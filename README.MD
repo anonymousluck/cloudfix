@@ -22,7 +22,9 @@ The framework supports:
 - **Evaluation and visualization of repair success**
 
 ---
+## Repository Structure
 
+```text
 FL/
 ├── original_policy/         # Original (unrepaired) IAM policies
 ├── figures/                 # Figures and visualizations from experiments
@@ -36,6 +38,7 @@ FL/
     ├── request_augment.py   # Request augmentation utilities
     ├── request_generate.py  # Request generation script
     └── viz.ipynb            # Visualization notebook
+
 
 
 
