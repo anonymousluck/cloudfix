@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "deny_6dde983f",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iam::000001:role/XXXXXXX-runner"
+    },
+    {
+      "id": "allow_a0807cb3",
+      "Effect": "allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::000001:role/XXXXXXX-runner"
+    },
+    {
+      "id": "deny_0ed8e06e",
+      "Effect": "deny",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    }
+  ]
+}

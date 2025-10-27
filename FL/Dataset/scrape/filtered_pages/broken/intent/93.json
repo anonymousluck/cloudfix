@@ -1,0 +1,32 @@
+I am attempting to use a CMK from "Account A" to encrypt SNS topics in "Account B". Then, using Cloudwatch Alarms in Account B, I am trying to send messages using SNS, also in Account B.
+
+
+The error occurring in Account B, is "CloudWatch Alarms does not have authorization to access the SNS topic encryption key."
+
+
+Let it be known, that when I disable the encryption on the SNS topic, the alarm works perfectly fine.
+I have also attempted to follow the suggestions listed in 
+this
+ post, but none of them fixed my problem.
+
+
+This is an example of the policy I am attempting to use:
+
+
+In this case, let 111222333 = Account A and 444555666 = Account B
+
+
+
+
+
+
+As you can see, I played around with a lot of the permissions, attempting to find an answer to the error, but I was unable to get the policy to work.
+
+
+I also tried appending the exact name of the SNS topic in Account B, in case it needed to be more specific and not so vague/open, but it had no effect either.
+
+
+I believe the other SNS topics I have in Account B work perfectly fine being encrypted with a key from Account A, but it is specifically Cloudwatch Alarms that is not working. Is it possible to use a key from another account to encrypt SNS and use Cloudwatch alarms, or is it impossible currently?
+
+
+Thank you for your help.

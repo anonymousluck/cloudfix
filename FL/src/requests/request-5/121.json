@@ -1,0 +1,48 @@
+{
+  "Requests": [
+    {
+      "id": "deny_0ca99806",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::my-bucket/config.xml",
+      "Principal": "apigateway.amazonaws.com"
+    },
+    {
+      "id": "deny_cf1ca95c",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::my-bucket/data.json",
+      "Principal": "apigateway.amazonaws.com"
+    },
+    {
+      "id": "allow_5b769f5d",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::my-bucket/config.xml"
+      ],
+      "Principal": "apigateway.amazonaws.com"
+    },
+    {
+      "id": "allow_9ccfabb2",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/config.xml",
+        "arn:aws:s3:::my-bucket/data.json"
+      ],
+      "Principal": "apigateway.amazonaws.com"
+    },
+    {
+      "id": "allow_98d1dd9c",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "apigateway.amazonaws.com"
+    }
+  ]
+}

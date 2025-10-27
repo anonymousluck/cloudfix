@@ -1,0 +1,52 @@
+{
+  "Requests": [
+    {
+      "id": "deny_e0303c40",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:glue:*:*:database/config.xml"
+    },
+    {
+      "id": "allow_84ea67b8",
+      "Effect": "allow",
+      "Action": [
+        "glue:GetTables",
+        "glue:GetDatabases"
+      ],
+      "Resource": [
+        "arn:aws:glue:*:*:table/*/config.xml",
+        "arn:aws:glue:*:*:table/*/data.json"
+      ]
+    },
+    {
+      "id": "allow_d17abfb4",
+      "Effect": "allow",
+      "Action": [
+        "glue:GetTables",
+        "glue:GetPartitions"
+      ],
+      "Resource": [
+        "arn:aws:glue:*:*:table/*/data.json",
+        "arn:aws:glue:*:*:database/config.xml"
+      ]
+    },
+    {
+      "id": "deny_a308c910",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:glue:*:*:table/*/data.json"
+    },
+    {
+      "id": "allow_9c4dcd32",
+      "Effect": "allow",
+      "Action": [
+        "glue:GetPartitions",
+        "glue:GetTables"
+      ],
+      "Resource": [
+        "arn:aws:glue:*:*:table/*/data.json",
+        "arn:aws:glue:*:*:database/document.txt"
+      ]
+    }
+  ]
+}

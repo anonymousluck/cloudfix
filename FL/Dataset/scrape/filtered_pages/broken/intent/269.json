@@ -1,0 +1,7 @@
+Ive never done any of this before and I'm having trouble verifying my new @domain email. Ive set up an s3 bucket. I used chatgpt to write the policy. Im configuring my email receiving rule in ses but I keep getting "The action or operation requested is invalid. Verify that the action is typed correctly."
+
+
+I have the regions set correctly. The bucket name was copied and pasted
+
+
+Ive replaced actual values with domain, arn, mybucket

@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_46d809dd",
+      "Effect": "allow",
+      "Action": "ssm:TerminateSession",
+      "Resource": "arn:aws:ssm:*:*:session/${aws:username}-document"
+    },
+    {
+      "id": "deny_7abf9d94",
+      "Effect": "deny",
+      "Action": "ssm:TerminateSession",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "deny_6f9a066a",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:ssm:*:*:session/${aws:username}-file1"
+    },
+    {
+      "id": "allow_ef6f1498",
+      "Effect": "allow",
+      "Action": "ssm:TerminateSession",
+      "Resource": "arn:aws:ssm:*:*:session/${aws:username}-file1"
+    },
+    {
+      "id": "allow_8b86255d",
+      "Effect": "allow",
+      "Action": "ssm:TerminateSession",
+      "Resource": [
+        "arn:aws:ssm:*:*:session/${aws:username}-document",
+        "arn:aws:ssm:*:*:session/${aws:username}-data123"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "Requests": [
+    {
+      "id": "allow_68449fe9",
+      "Effect": "allow",
+      "Action": [
+        "cloudwatch:ListDashboards",
+        "cloudwatch:ListMetrics"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    },
+    {
+      "id": "deny_830e26a6",
+      "Effect": "deny",
+      "Action": "cloudwatch:ListMetrics",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "allow_e45ea922",
+      "Effect": "allow",
+      "Action": "cloudwatch:ListDashboards",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "192.168.1.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_c72e1b6b",
+      "Effect": "allow",
+      "Action": [
+        "cloudwatch:ListDashboards",
+        "cloudwatch:GetMetricStatistics"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "cloudwatch:namespace": "AWS/Bedrock"
+        }
+      }
+    },
+    {
+      "id": "deny_556d8f67",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    }
+  ]
+}

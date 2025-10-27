@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "ArnEquals": {
+          "aws:PrincipalArn": "arn:aws:iam::<ACCOUNT_ID>:role/RoleName"
+        }
+      },
+      "Sid": "statement1"
+    }
+  ]
+}

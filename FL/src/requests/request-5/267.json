@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_2b98b89d",
+      "Effect": "deny",
+      "Action": "account:CloseAccount",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_a2b7ed25",
+      "Effect": "allow",
+      "Action": "account:CloseAccount",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_3fa6f097",
+      "Effect": "allow",
+      "Action": "account:CloseAccount",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_cdef1629",
+      "Effect": "allow",
+      "Action": "account:CloseAccount",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "deny_2b119181",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

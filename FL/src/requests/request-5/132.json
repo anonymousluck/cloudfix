@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_98f8a948",
+      "Effect": "allow",
+      "Action": "evidently:EvaluateFeature",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_df86bf86",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_c7790aaa",
+      "Effect": "allow",
+      "Action": [
+        "cognito-identity:GetCredentialsForIdentity",
+        "evidently:EvaluateFeature"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_cde3295f",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_1681ce0f",
+      "Effect": "allow",
+      "Action": [
+        "evidently:EvaluateFeature",
+        "cognito-identity:GetCredentialsForIdentity"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

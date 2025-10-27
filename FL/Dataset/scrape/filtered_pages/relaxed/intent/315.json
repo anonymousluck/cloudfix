@@ -1,0 +1,32 @@
+hello. i've been trying sending realtime video stream through raspberrypi with webcam to kinesis video stream and want to transform it and save the continous images(not a video). i checked the youtube video from AWS iot (
+https://www.youtube.com/watch?v=YoOYTCD_v3Q
+, 
+https://www.youtube.com/watch?v=pUvxI76YnfA
+) and successed getting video stream from raspberrypi to kinesis video stream(Iot core certification). But, the thing is i followed instruction and it cannot connect with S3(cannot save images in S3 bucket). i've double checked the role and policies which is same as instructions.
+
+
+{
+    "StreamName": "rt-video-1",
+    "ImageGenerationConfiguration":
+    {
+     "Status": "ENABLED",
+     "DestinationConfig":
+     {
+      "DestinationRegion": "ap-northeast-2",
+      "Uri": "s3://dining-images/rt-video-1/"
+     },
+     "SamplingInterval": 2000,
+     "ImageSelectorType": "PRODUCER_TIMESTAMP",
+     "Format": "PNG",
+     "WidthPixels": 640,
+     "HeightPixels": 480
+    }
+   }
+
+
+
+
+
+
+
+are these all information where kinesis video stream and S3 bucket is connected? please tell me where might be wrong

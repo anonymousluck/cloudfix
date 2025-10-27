@@ -1,0 +1,238 @@
+I was following these tutorials to pass my AWS ECS Farget service logs to multiple destinations e.g 
+S3
+ and 
+Datadog
+,
+
+
+AWS:
+ 
+https://repost.aws/knowledge-center/ecs-container-log-destinations-fargate
+
+
+Stackoverflow:
+ 
+https://stackoverflow.com/questions/68224439/aws-ecs-fargate-send-logs-to-multiple-destinations-cloudwatch-logs-and-elastic
+
+
+The articles are the same, but It didn't mention the 
+logConfiguration
+ setup on the container definition level with a 
+logDriver of 
+awsfirelens
+?
+, I was getting this error:
+
+
+
+
+Error: failed creating ECS Task Definition (
+prefix-service-dev
+): ClientException: When a firelensConfiguration object is specified, at least one container has to be configured with the awsfirelens log driver.
+
+
+
+
+So after adding 
+logConfiguration
+ to my existing container, it works. Still, in my case, I am facing an issue with successfully logging into 
+Datadog
+ for my service. Still, the logs are not going to the 
+AWS S3
+  The task definitions, Dockerfile, custom configuration, and s3 bucket permission are here.
+
+
+Task Definition
+
+
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-2:12121212121:task-definition/prefix-service-dev:20",
+    "containerDefinitions": [
+        {
+            "name": "log_router",
+            "image": "12121212121.dkr.ecr.us-east-2.amazonaws.com/custom-fluent-bit",
+            "cpu": 256,
+            "memory": 512,
+            "memoryReservation": 50,
+            "portMappings": [
+                {
+                    "containerPort": 24224,
+                    "hostPort": 24224,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": false,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "user": "0",
+            "systemControls": [],
+            "firelensConfiguration": {
+                "type": "fluentbit",
+                "options": {
+                    "config-file-type": "file",
+                    "config-file-value": "/firelens-datadog-s3.conf",
+                    "enable-ecs-log-metadata": "true"
+                }
+            }
+        },
+        {
+            "name": "prefix-service-dev",
+            "image": "12121212121.dkr.ecr.us-east-2.amazonaws.com/service-dev:latest",
+            "cpu": 512,
+            "memory": 1024,
+            "portMappings": [
+                {
+                    "containerPort": 50051,
+                    "hostPort": 50051,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "SECRET_KEY",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-2:12121212121:secret:prefix_service_dev:secret_key::"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awsfirelens",
+                "options": {
+                    "compress": "gzip",
+                    "provider": "ecs",
+                    "dd_service": "prefix-service-service",
+                    "Host": "http-intake.logs.datadoghq.com",
+                    "TLS": "on",
+                    "dd_source": "python-grpc",
+                    "dd_tags": "env:dev, prefix-service-dev",
+                    "Name": "datadog"
+                },
+                "secretOptions": [
+                    {
+                        "name": "apikey",
+                        "valueFrom": "arn:aws:secretsmanager:us-east-2:12121212121:secret:datadog_dev:dd_api_key::"
+                    }
+                ]
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "prefix-service-dev",
+    "taskRoleArn": "arn:aws:iam::12121212121:role/ecs-task-ex-rule-prefix-service-dev",
+    "executionRoleArn": "arn:aws:iam::12121212121:role/ecs-task-ex-rule-prefix-service-dev",
+    "networkMode": "awsvpc",
+    "revision": 20,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "ecs.capability.firelens.fluentbit"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "2048",
+    "registeredAt": "2024-06-17T12:43:28.860Z",
+    "registeredBy": "arn:aws:iam::12121212121:user/terraform_bot",
+    "tags": []
+}
+
+
+
+Dockerfile,
+
+
+FROM amazon/aws-for-fluent-bit:stable
+ADD firelens-datadog-s3.conf /firelens-datadog-s3.conf
+
+
+
+firelense-datadog-s3.conf
+
+
+[OUTPUT]
+    Name            s3
+    Match           *
+    region          us-west-2
+    bucket          ecs-service-logs
+    compression     gzip
+    total_file_size 1M
+    upload_timeout  1m
+    use_put_object  On
+    retry_limit     2
+    
+[OUTPUT]
+    Name          datadog
+    Match         *
+    Host          http-intake.logs.datadoghq.com
+    TLS           On
+    provider      ecs
+    compress      gzip
+    apikey        13434343432432dwwvasdsgdgdgdc
+
+
+
+bucket policy for the permission,
+
+
+
+
+
+
+ECS Task Execution Role
+
+
+resource "aws_iam_role" "ecsTaskExecutionRole" {
+  name               = "ecs-task-ex-rule-${var.name}"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+
+  inline_policy {
+    name = "ssm"
+
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Action = [
+            "ssm:GetParameters",
+            "secretsmanager:GetSecretValue",
+            "kms:Decrypt",
+            "ecs:ListClusters",
+            "ecs:ListContainerInstances",
+            "ecs:DescribeContainerInstances",
+            "s3:PutObject",
+            "s3:PutObjectAcl"
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+        },
+      ]
+    })
+  }
+}
+
+
+
+What am I doing wrong here? Please suggest, I was adding the 
+awsfirelens
+ in my "name": "prefix-service-dev", which is a container for which I want to send the logs to Datadog and S3 instead of Cloudwatch.
+
+
+Update
+: I have tried to remove the datadog portion and logs only on the S3 but in that case, the log_router container is not running(
+Stopped and Exit
+), it shows error with 
+ERROR: 255

@@ -1,0 +1,42 @@
+I'm currently testing if AWS Cognito can be used for our use-case. The plan is to use AWS Cognito user pools feature to provide user-authentication for a web application. However, we want some of our customers to be able to administrate their own user pools, so they can add and remove their own users themselves. I am trying the following:
+
+
+
+
+Create a seperate user-pool for the customer
+
+
+Add a new console user in IAM with a policy that allows to access and administer only that user pool, which the customer can use for administration
+
+
+
+
+I am using the following IAM policy in testing:
+
+
+
+
+
+
+Using this policy, I can login with the console user, and go to the link of the user pool (e.g. 
+https://eu-west-1.console.aws.amazon.com/cognito/v2/idp/user-pools/USER_POOL_ID/users?region=eu-west-1
+) and do administration tasks (e.g. create users).
+
+
+The problem is however that I need to set 'cognito-idp:ListUserPools' for this to work. Even if I directly go to the specific URL of the user pool, I still need this privilege, because otherwise Cognito will redirect to the 'Getting Started' Page. However, I don't want our customes to be able to see a list of all our user pools.
+
+
+My Questions:
+
+
+
+
+Is what I'm trying to do even a good idea, or is AWS Cognito simply not designed for 'delegated administration' (as Auth0 calls it)?
+
+
+Is there a way to authorize administration of a single user pool, without the 'ListUserPools' action?
+
+
+
+
+One solution that I could think of would be to create a seperate AWS root account for each customer's user pool, but this requires a lot of double configuration. Any other suggestions are welcome.

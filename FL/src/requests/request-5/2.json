@@ -1,0 +1,49 @@
+{
+  "Requests": [
+    {
+      "id": "allow_8a2a4e09",
+      "Effect": "allow",
+      "Action": [
+        "backup:DescribeRecoveryPoint",
+        "logs:CreateLogGroup"
+      ],
+      "Resource": [
+        "arn:aws:logs:::file1",
+        "arn:aws:logs:::data123"
+      ]
+    },
+    {
+      "id": "deny_bc28964a",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:logs:::data123"
+    },
+    {
+      "id": "allow_9b5b0bfa",
+      "Effect": "allow",
+      "Action": [
+        "backup:ListTags",
+        "kms:"
+      ],
+      "Resource": [
+        "arn:aws:backup:us-east-2:222222222222:backup-vault:zzush-intermediate-vault-ohio",
+        "arn:aws:iam::222222222222:role/"
+      ]
+    },
+    {
+      "id": "deny_30b333ea",
+      "Effect": "deny",
+      "Action": "backup:ListTags",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_3f1961a6",
+      "Effect": "allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:backup:us-east-2:222222222222:backup-vault:zzush-intermediate-vault-ohio"
+    }
+  ]
+}

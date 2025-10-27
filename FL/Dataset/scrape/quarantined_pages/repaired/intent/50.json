@@ -1,0 +1,22 @@
+I encountered an issue with AWS ECR where I'm getting an "ecr:GetAuthorizationToken" access denied error.
+
+
+I've created a service account on my EKS and attached a role with full access to ECR. The policy attached to the role includes the "ecr:GetAuthorizationToken" action.
+
+
+Here's the format of my IAM role's trust policy:
+
+
+
+
+
+
+
+However, when attempting to sign in to ECR from a pod, I'm encountering the following error:
+
+
+Error: An error occurred (AccessDeniedException) when calling the GetAuthorizationToken operation: User: arn:aws:sts::{ACC-ID}:assumed-role/ecr-sa/botocore-session-1706359714 is not authorized to perform: ecr:GetAuthorizationToken on resource: * because no identity-based policy allows the ecr:GetAuthorizationToken action Access denied
+
+
+
+What could be causing this issue, and how can I resolve it?

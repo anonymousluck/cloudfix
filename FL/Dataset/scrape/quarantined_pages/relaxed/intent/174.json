@@ -1,0 +1,37 @@
+Hello,
+
+
+For an AWS Application, I tried to create a tag-sync. The Console Screen (added below) requires to 
+Select a role that has permission to tag all of the resources that you include in the application.
+ I've manually created the role with below Trust Relationship and permissions, and selected it in the screen. But sometimes I got an error about Trust Relationships of the IAM Role, and sometime the screen freezes, and never makes the tag-sync.
+
+
+
+
+
+
+Permissions:
+
+
+
+
+ResourceGroupsandTagEditorFullAccess
+
+
+ResourceGroupsandTagEditorReadOnlyAccess
+
+
+ResourceGroupsTaggingAPITagUntagSupportedResources
+
+
+
+
+
+
+Could you please specify how should the Role look like so that the tag-sync to work ?
+
+
+Thank you,
+
+
+Mihai ADAM

@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_0e794f27",
+      "Effect": "allow",
+      "Action": "logs:GetLogEvents",
+      "Resource": "arn:aws:logs:eu-west-1:ACCOUNT-ID:log-group:aws-controltower/CloudTrailLogs:log-stream:ORG-ID_CRYPTO-ACCOUNT-ID_CloudTrail_eu-west-document"
+    },
+    {
+      "id": "deny_5f8a59b9",
+      "Effect": "deny",
+      "Action": "logs:GetLogEvents",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_b63ae115",
+      "Effect": "allow",
+      "Action": "logs:GetLogEvents",
+      "Resource": [
+        "arn:aws:logs:eu-west-1:ACCOUNT-ID:log-group:aws-controltower/CloudTrailLogs:log-stream:ORG-ID_CRYPTO-ACCOUNT-ID_CloudTrail_eu-west-data123",
+        "arn:aws:logs:eu-west-1:ACCOUNT-ID:log-group:aws-controltower/CloudTrailLogs:log-stream:ORG-ID_CRYPTO-ACCOUNT-ID_CloudTrail_eu-west-document"
+      ]
+    },
+    {
+      "id": "deny_35b11aa8",
+      "Effect": "deny",
+      "Action": "logs:GetLogEvents",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_3341cd71",
+      "Effect": "allow",
+      "Action": "logs:GetLogEvents",
+      "Resource": "arn:aws:logs:eu-west-1:ACCOUNT-ID:log-group:aws-controltower/CloudTrailLogs:log-stream:ORG-ID_CRYPTO-ACCOUNT-ID_CloudTrail_eu-west-file1"
+    }
+  ]
+}

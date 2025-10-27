@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "deny_e53000e1",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_c595c2cf",
+      "Effect": "allow",
+      "Action": "aoss:APIAccessAll",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_bc863f87",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_f727b5b6",
+      "Effect": "allow",
+      "Action": "aoss:APIAccessAll",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_2ab2dce0",
+      "Effect": "allow",
+      "Action": "aoss:APIAccessAll",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    }
+  ]
+}

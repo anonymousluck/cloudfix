@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_d985f0e7",
+      "Effect": "allow",
+      "Action": "glue:GetCrawler",
+      "Resource": "arn:aws:glue:*:248135293344:catalog"
+    },
+    {
+      "id": "allow_b16b2180",
+      "Effect": "allow",
+      "Action": [
+        "glue:GetConnections",
+        "glue:GetDatabases"
+      ],
+      "Resource": "arn:aws:glue:*:248135293344:job/config.xml"
+    },
+    {
+      "id": "allow_185882b4",
+      "Effect": "allow",
+      "Action": "glue:GetCrawler",
+      "Resource": [
+        "arn:aws:glue:*:248135293344:database/gluedata123",
+        "arn:aws:glue:*:248135293344:connection/config.xml"
+      ]
+    },
+    {
+      "id": "deny_bf36c5fd",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:glue:*:248135293344:job/data.json"
+    },
+    {
+      "id": "deny_2a69dfae",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:glue:*:248135293344:database/gluedata123"
+    }
+  ]
+}

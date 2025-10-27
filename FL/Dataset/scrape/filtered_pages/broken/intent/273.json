@@ -1,0 +1,35 @@
+my s3 IAM
+
+
+
+
+
+
+
+settings.py
+
+
+INSTALLED_APPS = [
+    'storages',
+]
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+
+
+
+django code
+
+
+def UpdateCompanyView(request):
+    user = request.user
+    company = user.company
+    old_logo = company.logo
+    if old_logo and 'logo' in serializer.validated_data and data_logo is not None:
+        old_logo.delete()
+    #old_logo.delete(save=False)#I've tried this also
+
+
+
+
+other all actions working put, add, but deleting occurring this error

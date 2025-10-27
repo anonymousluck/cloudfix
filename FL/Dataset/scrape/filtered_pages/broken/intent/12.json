@@ -1,0 +1,93 @@
+Hi guys,
+
+
+I am using amplify cli but I am getting error,
+I see that bucket is created, but deployment fails.
+I have S3 permissions :
+
+
+ s3:CreateBucket, s3:DeleteBucket, s3:PutObject, s3:GetObject, and s3:ListBucket.
+
+
+I did :
+
+
+amplify init --debug
+
+
+
+Error:
+
+
+? region:  us-east-2
+Adding backend environment dev to AWS Amplify app: dogj3jga
+
+Deployment failed.
+Deploying root stack store [ ==========------------------------------ ] 1/4
+        amplify-store-dev-195845      AWS::CloudFormation::Stack     ROLLBACK_COMPLETE              Tue Jan 30 2024 19:59:25…     
+        UnauthRole                     AWS::IAM::Role                 CREATE_FAILED                  Tue Jan 30 2024 19:59:09…     
+        AuthRole                       AWS::IAM::Role                 CREATE_FAILED                  Tue Jan 30 2024 19:59:09…     
+        DeploymentBucket               AWS::S3::Bucket                CREATE_FAILED                  Tue Jan 30 2024 19:59:08…     
+
+
+An error occurred when creating the CloudFormation stack
+🛑 The following resources failed to deploy:
+Resource Name: DeploymentBucket (AWS::S3::Bucket)
+Event Type: create
+Reason: Resource handler returned message: "Access Denied (Service: S3, Status Code: 403, Request ID: E35R5MZHFJ633RA8, Extended Request ID: E8JOq6AWsS+Wxt/cFgSe9cHnGaA7g6qOeB4XvnHmPXrwJeuDBbWhk5FTnMa8bgjoR3psQflGYyI=)" (RequestToken: e1807050-039c-d96d-0f78-690209da8181, HandlerErrorCode: GeneralServiceException)
+
+
+🛑 Initialization of project failed
+Name: DeploymentBucket (AWS::S3::Bucket), Event Type: create, Reason: Resource handler returned message: "Access Denied (Service: S3, Status Code: 403, Request ID: E35R5MZHFJ633RA8, Extended Request ID: E8JOq6AWsS+Wxt/cFgSe9cHnGaA7g6qOeB4XvnHmPXrwJeuDBbWhk5FTnMa8bgjoR3psQflGYyI=)" (RequestToken: e1807050-039c-d96d-0f78-690209da8181, HandlerErrorCode: GeneralServiceException), IsCustomResource: false
+
+
+Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/
+
+Resource is not in the state stackCreateComplete
+ResourceNotReady: Resource is not in the state stackCreateComplete
+    at constructor.setError (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/resource_waiter.js:182:47)
+    at Request.CHECK_ACCEPTORS (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/resource_waiter.js:44:12)
+    at Request.callListeners (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/sequential_executor.js:106:20)
+    at Request.emit (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/sequential_executor.js:78:10)
+    at Request.emit (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/request.js:686:14)
+    at Request.transition (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/request.js:22:10)
+    at AcceptorStateMachine.runTo (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/state_machine.js:14:12)
+    at /snapshot/amplify-cli/build/node_modules/aws-sdk/lib/state_machine.js:26:10
+    at Request.<anonymous> (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/request.js:38:9)
+    at Request.<anonymous> (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/request.js:688:12)
+    at Request.callListeners (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/sequential_executor.js:116:18)
+    at Request.emit (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/sequential_executor.js:78:10)
+    at Request.emit (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/request.js:686:14)
+    at Request.transition (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/request.js:22:10)
+    at AcceptorStateMachine.runTo (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/state_machine.js:14:12)
+    at /snapshot/amplify-cli/build/node_modules/aws-sdk/lib/state_machine.js:26:10
+    at Request.<anonymous> (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/request.js:38:9)
+    at Request.<anonymous> (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/request.js:688:12)
+    at Request.callListeners (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/sequential_executor.js:116:18)
+    at callNextListener (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/sequential_executor.js:96:12)
+    at IncomingMessage.onEnd (/snapshot/amplify-cli/build/node_modules/aws-sdk/lib/event_listeners.js:417:13)
+    at IncomingMessage.emit (node:events:525:35)
+    at IncomingMessage.emit (node:domain:489:12)
+    at endReadableNT (node:internal/streams/readable:1359:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+
+
+
+My permissions:
+
+
+
+
+
+
+I also used IAM Policy Simulator 
+https://policysim.aws.amazon.com/home/index.jsp
+ with my roles. it worked in simulator , but issue still exists.
+
+
+
+
+Can someone please advice?
+
+
+Thank you

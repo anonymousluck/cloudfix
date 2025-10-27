@@ -1,0 +1,116 @@
+Hi guys, I need help with creating an SFTP user in AWS Transfer Family that has access to specific folders within an S3 bucket. Here are the details:
+Current Setup:
+I have an S3 bucket named abc-sftp.
+I currently have an SFTP user who has access to the root directory.
+I need to create a new user who will have access only to a specific directory (test) within the bucket.
+
+
+Requirements:
+A user that has access only to the test directory within the S3 bucket.
+User can see all files in the test directory but cannot download or upload files to it. I want to modify this user's permissions so that they can upload and download files.
+
+
+Current IAM Role and Policy:
+Here is the IAM policy attached to the SFTP user's role:
+
+
+{
+
+
+"Version": "2012-10-17",
+
+
+"Statement": [
+
+
+{
+
+
+"Effect": "Allow",
+
+
+"Action": [
+
+
+"s3:ListBucket"
+
+
+],
+
+
+"Condition": {
+
+
+"StringLike": {
+
+
+"s3:prefix": "test/
+"
+
+
+}
+
+
+},
+
+
+"Resource": "arn:aws:s3:::abc-sftp"
+
+
+},
+
+
+{
+
+
+"Effect": "Allow",
+
+
+"Action": [
+
+
+"s3:GetObject",
+
+
+"s3:PutObject",
+
+
+"s3:DeleteObject",
+
+
+"s3:GetObjectAcl",
+
+
+"s3:DeleteObjectVersion",
+
+
+"s3:PutObjectAcl",
+
+
+"s3:GetObjectVersion"
+
+
+],
+
+
+"Resource": "arn:aws:s3:::abc-sftp/test/
+"
+
+
+}
+
+
+]
+
+
+}
+
+
+The trust relationship for the IAM role is as follows:
+
+
+
+
+
+Questions:
+How can I modify the second user's permissions so that they can upload and download files from the test directory?

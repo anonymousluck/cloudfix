@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "allow_4bcc355d",
+      "Effect": "allow",
+      "Action": "iam:CreateServiceLinkedRole",
+      "Resource": "arn:aws:iam::{ACCOUNT_ID}:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot"
+    },
+    {
+      "id": "deny_36b41c10",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iam::{ACCOUNT_ID}:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot"
+    },
+    {
+      "id": "deny_71622d49",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:iam::{ACCOUNT_ID}:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot"
+    }
+  ]
+}

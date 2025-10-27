@@ -1,0 +1,83 @@
+{
+  "Requests": [
+    {
+      "id": "allow_bae3dc0e",
+      "Effect": "allow",
+      "Action": [
+        "kinesisvideo:GetMedia",
+        "kinesisvideo:DescribeStream"
+      ],
+      "Resource": [
+        "arn:aws:kinesisvideo:us-east-2:000011112222:stream/data.json",
+        "arn:aws:kinesisvideo:us-east-2:000011112222:stream/config.xml"
+      ],
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalTag/companyRoles": [
+            "*${aws:ResourceTag/companyId}:admin*",
+            "*${aws:ResourceTag/companyId}:member*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_199c6c65",
+      "Effect": "allow",
+      "Action": "kinesisvideo:GetImages",
+      "Resource": "arn:aws:kinesisvideo:us-east-2:000011112222:stream/data.json",
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalTag/companyRoles": [
+            "*${aws:ResourceTag/companyId}:admin*",
+            "*${aws:ResourceTag/companyId}:member*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_46b33b00",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:kinesisvideo:us-east-2:000011112222:stream/config.xml",
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalTag/companyRoles": [
+            "*${aws:ResourceTag/companyId}:admin*",
+            "*${aws:ResourceTag/companyId}:member*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_b5e4f7f9",
+      "Effect": "allow",
+      "Action": [
+        "kinesisvideo:GetHLSStreamingSessionUrl",
+        "kinesisvideo:GetMedia"
+      ],
+      "Resource": "arn:aws:kinesisvideo:us-east-2:000011112222:stream/data.json",
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalTag/companyRoles": [
+            "*${aws:ResourceTag/companyId}:admin*",
+            "*${aws:ResourceTag/companyId}:member*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_1dec5a43",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:kinesisvideo:us-east-2:000011112222:stream/data.json",
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalTag/companyRoles": [
+            "*${aws:ResourceTag/companyId}:admin*",
+            "*${aws:ResourceTag/companyId}:member*"
+          ]
+        }
+      }
+    }
+  ]
+}

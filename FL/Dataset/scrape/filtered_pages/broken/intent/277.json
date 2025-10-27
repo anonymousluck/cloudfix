@@ -1,0 +1,23 @@
+Hi AWS, I am writing an SCP to enable 
+AWS Config
+ and 
+AWS GuardDuty
+. The approved regions are 
+us-east-1
+, 
+us-east-2
+, 
+us-west-1
+. Here is the SCP code:
+
+
+
+
+
+
+But during testing, I tried to enable both AWS Config and GuardDuty in one of the non-approved regions (for e.g. 
+ap-south-1
+) and I was able to enable it.
+
+
+Can you please help me in identifying why it is happening?

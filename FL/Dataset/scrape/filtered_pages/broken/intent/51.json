@@ -1,0 +1,10 @@
+As mentioned in the AWS documentation, I created policy to allow delete IAM users' operation.
+
+https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_delegate-permissions_examples.html
+
+
+"Deleting the user. This task requires permissions to perform all of the following actions: DeleteSigningCertificate, DeleteLoginProfile, RemoveUserFromGroup, and DeleteUser"
+
+
+
+But it doesn't allow to delete users.

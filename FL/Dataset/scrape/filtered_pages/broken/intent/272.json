@@ -1,0 +1,19 @@
+I have SSM document that accessing an S3 bucket using HTTPS. The bucket contains an installer . I can access the installer using below S3 policy, but it is open to public. Is there a way to restrict it to only in my Organization account?
+
+
+
+
+
+
+I tried to add a condition but I got 403 Forbidden error.
+
+
+			"Condition": {
+			    "StringEquals": {
+				    "aws:PrincipalOrgID": ["o-xxxxxxxx"] 
+				}  
+			}
+
+
+
+Any suggestions?

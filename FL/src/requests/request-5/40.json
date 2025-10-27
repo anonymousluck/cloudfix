@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_fe9f44ee",
+      "Effect": "allow",
+      "Action": [
+        "iam:RemoveUserFromGroup",
+        "iam:GetUserPolicy"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "allow_bb7449a1",
+      "Effect": "allow",
+      "Action": "iam:DeleteSigningCertificate",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_628429c0",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_577196b6",
+      "Effect": "allow",
+      "Action": "iam:ListUsers",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_69571126",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    }
+  ]
+}

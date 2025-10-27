@@ -1,0 +1,129 @@
+I am trying to set up IAM authentication in an AWS RDS MySQL database. I've followed the guidance in AWS' documentation (which I see is the same as on various other webpages about the topic).
+
+
+I know that the problem is not the VPC security group, because the same client system (a Windows desktop) can successfully connect to the same AWS RDS MySQL database using MySQL Workbench.
+
+
+I assume that the problem is not SSL, as the MySQL Workbench is connecting over SSL, and the mysql command line client which I'm trying to use is the binary provided with MySQL Workbench, and the --ssl* options produce reasonable output (detailed below).
+
+
+I don't think that the problem is with the creation and grants of the user. Details below.
+
+
+The most likely place where I've messed up I think is in the IAM Policy, although it doesn't look that complicated, and I've followed the documentation and examples that I've seen, so I don't know what it is that I might have done wrong there. And, I've run the AWSSupport-TroubleshootRDSIAMAuthentication automation which runs Steps 1-5 all successfully, including testing the IAM policy, so that too seems like it should be good.
+
+
+Help getting past surely some kind of my own error blindness will be appreciated, thank you in advance!
+
+
+Various critical configuration and identity parameters:
+
+
+AWS Region: eu-west-2 
+AWS RDS database type/engine: MySQL (Community, v8 series, specifically v8.0.35) 
+ARN: arn:aws:rds:eu-west-2:MyAcctNumber:db:my-test2-db 
+IAM DB authentication: enabled 
+parameter: require_secure_transport: 1
+
+
+
+The IAM Policy which is applied to the user:
+
+
+
+
+
+
+(n.b. Not that I hope it would matter anyway, although I call my database user "myIAMuser" throughout this post, the database username is in fact in all lower-case).
+
+
+The AWS DB IAM user's GRANTs in the database:
+
+
+#Grants for myIAMuser@%
+
+'GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, RELOAD, PROCESS, INDEX, ALTER, SHOW DATABASES, CREATE TEMPORARY TABLES, LOCK TABLES, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, CREATE USER, EVENT, TRIGGER ON *.* TO `myIAMuser`@`%` WITH GRANT OPTION'
+
+
+
+(I compared this to the GRANTs of the 'admin' user, and while admin has a few extras, none of them seem to be relating to basic permission to connect).
+
+
+Getting an AWS IAM authentication token:
+
+
+T
+
+
+OKEN="$(aws rds generate-db-auth-token --hostname $RDSHOST --port 3306 --region eu-west-2 --username myIAMuser )"
+echo $TOKEN
+my-test2-db.cfxxx3bdbuck.eu-west-2.rds.amazonaws.com:3306/?Action=connect&DBUser=myIAMuser&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=CREDENTIAL%2F20240820%2Feu-west-2%2Frds-db%2Faws4_request&X-Amz-Date=20240820T123237Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=1234567890abcdef1234567890abcdefabcdef1234567890abcdef
+
+
+
+(above edited to remove real details)
+
+
+Just to prove that my IAM credentials are good:
+
+
+$ aws rds describe-pending-maintenance-actions --region eu-west-2
+PENDINGMAINTENANCEACTIONS      
+arn:aws:rds:eu-west-2:myaccountid:db:somedbname
+PENDINGMAINTENANCEACTIONDETAILS system-update   New Operating System update is available
+
+
+
+Trying to connect using the mysql CLI:
+
+
+$ echo "RDSHOST"
+my-test2-db.cfxxx3bdbuck.eu-west-2.rds.amazonaws.com
+
+$ mysql --host=$RDSHOST --port=3306 --ssl-mode=required --ssl-ca=./eu-west-2-bundle.pem --enable-cleartext-plugin --user=myIAMuser --password=$TOKEN
+mysql: [Warning] Using a password on the command line interface can be insecure.
+WARNING: no verification of server certificate will be done. Use --ssl-mode=VERIFY_CA or VERIFY_IDENTITY.
+ERROR 1045 (28000): Access denied for user 'myIAMuser'@'dyndsl-012-034-037-172.qqq-ip-backbone.xx' (using password: YES)
+
+
+
+I have tried increasing the general log level to 3; that did not produce any further information than that this user's access attempt was denied.
+
+
+I added the MARIADB AUDIT option; that, too, provided no further information.
+
+
+Deliberately putting in something that wouldn't be a valid AWS IAM authentication token in the --password option makes no difference.
+
+
+The mysql client provided with MySQL Workbench seems to have been compiled without debugging options:
+
+
+$ mysql --help 2>&1|grep -i debug
+  -#, --debug[=#]     This is a non-debug version. Catch this and exit.
+  --debug-check       This is a non-debug version. Catch this and exit.
+  -T, --debug-info    This is a non-debug version. Catch this and exit.
+
+$ mysql --debug=9 --host=$RDSHOST --port=3306 --ssl-mode=required --ssl-ca=./eu-west-2-bundle.pem --enable-cleartext-plugin --user=myIAMuser --password=$TOKEN
+mysql: [ERROR] C:\Program Files\MySQL\MySQL Workbench 8.0 CE\mysql.exe: Option 'debug=9' was used, but is disabled.
+
+
+
+.. so I don't seem to be able to ask for more detail on what/why failed that way, either.
+
+
+However, I also downloaded MySQLsh, which does have debugging, and I turned that up to max (log level 8, verbosity level 4) and that still doesn't give anything more about the access denied error other than giving the exact same access denied error that I get from the normal mysql client and from MySQL Workbench.
+
+
+I've also read 
+https://repost.aws/knowledge-center/rds-mysql-access-denied
+ and checked everything in it.
+
+
+Please forgive me if I've left out any pertinent detail - just ask.
+
+
+Thanks again in advance for suggestions on debugging this.
+
+
+-Jay

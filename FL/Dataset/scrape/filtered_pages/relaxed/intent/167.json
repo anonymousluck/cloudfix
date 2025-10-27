@@ -1,0 +1,81 @@
+Hello there AWS team!
+
+
+I'm using provision by claim in AWS IoT core to provision a fleet of devices.
+
+
+At this moment I'm able to publish to $aws/certificates/create/json topic and receive the following values:
+-Certificate Id
+-Certificate
+-Private Key
+-Certificate ownership token
+
+
+Now, I'm trying to publish to 
+$aws/provisioning-templates/esp32_fleet_prov_template/provision/json
+ topic. I get the following error in the 
+$aws/provisioning-templates/esp32_fleet_prov_template/provision/json/rejected
+topic:
+-{"statusCode":400,"errorCode":"InvalidParameters","errorMessage":"Cannot resolve reference value: SerialNumber"}
+
+
+As far as I understand, I need to create a JSON with the ownership certificate which is what I do here:
+
+
+    DynamicJsonDocument registerDoc(2000);
+    registerDoc["certificateOwnershipToken"] = ownerToken;
+    char jsonRegister[2000]; 
+    serializeJson(registerDoc, jsonRegister); // print to client    
+    client.publish("$aws/provisioning-templates/esp32_fleet_prov_template/provision/json", jsonRegister);
+    registerDoc.clear();
+
+
+
+My policies are:
+esp32_claim_policy (for the claim certificate)
+
+
+
+
+
+
+
+esp32_fleet_policy
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:iot:sa-east-1:195542078145:*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Publish",
+      "Resource": "arn:aws:iot:sa-east-1:195542078145:*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Subscribe",
+      "Resource": "arn:aws:iot:sa-east-1:195542078145:*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Receive",
+      "Resource": "arn:aws:iot:sa-east-1:195542078145:*"
+    }
+  ]
+}
+
+
+
+I couldn't find the documentation for the JSON on the AWS site, so I'm following this one 
+https://buildstorm.com/blog/aws_iot_provision_by_claim/
+
+I think I need to add a serial number and certificateId in the JSON?
+I tested different formats but all of them result in the same error, so I muss be missing something, but I can't find too much documentation about it.
+
+
+Thanks a lot in advance :)

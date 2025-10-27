@@ -1,0 +1,70 @@
+{
+  "Requests": [
+    {
+      "id": "allow_daf5f63b",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::<bucket-name>/config.xml",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalARN": "arn:aws:iam::<account-id>:role/aws-quicksight-service-role-manual"
+        }
+      }
+    },
+    {
+      "id": "deny_06c8c6c7",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalARN": "arn:aws:iam::<account-id>:role/aws-quicksight-service-role-manual"
+        }
+      }
+    },
+    {
+      "id": "allow_85f4a003",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::<bucket-name>/data.json",
+        "arn:aws:s3:::<bucket-name>/document.txt"
+      ],
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalARN": "arn:aws:iam::<account-id>:role/aws-quicksight-service-role-manual"
+        }
+      }
+    },
+    {
+      "id": "allow_c8fa91d4",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::<bucket-name>/document.txt",
+        "arn:aws:s3:::<bucket-name>/config.xml"
+      ],
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "deny_39489242",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::<bucket-name>/data.json",
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:max-keys": "10"
+        }
+      }
+    }
+  ]
+}

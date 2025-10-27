@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_c7023b6f",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:lambda:us-east-1:account_b:function:alarmActionLambda",
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "192.168.1.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_84ac2901",
+      "Effect": "allow",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:lambda:us-east-1:account_b:function:alarmActionLambda",
+      "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceAccount": "account_a"
+        },
+        "StringLike": {
+          "AWS:SourceArn": "arn:aws:cloudwatch:us-east-1:account_a:alarm:canary alarm"
+        }
+      }
+    },
+    {
+      "id": "deny_5f5e8a73",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:lambda:us-east-1:account_b:function:alarmActionLambda",
+      "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceAccount": "account_a"
+        },
+        "StringLike": {
+          "AWS:SourceArn": "arn:aws:cloudwatch:us-east-1:account_a:alarm:canary alarm"
+        }
+      }
+    }
+  ]
+}

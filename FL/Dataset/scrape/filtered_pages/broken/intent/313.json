@@ -1,0 +1,14 @@
+Hi,
+
+
+I'm having trouble moving existing folders to new folders in my S3 bucket, with the following error message: "CopyObjectOperationObject: storage class has unknown or unsupported value : DEEP_ARCHIVE"
+
+
+I then ran the 'Diagnose with AmazonQ', and followed the instructions on how to add the following permissions to my IAM:
+
+
+
+But that doesn't work either.
+
+
+Any help would be most appreciated, thanks :)

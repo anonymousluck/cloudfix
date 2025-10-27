@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_63068ecc",
+      "Effect": "allow",
+      "Action": [
+        "sms-voice:SendTextMessage",
+        "sms-voice:DescribePhoneNumbers"
+      ],
+      "Resource": "arn:aws:sms-voice:us-east-2:{{accountB}}:phone-number/phone-abcdefabcdef",
+      "Principal": "arn:aws:iam::{{accountA}}:root"
+    },
+    {
+      "id": "allow_644093b4",
+      "Effect": "allow",
+      "Action": "sms-voice:SendVoiceMessage",
+      "Resource": "arn:aws:sms-voice:us-east-2:{{accountB}}:phone-number/phone-abcdefabcdef",
+      "Principal": "arn:aws:iam::123456789012:user/bob"
+    },
+    {
+      "id": "allow_c64188a8",
+      "Effect": "allow",
+      "Action": "sms-voice:SendTextMessage",
+      "Resource": "arn:aws:sms-voice:us-east-2:{{accountB}}:phone-number/phone-abcdefabcdef",
+      "Principal": "arn:aws:iam::{{accountA}}:root"
+    },
+    {
+      "id": "deny_e1ff802f",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:sms-voice:us-east-2:{{accountB}}:phone-number/phone-abcdefabcdef",
+      "Principal": "arn:aws:iam::{{accountA}}:root"
+    },
+    {
+      "id": "deny_bd026040",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:sms-voice:us-east-2:{{accountB}}:phone-number/phone-abcdefabcdef",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    }
+  ]
+}

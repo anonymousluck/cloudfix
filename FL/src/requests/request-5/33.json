@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_aa6941ab",
+      "Effect": "allow",
+      "Action": "es:ESHttpGetObject",
+      "Resource": "arn:aws:es:REGION:ACCOUNTID:domain/DOMAIN/index3/document.txt",
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    },
+    {
+      "id": "allow_722d78fd",
+      "Effect": "allow",
+      "Action": "es:ESHttpGetObject",
+      "Resource": "arn:aws:es:REGION:ACCOUNTID:domain/DOMAIN/index4/document.txt",
+      "Principal": "arn:aws:iam::ACCOUNTID:role/EC2_ROLE_4"
+    },
+    {
+      "id": "deny_7cd0c93f",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:es:REGION:ACCOUNTID:domain/DOMAIN/index4/document.txt",
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    },
+    {
+      "id": "deny_6a05fb43",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:es:REGION:ACCOUNTID:domain/DOMAIN/index4/data.json",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role"
+    },
+    {
+      "id": "allow_e1b69a92",
+      "Effect": "allow",
+      "Action": "es:ESHttpGetObject",
+      "Resource": [
+        "arn:aws:es:REGION:ACCOUNTID:domain/DOMAIN/index4/document.txt",
+        "arn:aws:es:REGION:ACCOUNTID:domain/DOMAIN/index3/data.json"
+      ],
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    }
+  ]
+}

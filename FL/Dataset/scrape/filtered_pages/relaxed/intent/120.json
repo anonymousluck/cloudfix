@@ -1,0 +1,50 @@
+Hi everyone,
+
+
+I'm currently working with the Amazon Q Business APIs using IAM user credentials. Most APIs like chatControls, plugins, etc., are working as expected. However, I'm encountering an issue with the ChatSync API — it returns the following error:
+
+
+"User is not authorized for this service call"
+
+
+My IAM user has the following policy attached, which provides full access to Amazon Q Business:
+
+
+
+
+
+
+Despite this, I'm still receiving the authorization error only for the ChatSync API.
+
+
+Here is the curl request I'm using for the ChatSync API:
+
+
+curl --location 'https://qbusiness.us-east-1.api.aws/applications/4-my-application-id/conversations?sync' \
+--header 'Content-Type: application/json' \
+--header 'X-Amz-Content-Sha256: beaeadyyyyyba3' \
+--header 'X-Amz-Date: 20250423T052305Z' \
+--header 'Authorization: AWS4-HMAC-SHA256 Credential=AKyyI/20250423/us-east-1/qbusiness/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-content-sha256;x-amz-date, Signature=f6yyy0' \
+--data '{
+  "userMessage": "Tell me about Amazon Q Business API"
+}'
+
+
+
+
+Given that other APIs work and this specific one doesn't, I’m wondering:
+
+
+Is there a different permission required specifically for the ChatSync API?
+
+
+Could there be a service control policy (SCP), organization policy, or something else that might be blocking it?
+
+
+Am I missing anything in the request structure itself?
+
+
+Any insights or guidance would be greatly appreciated.
+
+
+Thanks in advance!

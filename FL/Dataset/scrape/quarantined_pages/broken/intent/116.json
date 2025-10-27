@@ -1,0 +1,43 @@
+Hi Team.
+I'm working on cross accounts, so i have a lambda function which delete the log group which doesn't have any retention period to it.
+I'm assuming the role from other aws account using sts_connection = boto3.client('sts') in my lambda code.
+I need a restriction rule to this role to just pick up a single lambda function i.e my lambda and not by the other lambda functions.
+As of now i have policy:
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "VisualEditor0",
+"Effect": "Allow",
+"Action": [
+"logs:DescribeLogGroups",
+"logs:DeleteLogGroup"
+],
+"Resource": [
+"arn:aws:logs:
+:
+:
+"
+]
+}
+]
+}
+Lambda Basic execution:
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Effect": "Allow",
+"Action": [
+"logs:CreateLogGroup",
+"logs:CreateLogStream",
+"logs:PutLogEvents"
+],
+"Resource": "
+"
+}
+]
+}
+TRUST RELATIONSHIP:
+
+Kindly provide a solution to this as the plicy needs to be updated or conditions needs to be applied for the above policy, Thanks!

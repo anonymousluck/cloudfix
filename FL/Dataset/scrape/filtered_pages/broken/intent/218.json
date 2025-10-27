@@ -1,0 +1,14 @@
+i have created following SCP to enforce tags on EC2,Lambda and dynamodb. However it is not working for dynamo db
+`
+
+
+
+
+
+
+`
+
+
+I am giving tag Name while creating table but it is giving error
+User: arn:aws:iam::458225596744:root is not authorized to perform: dynamodb:CreateTable on resource: arn:aws:dynamodb:us-east-1:458225596744:table/ashish0001 with an explicit deny in a service control policy
+No other SCP is applied

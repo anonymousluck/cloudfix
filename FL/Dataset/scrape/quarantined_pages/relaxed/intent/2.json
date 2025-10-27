@@ -1,0 +1,12 @@
+I am recieving this error after the sso flow using AUTH0 on amazon Q business  web experience
+
+
+
+here is the porlicy I am using with assume role, I gave it permissions to qapps:* and qbusiness:* :
+
+
+
+
+
+
+What is missing in my setup since i am recieving the error

@@ -1,0 +1,61 @@
+Hi,
+
+
+Today is my first time configuring a static web site on S3.
+
+
+
+
+I setup a S3 Bucket with Static Hosting enabled, Public Access Enabled, Bucket policy that allows access
+
+
+
+
+
+
+
+
+I tested it and website works.
+
+
+Now i want to add CloudFront + ACM. So i generate my certificate on ACM and Configure CloudFront
+
+
+when i am adding the Origin for my bucket it gives the Below Recommendation
+
+
+
+
+This S3 bucket has static web hosting enabled. If you plan to use this distribution as a website, we recommend using the S3 website endpoint rather than the bucket endpoint.
+
+
+
+
+But in my reading and understanding, i want to follow the approach of keeping my bucket private and only allowing access from CF OAC.
+
+
+What is the different between both approaches ? it seems if i use the website endpoint then i cannot make the S3 bucket private, as people will be able to access it directly without CF too.
+
+
+I see that there are multiple options
+
+
+
+
+Use a REST API endpoint as the origin, and restrict access with an origin access control (OAC) or origin access identity (OAI)
+Note: It's a best practice to use origin access control (OAC) to restrict access. Origin access identity (OAI) is a legacy method for this process.
+
+
+Use a website endpoint as the origin, and allow anonymous (public) access
+
+
+Use a website endpoint as the origin, and restrict access with a Referer header
+
+
+Use AWS CloudFormation to deploy a static website endpoint as the origin, and custom domain pointing to CloudFront
+
+
+
+
+Which one is the recommended. it seems to keep the Bucket Private i can use either 1 or 3 ?
+But still confused as to which the recommended approach

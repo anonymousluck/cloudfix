@@ -1,0 +1,25 @@
+The AWS SQS docs states that anonymous access is supported: 
+https://aws.amazon.com/sqs/faqs/#:~:text=Q%3A%20Does%20Amazon%20SQS%20support%20anonymous%20access%3F
+
+
+It also provides an example policy that grants a permission to all users: 
+https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-examples-of-sqs-policies.html#:~:text=Example%205%3A%20Grant%20a%20permission%20to%20all%20users
+
+
+I've tried to create an SQS queue with the following access policy:
+
+
+
+
+
+
+However, an anonymous client (using a cURL request) gets the following error when trying to execute SendMessage: 
+Access to the resource The specified queue does not exist or you do not have access to it. is denied.
+
+
+A previous solution (
+https://stackoverflow.com/questions/32632850/how-do-you-enable-anonymous-write-access-to-sqs-queue
+) doesn't seem to work anymore.
+
+
+Is anonymous access to SQS no longer supported by AWS?

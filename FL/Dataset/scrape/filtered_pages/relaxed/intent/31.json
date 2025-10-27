@@ -1,0 +1,90 @@
+I am trying to authenticate users through their Gmail account using Identity Pool. I am successfully able to get Google id_token from Google but when I try to get AWS credentials after following this 
+authentication flow doc
+, it gives me "Token is not from a supported provider of this identity pool." error. I've also tried calling "AssumeRoleWithWebIdentity" but I get "Not authorized to perform sts:AssumeRoleWithWebIdentity" error.
+This is the curl command I've used for GetID
+
+
+curl --location 'https://cognito-identity.us-east-1.amazonaws.com' \
+--header 'Content-Type:  application/x-amz-json-1.1' \
+--header 'X-Amz-Target: AWSCognitoIdentityService.GetId' \
+--data '{
+    "IdentityPoolId": "us-east-1:<IDENTITY_POOL_ID>",
+    "Logins": {
+        "accounts.google.com": <GOOGLE_ID_TOKEN>
+    }
+}'
+
+
+
+I get "Token is not from a supported provider of this identity pool." error for this.
+
+
+This is the curl command I've used for AssumeRoleWithWebIdentity
+
+
+curl --location 'https://sts.amazonaws.com' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'Action=AssumeRoleWithWebIdentity' \
+--data-urlencode 'RoleArn=arn:aws:iam::<ACCOUNT_ID>:role/service-role/<ROLE_NAME>' \
+--data-urlencode 'RoleSessionName=Mysession' \
+--data-urlencode 'WebIdentityToken=<GOOGLE_ID_TOKEN>' \
+--data-urlencode 'Version=2011-06-15'
+
+
+
+I get "Not authorized to perform sts:AssumeRoleWithWebIdentity" error for this
+
+
+I've updated the Trust policy to include "accounts.google.com" but still I get this error.
+Permissions
+
+
+
+
+
+
+Trust Policy
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "cognito-identity.amazonaws.com:aud": "us-east-1:<IDENTITY_POOL_ID>"
+                },
+                "ForAnyValue:StringLike": {
+                    "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "accounts.google.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "accounts.google.com:aud": "<GOOGLE_WEB_CLIENT_ID>"
+                }
+            }
+        }
+    ]
+}
+
+
+
+I've confirmed multiple times that the Client ID (Web) from Google matches the Client ID on Identity Pool. The "aud" in the Google id_token also matches the Google And Identity Pool Client ID.
+
+
+The documentation says that I can authenticate Google users with only Identity Pool, so I have not created any User pool. I am just using Identity Pool to authenticate users.
+
+
+Can you please help me to understand what am I doing wrong and what should I try get AWS credentials?

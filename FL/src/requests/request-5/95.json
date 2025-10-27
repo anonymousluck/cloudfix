@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_ccc007a7",
+      "Effect": "allow",
+      "Action": "eks:AccessKubernetesApi",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_37fd7880",
+      "Effect": "allow",
+      "Action": "eks:DescribeCluster",
+      "Resource": [
+        "arn:aws:ssm:*:accountnumber:parameter/data.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "deny_0f2e52a3",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:ssm:*:accountnumber:parameter/config.xml"
+    },
+    {
+      "id": "allow_18bec68c",
+      "Effect": "allow",
+      "Action": [
+        "eks:ListAddons",
+        "eks:ListClusters"
+      ],
+      "Resource": [
+        "arn:aws:ssm:*:accountnumber:parameter/config.xml",
+        "arn:aws:ssm:*:accountnumber:parameter/data.json"
+      ]
+    },
+    {
+      "id": "deny_ac85056c",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    }
+  ]
+}

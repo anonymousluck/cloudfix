@@ -1,0 +1,70 @@
+I’ve created a SCP to enforce tagging policies for EC2 resources by referencing the document "
+https://aws.amazon.com/pt/blogs/mt/implement-aws-resource-tagging-strategy-using-aws-tag-policies-and-service-control-policies-scps/
+", and it is working as expected. Here's the SCP I am currently using:
+
+
+ 
+
+
+This SCP ensures:
+
+
+
+
+EC2 resources cannot be launched without 
+Name
+ and 
+Team
+ tags.
+
+
+Tags 
+Name
+ and 
+Team
+ cannot be removed unless explicitly allowed using the 
+AllowTagRemoval
+ tag.
+
+
+
+
+Issue
+
+
+The issue is that I've created separate statements for each tag (e.g., Name and Team). This approach increases the SCP's character count unnecessarily, as I have to duplicate the logic for each tag.
+While this example only uses two tags, in my enterprise application, I need to enforce multiple tags such as 
+CostCenter, Service, Environment
+ and others. This drastically increases the SCP's character count, making it inefficient and harder to maintain.
+
+
+I attempted to combine the tags into a single 
+Condition
+ like this:
+
+
+ "Condition": {   "Null": {     "aws:RequestTag/Name": "true",     "aws:RequestTag/Team": "true"   } }
+
+
+However, according to this document "
+https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-logic-multiple-context-keys-or-values.html?utm_source=chatgpt.com
+" in AWS SCPs, when multiple Condition keys are specified, they are evaluated using OR logic. This allows resource creation if any one of the specified tags is present, which is not my intended behavior. I want AND logic to enforce that all required tags must be present.
+
+
+I’ve explored the following approaches but none have worked:
+
+
+
+
+Using ForAllValues:StringEquals to check for multiple tags.
+
+
+Combining conditions into a single block, which results in implicit OR logic.
+
+
+Writing separate SCP statements for each tag, which works but increases the character count unnecessarily.
+
+
+
+
+Is there a way to enforce AND logic for multiple tags in a single SCP statement to reduce the character count? If not, is there an alternative approach to achieving this requirement efficiently? Any advice please.

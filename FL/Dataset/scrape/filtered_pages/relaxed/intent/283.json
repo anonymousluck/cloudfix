@@ -1,0 +1,29 @@
+Dear members of the AWS community,
+
+
+I have been facing an issue for the past couple of days trying to setup AWS Managed Grafana workspace with Athena workgroup.
+
+
+The underlying reason why I want to do this is to visualize the cost of my AWS infrastructure in Grafana. For that, I have been following this comprehensive guide 
+https://aws.amazon.com/blogs/mt/visualize-and-gain-insights-into-your-aws-cost-and-usage-with-amazon-managed-grafana/
+.
+
+
+I believe the problem I’m encountering is permissions. The reason is because when I try to configure a new connection to Athena workgroup, I can see no workgroups available in any region.
+
+
+However, I checked the IAM service role from Grafana, and it does have this managed AWS policy 
+AmazonGrafanaAthenaAccess
+ , which has the following permissions:
+
+
+
+
+
+Would appreciate some shed of light in this issue.
+
+
+Best
+
+
+Ed

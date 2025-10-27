@@ -1,0 +1,65 @@
+{
+  "Requests": [
+    {
+      "id": "allow_edd6f951",
+      "Effect": "allow",
+      "Action": "ecr:GetObject",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ],
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalOrgID": "ROOT_ACCOUNT_ID"
+        }
+      }
+    },
+    {
+      "id": "allow_e27c2d37",
+      "Effect": "allow",
+      "Action": "ecr:GetObject",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ],
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_76f5d927",
+      "Effect": "allow",
+      "Action": "ecr:GetObject",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalOrgID": "ROOT_ACCOUNT_ID"
+        }
+      }
+    },
+    {
+      "id": "deny_b74f294e",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalOrgID": "ROOT_ACCOUNT_ID"
+        }
+      }
+    },
+    {
+      "id": "deny_9002467f",
+      "Effect": "deny",
+      "Action": "ecr:GetObject",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    }
+  ]
+}

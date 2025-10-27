@@ -1,0 +1,87 @@
+Dear all,
+
+
+This is the first time to use the AWS DRS service. I want to configure DRS between two AWS accounts, I try my best and also ask friends to help, but still cannot fix the problem.
+
+
+Information:
+Account A: Stockholm region (Source instances are here)
+Account B: HK region (Staging and recovery subnets are here)
+
+
+I followed the last diagram in the below URL to build the VPC and use VPC peering:
+
+https://docs.aws.amazon.com/drs/latest/userguide/Network-diagrams.html
+
+
+(1) The AWSElasticDisasterRecoveryEC2InstancePolicy sts permission deny
+
+First of all, I need to install the replication agent in the source EC2, I try to follow the steps in the below post to create role:
+
+https://aws.amazon.com/blogs/storage/securely-installing-aws-replication-agent-using-aws-security-token-service/
+
+
+I created a role with the policy "AWSElasticDisasterRecoveryEC2InstancePolicy" in the Account B, and create a role in Account A to assume the role (This is the first time I create cross account role, I am not sure is my setting correct or not, if there is anything wrong, please correct me).
+
+
+
+
+Create the role "DRS_SourceEC2" in Account B (HK region) and below is the setting in the "Trust Relationships" Tag:
+
+
+
+
+
+
+
+
+
+
+Create the role "AssumeRoleDRS_SourceEC2" with the below inline policy in Account A (Stockholm region):
+
+
+
+
+{
+	"Version": "2012-10-17",
+	"Statement": {
+		"Effect": "Allow",
+		"Action": "sts:AssumeRole",
+		"Resource": "arn:aws:iam::<Account B ID>:role/DRS_SourceEC2"
+	}
+}
+
+
+
+
+
+In Source EC2 (OS is Windows)
+Create the ".aws" folder and the "config" file:
+C:\Users\Administrator.aws\config
+
+
+
+
+[profile AssumeRoleDRS_SourceEC2]
+arn:aws:iam::<Account A ID>:role/AssumeRoleDRS_SourceEC2
+credential_source = Ec2InstanceMetadata
+
+
+
+When I execute the AwsReplicationWindowsInstaller.exe, I input the region "ap-east-1", then it ask for the access key, but refer to the blog post, if the assume role success, it should not ask for access key.
+
+
+I search from the internet, and use command to connect sts manually, but it show permission deny and not able to get the access key, secret access key and token.
+Finally, I add the AWSElasticDisasterRecoveryAgentInstallationPolicy to the role and test again, it is able to get the temp access key, secret access key and token. I input these information, it is able to install the agent, but these credential will expire.
+
+
+(2) DRS Authentication Failed
+
+I use another EC2 to test. Create a user and attach AWSElasticDisasterRecoveryAgentInstallationPolicy, use the user's access key and secret access key to install the agent. Then I see both EC2 appear in the DRS console, but both Replication initiation steps failed in step 4: Authenticate with service.
+
+
+The DRS interface endpoint is created in Account B (HK region), I modified the NACL and security group to allow All TCP traffic between the two VPC CIDR, but still failed in the authentication step.
+
+
+Don't know how to fix the two problems above...
+Welcome to share your idea and experience, many thanks!

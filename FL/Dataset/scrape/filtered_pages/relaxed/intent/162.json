@@ -1,0 +1,9 @@
+Hi
+Can I get some clarification as what does this below policy imply?
+
+
+
+
+
+
+Is it that all the resources in the policy should have the resource tag : "tkey" and "tval"? Or is it that the resource that is going to be created i.e instance should have the tags?

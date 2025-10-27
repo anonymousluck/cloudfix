@@ -1,0 +1,133 @@
+Overview
+
+
+I have a lambda function that attempts to redirect social media crawlers based on their user-agent header to an s3 containing prerendered html (s3 is called 'prerendered-routes'). If the user is not a crawler then they are directed to the s3 hosting my static website. I'm doing this so that I can have social media metatags prerendered –– eventually I'll figure out how to implement ssr for my SPA.
+
+
+The s3 with prerendered routes has a directory structure that mirrors the url segments. So, for a route on my website like '
+https://example.com/this/route
+', there would be a prerendered index.html in '
+https://prerendered-routes.s3.amazonaws.com/this/route/index.html
+'
+
+
+Error
+
+
+The lambda function (called 'prerender') is effectively differentiating between social media crawlers and regular users based on user agent, but I am getting an access denied error, specifically when I send a get request with a bot as my user-agent:
+
+
+Thank you for your response Piotrek!
+
+
+I have updated my code as follows:
+
+
+
+
+authMethod is now set to 'origin-access-identity'
+
+
+region is set to 'us-east-1', which is the region for my prerendered-routes s3
+
+
+
+
+I have configured the lambda to trigger on 'viewer request' events because I want the bot traffic to always be sent to the prerendered-routes s3, and from what I understand if I do origin request instead, the bot would receive the website s3 content for any cached routes. In that case they would not have the prerendered metatags. Is my understanding correct?
+
+
+I have updated the lambda, pushed the new version to cloudfront and ran an invalidation for all files ('/*'). I'm still getting an error when I try to access my site as a bot:
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>ERROR: The request could not be satisfied</TITLE>
+</HEAD><BODY>
+<H1>502 ERROR</H1>
+<H2>The request could not be satisfied.</H2>
+<HR noshade size="1px">
+The Lambda function returned an invalid origin configuration: For an S3 origin, the value of either AuthMethod or Region is invalid.
+We can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again later, or contact the app or website owner.
+<BR clear="all">
+If you provide content to customers through CloudFront, you can find steps t
+
+
+if I don't use a bot user agent, I have no issues accessing my website, and looking at the lambda logs I can see that it is indeed routing away from the primary s3 when it is a bot, as expected.
+
+
+Here is the full lambda function:
+
+
+Code
+
+
+'use strict';
+
+
+exports.handler = (event, context, callback) => {
+const request = event.Records[0].cf.request;
+const headers = request.headers;
+
+
+const botUserAgents = [
+    'googlebot',
+    'twitterbot',
+    'applebot',
+    'facebookexternalhit',
+    'linkedinbot',
+    'bingbot',
+    'yandex',
+    'duckduckbot',
+];
+
+const userAgent = headers['user-agent'] && headers['user-agent'][0] ? headers['user-agent'][0].value.toLowerCase() : '';
+console.log(`User-Agent: ${userAgent}`);
+console.log(headers)
+const isBot = botUserAgents.some(botAgent => userAgent.includes(botAgent));
+
+if (isBot) {
+    let newUri = request.uri.endsWith('/') ? request.uri : `${request.uri}/`;
+    newUri += 'index.html';
+
+    // Modify the request to serve from the prerendered bucket
+    request.origin = {
+        s3: {
+            domainName: 'current-prerendered.s3.amazonaws.com',
+            path: '',
+            region: 'us-east-1',
+            authMethod: 'origin-access-identity',
+             customHeaders: {
+                'X-Forwarded-Host': [{ key: 'X-Forwarded-Host', value: 'current-prerendered.s3.amazonaws.com' }]
+            }
+        }
+    };
+    request.uri = newUri;
+    console.log(`Modified Request URI: ${request.uri}`);
+}
+console.log('Modified request:', JSON.stringify(request));
+
+callback(null, request);
+
+
+
+};
+
+
+Configuration
+
+
+The lambda function is deployed with lambda@Edge for 'viewer request' on the cloudfront dist associated with my website. I assumed the issue might be that the 'prerendered-routes' s3 was blocking requests from the cloudfront distribution, but I believe the origin policy i'm using for the s3 should allow cloudfront interactions. Here it is:
+
+
+
+
+
+Lastly, I am using a legacy OAI for my cloudfront dist, which is linked in the above policy for the prerendered-routes s3.
+
+
+The console.log statements I have set in the lambda have not helped me understand the error any better. If you have any ideas for ways to more effectively debug this I would appreciate the guidance.
+
+
+Thank you.

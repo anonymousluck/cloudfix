@@ -1,0 +1,19 @@
+HI folks,
+
+
+I feel like this should be super simple, but I think i have everything enabled as it should be.
+
+
+I have a user, to whom I've given a policy like:
+
+
+
+
+
+
+However, he cannot see the bucket in the bucket list view. No buckets are listed. I would think, since I've given the user the action 
+s3*
+ for that bucket, they should be able to see that bucket listed. Am I wrong?
+
+
+Cheers.

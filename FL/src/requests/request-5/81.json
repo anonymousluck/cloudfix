@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "allow_262fbef6",
+      "Effect": "allow",
+      "Action": [
+        "bedrock:TagResource",
+        "bedrock:StopModelInvocationJob"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_f7e15426",
+      "Effect": "allow",
+      "Action": "bedrock:CreateModelInvocationJob",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "allow_36204023",
+      "Effect": "allow",
+      "Action": "bedrock:GetFoundationModel",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "deny_6fcfbfb7",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_17f5805c",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

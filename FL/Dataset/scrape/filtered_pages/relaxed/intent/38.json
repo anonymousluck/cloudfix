@@ -1,0 +1,30 @@
+I have a user role set up with the following permission:
+
+
+
+
+
+
+Using assumeRole() with this works as expected, however I am trying to programatically restrict access to sub folders so during the assmueRole call I add:
+
+
+{
+            Version: "2012-10-17",
+            Statement: [
+                {
+                    Effect: "Allow",
+                    Action: ["s3:GetObject", "s3:ListBucket"],
+                    Resource: ["arn:aws:s3:::BUCKET/SUBFOLDER/*"],
+                },
+            ],
+        }
+
+
+
+as the policy parameter (after JSON encoding it) but I then get 403 access denied when trying to access any of the folders root or otherwise.
+
+
+Setting the above as a policy in it's own right works fine too so the policy seems to be formatted correctly
+
+
+Has anyone had this before or do am I doing something obviously wrong?

@@ -1,0 +1,76 @@
+{
+  "Requests": [
+    {
+      "id": "deny_7a054adf",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:Referer": [
+            "MY FIRST DOMAIN/*",
+            " MY NEW DOMAIN/*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_c3ff4f41",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::owrvideos/config.xml",
+      "Principal": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:Referer": [
+            "MY FIRST DOMAIN/*",
+            " MY NEW DOMAIN/*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_9ff998e4",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::owrvideos/config.xml",
+        "arn:aws:s3:::owrvideos/data.json"
+      ],
+      "Principal": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:Referer": [
+            "MY FIRST DOMAIN/*",
+            " MY NEW DOMAIN/*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_4431b8dc",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::owrvideos/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/bob",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "192.168.1.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_5b53a59e",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::owrvideos/config.xml",
+      "Principal": "arn:aws:iam::123456789012:user/bob",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:max-keys": "10"
+        }
+      }
+    }
+  ]
+}

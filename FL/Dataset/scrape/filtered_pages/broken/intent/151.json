@@ -1,0 +1,63 @@
+I am writing a Greengrass component and would like to use 
+aws iot-data get-thing-shadow
+ to fetch the shadow of the current device. Specifically, the full command is:
+
+aws iot-data get-thing-shadow --thing-name "${AWS_IOT_THING_NAME}" --shadow-name "${my_shadow_name}" "shadow.json"
+
+At the moment, I have the following (temporary) IOT Policy attached to the device:
+
+
+
+
+
+
+The relevant portions of the IAM policy for the assumed role is:
+
+
+        {
+            "Action": "iot:Receive",
+            "Effect": "Allow",
+            "Resource": "arn:aws:iot:[MY_REGION]:[MY_ACCOUNT]:topic/$aws/things/${iot:Connection.Thing.ThingName}/shadow/name/*/{topic}",
+            "Sid": "ReadDeviceShadow"
+        },
+        {
+            "Action": "iot:Subscribe",
+            "Effect": "Allow",
+            "Resource": "arn:aws:iot:[MY_REGION]:[MY_ACCOUNT]:topicfilter/$aws/things/${iot:Connection.Thing.ThingName}/shadow/name/*/{topic}",
+            "Sid": "SubscribeDeviceShadow"
+        },
+        {
+            "Action": "iot:Publish",
+            "Effect": "Allow",
+            "Resource": "arn:aws:iot:[MY_REGION]:[MY_ACCOUNT]:topic/$aws/things/${iot:Connection.Thing.ThingName}/shadow/name/*/{topic}",
+            "Sid": "WriteDeviceShadow"
+        },
+        {
+            "Action": [
+                "iot:ListNamedShadowsForThing",
+                "iot:GetThingShadow",
+                "iot:UpdateThingShadow",
+                "iot:DeleteThingShadow"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:iot:[MY_REGION]:[MY_ACCOUNT]:thing/*",
+            "Sid": "AllowGreengrassAccessToShadows"
+        }
+
+
+
+This does work and correctly fetches the named shadow. However, I'd like to make the resource in that last block more specific, so things can only fetch their own shadow. These are the resources I have tried, and all result in an error of 
+An error occurred (ForbiddenException) when calling the GetThingShadow operation: None.
+:
+
+
+arn:aws:iot:[MY_REGION]:[MY_ACCOUNT]:thing/${iot:Connection.Thing.ThingName}
+arn:aws:iot:[MY_REGION]:[MY_ACCOUNT]:thing/${iot:Connection.Thing.ThingName}*
+arn:aws:iot:[MY_REGION]:[MY_ACCOUNT]:thing/${iot:Connection.Thing.ThingName}**
+arn:aws:iot:[MY_REGION]:[MY_ACCOUNT]:thing/**${iot:Connection.Thing.ThingName}**
+
+
+
+Is it possible to filter 
+GetThingShadow
+ to a caller's own thing name in the IAM policy? Is this filtering only possible by the IoT policy? What is the correct resource here? I have found multiple conflicting sources on the correct resource to use for these operations.

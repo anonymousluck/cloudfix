@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "deny_ab38e17b",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    },
+    {
+      "id": "allow_860b0a2c",
+      "Effect": "allow",
+      "Action": [
+        "sns:Publish",
+        "SNS:Publish"
+      ],
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_b7a3473a",
+      "Effect": "allow",
+      "Action": [
+        "sns:Publish",
+        "SNS:Publish"
+      ],
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    },
+    {
+      "id": "allow_f5f2f1b5",
+      "Effect": "allow",
+      "Action": "SNS:Publish",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "deny_2a38abf7",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::123456789012:user/bob"
+    }
+  ]
+}

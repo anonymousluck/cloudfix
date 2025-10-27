@@ -1,0 +1,176 @@
+Dear Support for around 10 days I am trying to create EKS cluster and it is not working. I tried at least 100s of variations still it did not work. in my organization we are planning to migrate from Oracle cloud to AWS for that i am doing POC. i am not using internet gateway as it is not allowed. so POC is my java spring boot application will be deployed in AWS EKS and it will send email through SES and sms through pinpoint. what I am trying i will use vpc endpoint for s3,dynamodb,codebuild ecr ,pinpoint ,ses etc. but its not working. i tried security group ,s3, port connectivilty ingress outgresss, and thousands of things. but its not working. can you guide me what is wrong in my script. even AI is not helping.
+
+
+$ cat setup4x.sh
+#!/bin/bash
+set -e  # Exit on command failure
+
+
+Configuration
+
+
+AWS_REGION="us-east-1"
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+VPC_NAME="pocemail-vpc"
+CLUSTER_NAME="pocemail-cluster"
+NODEGROUP_NAME="pocemail-workers"
+ENDPOINT_SG_NAME="pocemail-endpoint-sg"
+echo "AWS Account: $AWS_ACCOUNT_ID | Region: $AWS_REGION"
+
+
+1. IAM Roles
+
+
+echo "Configuring IAM roles..."
+
+
+EKS Cluster Role
+
+
+EKS_CLUSTER_ROLE="pocemail-eksclusterrole"
+if aws iam get-role --role-name "$EKS_CLUSTER_ROLE" >/dev/null 2>&1; then
+echo "$EKS_CLUSTER_ROLE already exists."
+else
+aws iam create-role --role-name "$EKS_CLUSTER_ROLE" --assume-role-policy-document ''
+aws iam attach-role-policy --role-name "$EKS_CLUSTER_ROLE" --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+fi
+
+
+EKS Node Role
+
+
+EKS_NODE_ROLE="pocemail-eksnoderole"
+if aws iam get-role --role-name "$EKS_NODE_ROLE" >/dev/null 2>&1; then
+echo "$EKS_NODE_ROLE already exists."
+else
+aws iam create-role --role-name "$EKS_NODE_ROLE" --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"ec2.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+aws iam attach-role-policy --role-name "$EKS_NODE_ROLE" --policy-arn arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+aws iam attach-role-policy --role-name "$EKS_NODE_ROLE" --policy-arn arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+aws iam attach-role-policy --role-name "$EKS_NODE_ROLE" --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+fi
+sleep 10  # Wait for IAM propagation
+
+
+2. VPC & Networking
+
+
+echo "Setting up VPC..."
+
+
+VPC_ID=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 --query 'Vpc.VpcId' --output text)
+aws ec2 create-tags --resources "$VPC_ID" --tags Key=Name,Value="$VPC_NAME"
+aws ec2 modify-vpc-attribute --vpc-id "$VPC_ID" --enable-dns-support
+aws ec2 modify-vpc-attribute --vpc-id "$VPC_ID" --enable-dns-hostnames
+
+
+DHCP Options with AmazonProvidedDNS
+
+
+DHCP_OPTIONS_ID=$(aws ec2 create-dhcp-options --dhcp-configuration "Key=domain-name-servers,Values=AmazonProvidedDNS" --query 'DhcpOptions.DhcpOptionsId' --output text)
+aws ec2 associate-dhcp-options --dhcp-options-id "$DHCP_OPTIONS_ID" --vpc-id "$VPC_ID"
+
+
+Subnets (two private subnets for high availability)
+
+
+SUBNET1=$(aws ec2 create-subnet --vpc-id "$VPC_ID" --cidr-block 10.0.1.0/24 --availability-zone "us-east-1f" --query 'Subnet.SubnetId' --output text)
+aws ec2 create-tags --resources "$SUBNET1" --tags Key=Name,Value=pocemail-subnet-1 "Key=kubernetes.io/role/internal-elb,Value=1" "Key=kubernetes.io/cluster/$CLUSTER_NAME,Value=shared"
+
+
+SUBNET2=$(aws ec2 create-subnet --vpc-id "$VPC_ID" --cidr-block 10.0.2.0/24 --availability-zone "us-east-1d" --query 'Subnet.SubnetId' --output text)
+aws ec2 create-tags --resources "$SUBNET2" --tags Key=Name,Value=pocemail-subnet-2 "Key=kubernetes.io/role/internal-elb,Value=1" "Key=kubernetes.io/cluster/$CLUSTER_NAME,Value=shared"
+
+
+Route Table
+
+
+RTB_ID=$(aws ec2 create-route-table --vpc-id "$VPC_ID" --query 'RouteTable.RouteTableId' --output text)
+aws ec2 associate-route-table --route-table-id "$RTB_ID" --subnet-id "$SUBNET1"
+aws ec2 associate-route-table --route-table-id "$RTB_ID" --subnet-id "$SUBNET2"
+
+
+Create S3 Gateway Endpoint
+
+
+echo "Creating S3 Gateway Endpoint..."
+aws ec2 create-vpc-endpoint 
+
+
+--vpc-id "$VPC_ID" 
+
+
+--service-name "com.amazonaws.$AWS_REGION.s3" 
+
+
+--route-table-ids "$RTB_ID" 
+
+
+--vpc-endpoint-type Gateway 
+
+
+--region "$AWS_REGION"
+
+
+Security Group for Endpoints and Nodes
+
+
+ENDPOINT_SG_ID=$(aws ec2 create-security-group --group-name "$ENDPOINT_SG_NAME" --description "SG for VPC Endpoints and Nodes" --vpc-id "$VPC_ID" --query 'GroupId' --output text)
+aws ec2 authorize-security-group-ingress --group-id "$ENDPOINT_SG_ID" --protocol tcp --port 443 --cidr 10.0.0.0/16  # For EKS API
+aws ec2 authorize-security-group-ingress --group-id "$ENDPOINT_SG_ID" --protocol tcp --port 10250 --cidr 10.0.0.0/16  # For Kubelet
+aws ec2 authorize-security-group-ingress --group-id "$ENDPOINT_SG_ID" --protocol tcp --port 53 --cidr 10.0.0.0/16  # For DNS (TCP)
+aws ec2 authorize-security-group-ingress --group-id "$ENDPOINT_SG_ID" --protocol udp --port 53 --cidr 10.0.0.0/16  # For DNS (UDP)
+
+
+VPC Endpoints for EKS and ECR
+
+
+echo "Creating EKS VPC Endpoint..."
+aws ec2 create-vpc-endpoint --vpc-id "$VPC_ID" --service-name "com.amazonaws.$AWS_REGION.eks" --vpc-endpoint-type Interface --subnet-ids "$SUBNET1" "$SUBNET2" --security-group-ids "$ENDPOINT_SG_ID" --private-dns-enabled --query 'VpcEndpoint.VpcEndpointId' --output text
+
+
+echo "Creating ECR API VPC Endpoint..."
+aws ec2 create-vpc-endpoint --vpc-id "$VPC_ID" --service-name "com.amazonaws.$AWS_REGION.ecr.api" --vpc-endpoint-type Interface --subnet-ids "$SUBNET1" "$SUBNET2" --security-group-ids "$ENDPOINT_SG_ID" --private-dns-enabled --query 'VpcEndpoint.VpcEndpointId' --output text
+
+
+echo "Creating ECR DKR VPC Endpoint..."
+aws ec2 create-vpc-endpoint --vpc-id "$VPC_ID" --service-name "com.amazonaws.$AWS_REGION.ecr.dkr" --vpc-endpoint-type Interface --subnet-ids "$SUBNET1" "$SUBNET2" --security-group-ids "$ENDPOINT_SG_ID" --private-dns-enabled --query 'VpcEndpoint.VpcEndpointId' --output text
+
+
+3. EKS Cluster & Node Group
+
+
+echo "Creating EKS cluster: $CLUSTER_NAME..."
+aws eks create-cluster --name "$CLUSTER_NAME" --role-arn "arn:aws:iam::$AWS_ACCOUNT_ID:role/$EKS_CLUSTER_ROLE" --resources-vpc-config "subnetIds=$SUBNET1,$SUBNET2,securityGroupIds=$ENDPOINT_SG_ID,endpointPublicAccess=false,endpointPrivateAccess=true" --region "$AWS_REGION"
+aws eks wait cluster-active --name "$CLUSTER_NAME" --region "$AWS_REGION" || { echo "Cluster creation failed."; exit 1; }
+
+
+echo "Creating node group: $NODEGROUP_NAME..."
+aws eks create-nodegroup --cluster-name "$CLUSTER_NAME" --nodegroup-name "$NODEGROUP_NAME" --subnets "$SUBNET1" "$SUBNET2" --node-role "arn:aws:iam::$AWS_ACCOUNT_ID:role/$EKS_NODE_ROLE" --scaling-config minSize=1,maxSize=3,desiredSize=2 --instance-types t3.medium --region "$AWS_REGION"
+aws eks wait nodegroup-active --cluster-name "$CLUSTER_NAME" --nodegroup-name "$NODEGROUP_NAME" --region "$AWS_REGION" || {
+echo "Node group failed. Check issues:"
+aws eks describe-nodegroup --cluster-name "$CLUSTER_NAME" --nodegroup-name "$NODEGROUP_NAME" --query 'nodegroup.health.issues'
+exit 1
+}
+
+
+echo "Setup complete! Cluster and nodes are active."
+
+
+AND ERROR IS
+
+
+Waiter NodegroupActive failed: Waiter encountered a terminal failure state: For expression "nodegroup.status" we matched expected path: "CREATE_FAILED"
+Node group failed. Check issues:
+[
+{
+"code": "NodeCreationFailure",
+"message": "Instances failed to join the kubernetes cluster",
+"resourceIds": [
+"i-088b128cab9aa8e47",
+"i-091e9310a591e80bb"
+]
+}
+]
+
+
+There are many more version of this script and i can provide if it can help. but I need your guidance. i am struggling for 10 days.

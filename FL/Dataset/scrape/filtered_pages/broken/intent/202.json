@@ -1,0 +1,140 @@
+Hi there,
+I am trying to subscribe an Amazon SQS queue located in the 
+eu-west-1
+ (Ireland) region to the Amazon Marketing Stream (AMS) 
+sp-traffic
+ dataset using the Subscription API (
+POST https://advertising-api-eu.amazon.com/streams/subscriptions
+).
+
+
+However, I consistently receive a 
+400 Bad Request
+ error with the message:
+
+{"message":"Unable to validate destination: arn:aws:sqs:eu-west-1:<YOUR_ACCOUNT_ID>:ams-eu-sp-traffic-queue"}
+
+(Also tested with a new queue 
+...:ams-eu-sp-traffic-queue2
+ with the same result).
+
+
+Details & Steps Taken:
+
+
+
+
+Goal:
+ Receive 
+sp-traffic
+ events in an SQS queue in 
+eu-west-1
+.
+
+
+API Call:
+ Using Python 
+requests
+ library with LWA Bearer Token authentication.
+
+
+Authentication:
+ Authentication seems successful (no 401/403 errors). Headers include 
+Authorization
+, 
+Amazon-Advertising-API-ClientId
+, 
+Amazon-Advertising-API-Scope
+, 
+Content-Type
+ (vnd.MarketingStreamSubscriptions...), and 
+Accept
+ (vnd.MarketingStreamSubscriptions...).
+
+
+Region:
+ Confirmed SQS queue is Standard type and located in 
+eu-west-1
+. The API endpoint used is the EU one (
+advertising-api-eu.amazon.com
+).
+
+
+SQS Policy:
+ Attached the following policy to the SQS queue (Resource ARN confirmed correct):
+
+
+
+
+
+
+
+Troubleshooting Tried:
+
+
+
+
+Confirmed the 
+Resource
+ ARN in the policy matches the target SQS queue.
+
+
+Confirmed the 
+aws:SourceArn
+ and 
+aws:SourceAccount
+ values match the details provided by Amazon for AMS in 
+eu-west-1
+.
+
+
+Tried removing the entire 
+Condition
+ block from the policy – the error persisted.
+
+
+Tried using a different 
+aws:SourceArn
+ found in a GitHub example (
+arn:aws:sns:eu-west-1:668473351658:*
+) – the error persisted.
+
+
+Created a completely new SQS queue (
+ams-eu-sp-traffic-queue2
+) in 
+eu-west-1
+ with the correct policy – the error persisted.
+
+
+Tried using AWS Signature v4 authentication (with IAM user keys) resulted in a 
+401 Unauthorized
+ error, which seems unrelated to the destination validation issue (likely IAM permission issue for the calling user).
+
+
+
+
+
+
+
+
+Question:
+
+
+Despite the SQS policy appearing correct and aligned with AWS documentation examples (allowing 
+sns.amazonaws.com
+ with 
+SourceArn
+ and 
+SourceAccount
+ conditions), AMS consistently fails to validate the SQS destination in 
+eu-west-1
+.
+
+
+What could be causing this "Unable to validate destination" error? Are there any known issues, undocumented requirements (e.g., specific queue naming, tags, LWA scopes), potential SNS topic ARN changes, or further troubleshooting steps recommended for AMS SQS integration specifically in the 
+eu-west-1
+ region?
+
+
+Thank you in advance!

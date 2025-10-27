@@ -1,0 +1,146 @@
+Error:
+
+
+http-outgoing-1 << "{"message": "Caller doesn't have access to amazon-bracket-<bracket-bucket-name> or it doesn't exist.", "__type": "ValidationException"}" 
+
+
+
+Code:
+
+
+// Aws credentials provider.
+    final AWSCredentialsProvider awsCredentialsProvider = new AWSCredentialsProvider() {
+
+      @Override
+      public AWSCredentials getCredentials() {
+        return new AWSCredentials() {
+          @Override
+          public String getAWSAccessKeyId() {
+            return accessKey;
+          }
+
+          @Override
+          public String getAWSSecretKey() {
+            return secretKey;
+          }
+        };
+      }
+
+      @Override
+      public void refresh() {
+        // No Refresh.
+      }
+    };
+
+// Create braket client.
+    final AWSBraket braketClient = AWSBraketClientBuilder.standard()
+        .withCredentials(awsCredentialsProvider)
+        .withRegion(region)
+        .build();
+
+    verifyBucketAccess(accessKey, secretKey, bucketName, region, awsCredentialsProvider);
+
+    // Create quantum task request.
+    final CreateQuantumTaskRequest request = new CreateQuantumTaskRequest()
+        .withDeviceArn("arn:aws:braket:::device/quantum-simulator/amazon/sv1")
+        .withDeviceParameters(getDeviceParameters())
+        .withOutputS3Bucket(bucketName)
+        .withOutputS3KeyPrefix("bellCircuit")
+        .withShots(1000L)
+        .withAction(getOpenQasmAction());
+    final CreateQuantumTaskResult result = braketClient.createQuantumTask(request);
+
+    System.out.println(result.getQuantumTaskArn());
+  }
+
+  public static String getOpenQasmAction() {
+    final String program = "OPENQASM 3; qubit[2] q; bit[2] ro; h q[0];"
+        + " cnot q[0], q[1]; ro[0] = measure q[0]; ro[1] = measure q[1];";
+    final JSONObject action = new JSONObject();
+    action.put("source", program);
+
+    final JSONObject header = new JSONObject();
+    header.put("name", "braket.ir.openqasm.program");
+    header.put("version", "1");
+
+    action.put("braketSchemaHeader", header);
+    return action.toString();
+  }
+
+  public static String getDeviceParameters() {
+    final JSONObject deviceParameters = new JSONObject();
+
+    final JSONObject header = new JSONObject();
+    header.put("name", "braket.device_schema.simulators.gate_model_simulator_device_parameters");
+    header.put("version", "1");
+
+    final JSONObject deviceSchema = new JSONObject();
+    deviceSchema.put("name", "braket.device_schema.gate_model_parameters");
+    deviceSchema.put("version", "1");
+
+    final JSONObject paradigmParameters = new JSONObject();
+    paradigmParameters.put("qubitCount", 2);
+    paradigmParameters.put("braketSchemaHeader", deviceSchema);
+
+    deviceParameters.put("paradigmParameters", paradigmParameters);
+    deviceParameters.put("braketSchemaHeader", header);
+    return deviceParameters.toString();
+  }
+
+  public static void verifyBucketAccess(String accessKey, String secretKey, String bucketName, String region, AWSCredentialsProvider awsCredentialsProvider) {
+
+    // Create an AmazonS3 client with the specified credentials
+    AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+        .withCredentials(awsCredentialsProvider)
+        .withRegion(region)
+        .build();
+
+    // Verify access to the bucket by listing objects in the bucket
+    System.out.println("Listing objects in bucket: " + bucketName);
+    for (Bucket bucket : s3Client.listBuckets()) {
+      if (bucket.getName().equals(bucketName)) {
+        System.out.println("\nAccess to the bucket '" + bucketName + "' verified.\n");
+        return; // Access verified, exit the function
+      }
+    }
+    System.out.println("Bucket '" + bucketName + "' not found or access denied.");
+  }
+
+
+
+Dependencies:
+
+
+<dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-braket</artifactId>
+      <version>1.12.502</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-s3</artifactId>
+      <version>1.12.498</version>
+    </dependency>
+
+
+
+AmazonBracketServiceRolePolicy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        ,
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:CreateLogGroup",
+                "logs:DescribeLogGroups"
+            ],
+            "Resource": "arn:aws:logs:*:*:log-group:/aws/braket:*"
+        }
+    ]
+}

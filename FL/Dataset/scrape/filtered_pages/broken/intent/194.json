@@ -1,0 +1,22 @@
+hello while trying to use r
+esource based policies for s3 table buckets 
+
+here is the policy i used for aa role i created
+
+
+
+
+
+
+
+
+but when i try to assign it to a table using following command
+
+aws s3tables put-table-policy --namespace namesptest  --name table1 --resource-policy ".\j.json" --table-bucket-arn arn:aws:s3tables:us-west-2:123:bucket/tabletest --profile admin
+
+
+i get this error:
+
+
+An error occurred (BadRequestException) when calling the PutTablePolicy operation: The specified policy is malformed
+i used the same policy mentionned in the doc

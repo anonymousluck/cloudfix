@@ -1,0 +1,171 @@
+Dear Community,
+
+
+I hope this message finds you well. I am currently experiencing an issue with enabling access logs for a Network Application Load Balancer (ALB) that was created via the kubectl API when setting up an Ingress. I have carefully followed the instructions provided in 
+Enable access logs for your Network Load Balancer
+ to grant access to the S3 bucket where the logs will be stored. However, upon attempting to access the logs, I encounter the following error message:
+
+
+"Access Denied for bucket: alb-inter-devps. Please check S3 bucket permission."
+
+
+Unfortunately, I am unable to determine which permission might be missing. Below are the relevant details regarding my configuration:
+
+
+ALB Details
+:
+
+
+
+
+Load Balancer Type: Network
+
+
+IP Address Type: IPv4
+
+
+Availability Zones: 3 in Oregon
+
+
+Scheme: Internal
+
+
+DNS Name: k8s By AWS (k8s[string].elb.[region].amazonaws.com - A Record)
+
+
+
+
+S3 Bucket Details
+:
+
+
+
+
+Region: us-west-2 (Oregon)
+
+
+Bucket Versioning: Disabled
+
+
+Encryption Type: Server-side encryption with Amazon S3 managed keys (SSE-S3)
+
+
+Bucket Policy:  see below
+
+
+Public Access Block: Enabled
+
+
+
+
+#### Bucket Policy
+
+
+
+
+
+
+
+Additionally, I have also tested the configuration outlined in 
+Access logs for your Application Load Balancer
+, but unfortunately, the issue persists.
+
+
+Bucket Policy
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::[Oregon ID]:root"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::[destination-bucket]/AWSLogs/[My Account ID]/*"
+        }
+    ]
+}
+
+
+
+
+
+And also I have also tested a mixed configuration of the Bucket Policy
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::[Oregon ID]:root"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::[destination-bucket]/AWSLogs/[My Account ID]/*"
+        },
+        {
+            "Sid": "AWSLogDeliveryAclCheck",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": "arn:aws:s3:::[destination-bucket]",
+            "Condition": {
+                "StringEquals": {
+                    "aws:SourceAccount": ["My Account ID"]
+                },
+                "ArnLike": {
+                    "aws:SourceArn": ["arn:aws:logs:[oregon]:[My Account ID]:*"]
+                }
+            }
+        },
+        {
+            "Sid": "AWSLogDeliveryWrite",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::[destination-bucket]/AWSLogs/[My Account ID]/*",
+            "Condition": {
+                "StringEquals": {
+                    "s3:x-amz-acl": "bucket-owner-full-control",
+                    "aws:SourceAccount": ["[My Account ID]"]
+                },
+                "ArnLike": {
+                    "aws:SourceArn": ["arn:aws:logs:[oregon]:[My Account ID]:*"]
+                }
+            }
+        }
+    ]
+}
+
+
+
+(2024-10-21 21:44 UTC Time Update)
+
+
+And we also try this configuration by Gary Mclean (See in the answers). But We get the same error
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::797873946194:root"
+      },
+      "Action": "s3:PutObject",
+      "Resource": "[destination-bucket]/*"
+    }
+  ]
+}
+
+
+
+I would greatly appreciate any guidance or advice you could provide to help resolve this issue. Thank you in advance for your assistance!

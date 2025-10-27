@@ -1,0 +1,72 @@
+How exactly does the kms:CallerAccount Condition work in a key policy? I've set up an SNS topic that is encrypted, and is triggered by a CloudWatch alarm. A CloudWatch alarm will fail publishing to SNS when using the default SNS KMS key which has the following policy
+
+
+
+
+
+
+I can create a CMK KMS key with a roughly similar format that will work for CloudWatch to publish to SNS
+
+
+{
+    "Version": "2012-10-17",
+    "Id": "auto-sns-1",
+    "Statement": [
+        {
+            "Sid": "Allow access through SNS for all principals in the account that are authorized to use SNS",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey*",
+                "kms:CreateGrant",
+                "kms:ListGrants",
+                "kms:DescribeKey"
+            ],
+            "Resource": "*",
+        },
+        {
+            "Sid": "Allow direct access to key metadata to the account",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::xxxxxxxxxxxx:root"
+            },
+            "Action": [
+                "kms:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+
+
+However, if the first statement includes the kms:CallerAccount Condition like so, CloudWatch will, again, fail to publish to SNS
+
+
+{
+            "Sid": "Allow access through SNS for all principals in the account that are authorized to use SNS",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey*",
+                "kms:CreateGrant",
+                "kms:ListGrants",
+                "kms:DescribeKey"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "kms:CallerAccount": "xxxxxxxxxxxx"
+                }
+            }
+        }
+
+
+
+It would be my assumption that a call from anywhere in an account including CloudWatch would register the CallerAccount as the account it's coming from. So I can't understand why that particular condition is causing CloudWatch to fail in it's alarm publishing to SNS. So what exactly does kms:CallerAccount do and why isn't CloudWatch playing nice with it?

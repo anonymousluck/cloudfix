@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "deny_b3ea2a07",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:dynamodb:us-west-2:<accountId>:table/${credentials-iot:ThingName}"
+    },
+    {
+      "id": "deny_e0e9f0ca",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:dynamodb:us-west-2:<accountId>:table/${credentials-iot:ThingName}"
+    },
+    {
+      "id": "allow_919e02cc",
+      "Effect": "allow",
+      "Action": "dynamodb:DescribeTable",
+      "Resource": "arn:aws:dynamodb:us-west-2:<accountId>:table/${credentials-iot:ThingName}"
+    }
+  ]
+}

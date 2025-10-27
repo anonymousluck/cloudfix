@@ -1,0 +1,100 @@
+I am trying to spin up a container using ECS/Fargate. I created the Task Definition, Execution IAM Role, and Cloudwatch Group all through Terraform. Then I am using the AWS CLI to try and launch the task, with a command like this:
+
+
+aws ecs run-task --cluster my-cluster --launch-type FARGATE \
+--task-definition transcode:2 --network-configuration \
+'{"awsvpcConfiguration": {"subnets": ["subnet-...", "subnet-...", "subnet-..."], "securityGroups": ["sg-..."], "assignPublicIp": "ENABLED"}}'
+
+
+
+Suffice it to say that I replaced all the "..." in the subnets/security group with real values. I am just using the default VPC for my account; this container does not need internet ingress/egress anyways as it only interacts with S3 and SNS when running. However when I launch that command, it creates the ECS task which proceeds from "Provisioning" to "Pending," then it spins for a bit before failing with the following error message:
+
+
+
+
+ResourceInitializationError: unable to pull secrets or registry auth: execution resource retrieval failed: unable to retrieve ecr registry auth: service call has been retried 3 time(s): RequestError: send request failed caused by: Post "
+https://api.ecr.us-east-1.amazonaws.com/
+": dial tcp 52.46.154.25:443: i/o timeout. Please check your task network configuration.
+
+
+
+
+The execution IAM role has the following inline policy associated with it. I admit a few of these permissions may be overly broad but I wanted to take a maximalist approach while trying to get this to run, since it currently is not able to run.
+
+
+
+
+
+
+Also, if I click on the "Logs" tab for the task in the AWS console, there are no logs shown and instead I see this error in a red banner on top:
+
+
+
+
+There was an error while retrieving logs from log stream: transcode/transcode/2dff4575e60945e4b23945a4372f782b in log group: transcode_log_group. The specified log stream does not exist.
+
+
+
+
+Let me know if there are any more details I can provide. I am very frustrated that ECS/Fargate is so hard to get working in Terraform as it is not obvious to me what I am missing.
+
+
+EDIT: here is the Terraform which defines the task definition:
+
+
+resource "aws_ecs_task_definition" "transcode" {
+  cpu                      = 2048
+  family                   = "transcode"
+  memory                   = 4096
+  network_mode             = "awsvpc"
+  execution_role_arn       = aws_iam_role.transcode.arn
+  requires_compatibilities = ["FARGATE"]
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  container_definitions = templatefile("${path.module}/templates/transcode.json", {
+    bucket_name = aws_s3_bucket.csm.id
+    date        = "2023-05-17"
+    image       = "123456789012.dkr.ecr.us-east-1.amazonaws.com/zoom-transcode:latest"
+    log_group   = aws_cloudwatch_log_group.transcode.name
+    topic_arn   = aws_sns_topic.zoom.arn
+  })
+}
+
+
+
+And here is the JSON template file which that resource references:
+
+
+[
+    {
+      "name": "transcode",
+      "image": "${image}",
+      "cpu": 2048,
+      "memory": 4096,
+      "essential": true,
+      "command": ["${date}"],
+      "environment": [
+        {
+          "name": "BUCKET_NAME",
+          "value": "${bucket_name}"
+        },
+        {
+          "name": "TOPIC_ARN",
+          "value": "${topic_arn}"
+        }
+      ],
+      "networkMode": "awsvpc",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "${log_group}",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "transcode"
+        }
+      }
+    }
+]

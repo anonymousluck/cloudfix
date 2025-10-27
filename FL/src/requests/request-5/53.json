@@ -1,0 +1,70 @@
+{
+  "Requests": [
+    {
+      "id": "allow_6b63a13e",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucketfile1",
+        "arn:aws:s3:::my-bucketdocument"
+      ],
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::xxxxxxxx:distribution/distributionID"
+        }
+      }
+    },
+    {
+      "id": "allow_2f7a2653",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::my-bucketdocument",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "deny_98186dfe",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::xxxxxxxx:distribution/distributionID"
+        }
+      }
+    },
+    {
+      "id": "allow_46f3b321",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucketfile1",
+        "arn:aws:s3:::my-bucketdata123"
+      ],
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::xxxxxxxx:distribution/distributionID"
+        }
+      }
+    },
+    {
+      "id": "deny_98102ea3",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::my-bucketdata123",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    }
+  ]
+}

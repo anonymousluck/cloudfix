@@ -1,0 +1,91 @@
+{
+  "Requests": [
+    {
+      "id": "allow_8f17f415",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::mybucket/data.json",
+      "Principal": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:Referer": [
+            "https://example.com/*",
+            "https://example.com"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_56091242",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::mybucket/document.txt",
+      "Principal": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:Referer": [
+            "https://example.com/*",
+            "https://example.com"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_ef469951",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::mybucket/data.json",
+        "arn:aws:s3:::mybucket/document.txt"
+      ],
+      "Principal": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:Referer": [
+            "https://example.com/*",
+            "https://example.com"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_038c9385",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::mybucket/data.json",
+      "Principal": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:Referer": [
+            "https://example.com/*",
+            "https://example.com"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_e4cd910a",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::mybucket/document.txt",
+      "Principal": "*",
+      "Condition": {
+        "StringLike": {
+          "aws:Referer": [
+            "https://example.com/*",
+            "https://example.com"
+          ]
+        }
+      }
+    }
+  ]
+}

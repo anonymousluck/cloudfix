@@ -1,0 +1,55 @@
+I am attempting to evaluate the capabilities of Rekognition's Face Liveness detection capability, but whenever I try to start a Liveness check I am told that it "cannot complete check due to server issues". I've created the application using Next.JS and I am running the check locally in my browser -- 
+http://localhost:3000
+.
+
+
+Checking the network activity shows it makes a Get request to:
+"host": "streaming-rekognition.us-west-2.amazonaws.com",
+Which does seem correct as that's the region specified in "aws-exports.js". However it looks like it stops there and it may not be receiving any response with a session ID. It's the only network activity I see after clicking the "Start video check" button.
+
+
+The cloudwatch logs also seem to imply that it's ending with that request and that there's no response being returned.
+
+
+2024-09-09T20:40:28.307-07:00
+INIT_START Runtime Version: nodejs:18.v33	Runtime Version ARN: arn:aws:lambda:us-west-2::runtime:...
+	
+INIT_START Runtime Version: nodejs:18.v33 Runtime Version ARN: arn:aws:lambda:us-west-2::runtime...
+	
+2024-09-09T20:40:28.836-07:00
+2024-09-10T03:40:28.836Z	undefined	INFO	App started
+	
+2024-09-10T03:40:28.836Z undefined INFO App started
+	
+2024-09-09T20:40:28.850-07:00
+START RequestId: 463d7541... Version: $LATEST
+	
+START RequestId: 463d7541... Version: $LATEST
+	
+2024-09-09T20:40:28.863-07:00
+2024-09-10T03:40:28.863Z	463d7541...	INFO	EVENT: 
+{}
+
+2024-09-10T03:40:28.863Z 463d7541... INFO EVENT: {}
+	
+2024-09-09T20:40:29.224-07:00
+END RequestId: 463d7541...
+	
+END RequestId: 463d7541...
+
+
+
+	
+2024-09-09T20:40:29.224-07:00
+REPORT RequestId: 463d7541...Duration: 374.18 ms	Billed Duration: 375 ms	Memory Size: 128 MB	Max Memory Used: 92 MB	Init Duration: 541.81 ms	
+
+
+
+Checking my API Gateway shows me the expected endpoint and methods (create and get), linked to my Lambda function, while the Lambda function has an execution role with permissions that should allow it to invoke the correct operations:
+
+
+
+
+
+
+Genuinely not sure what the problem could be, if anyone has any ideas I'd be very grateful.

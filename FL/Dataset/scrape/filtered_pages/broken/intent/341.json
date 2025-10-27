@@ -1,0 +1,14 @@
+Admittedly, I'm an amateur when it comes to AWS S3 policy language. A few years ago, I set up a bucket to host videos for an online LMS that I run. I followed a guide that helped me set up the policy for the bucket to make sure no one could watch the video except from an embed run from my LMS's domain.
+
+
+I'm now in the process of transferring to a new LMS and need to be able to use both domains. Being a developer outside of the AWS eco-sphere, I used simple logic about JSON to add a new domain to my policy. It sort of worked. Instead of getting a complete access denied page upon embedding a video link, I got the video player up and running. But I'm still getting a 403 forbidden error and the video won't play. My policy as it stands is as follows:
+
+
+
+
+
+
+The old domain (here labeled my first domain) is still working fine. Nevermind that I've changed the aws:Referer from a simple name value pair to an array. but the second domain still doesn't seem to be working.
+
+
+Any ideas would be very much appreciated.

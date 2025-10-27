@@ -1,0 +1,248 @@
+I'm running into a persistent issue connecting to AWS IoT Core that I can't seem to resolve — hoping someone might have some insights.
+
+
+Context
+
+
+I'm trying to establish an MQTT connection over WebSockets (
+port 443
+) from an Angular application to AWS IoT Core in the 
+us-east-2
+ region.
+
+
+Setup
+
+
+
+
+Client: Angular app using:
+
+
+
+
+@aws-amplify/auth
+ (v6+)
+
+
+aws-iot-device-sdk-v2
+ (v1.26.2)
+
+
+
+
+
+
+Authentication:
+
+
+
+
+Amazon Cognito for user auth
+
+
+Cognito Identity Pool: 
+us-east-2:...
+
+
+Temporary AWS credentials obtained via 
+WorkspaceAuthSession({ forceRefresh: true })
+
+
+Credentials assume IAM Role: 
+*-authenticated-role-dev
+
+
+
+
+Role ID: 
+AROAX...
+
+
+
+
+
+
+
+
+
+
+MQTT Connection:
+
+
+
+
+SigV4 authentication over WebSockets
+
+
+clientId
+ is dynamically set to the Cognito Identity ID
+
+
+
+
+
+
+
+
+
+
+Behavior
+
+
+
+
+I can successfully 
+Publish
+ messages
+
+
+I can connect using the AWS IoT Core Test Client
+
+
+But — the MQTT connection from my app fails consistently
+
+
+
+
+CloudWatch IoT Core logs show:
+
+
+eventType: Connect
+protocol: MQTT
+status: Failure
+reason: AUTHORIZATION_FAILURE
+principalId: ...:CognitoIdentityCredentials
+
+
+
+
+
+IAM Policy Attached to Role
+
+
+
+
+
+Wildcard Test Policy
+
+
+{
+
+
+  
+"Version"
+:
+ 
+"2012-10-17"
+,
+
+
+  
+"Statement"
+:
+ 
+[
+
+
+    
+{
+
+
+      
+"Effect"
+:
+ 
+"Allow"
+,
+
+
+      
+"Action"
+:
+ 
+"iot:*"
+,
+
+
+      
+"Resource"
+:
+ 
+"*"
+
+
+    
+}
+
+
+  
+]
+
+
+}
+
+
+
+
+Troubleshooting Steps Taken
+
+
+
+
+Verified Role ID matches 
+principalId
+ in logs
+
+
+Confirmed correct policy version is attached and default
+
+
+Waited for policy propagation
+
+
+Confirmed using SigV4 and correct MQTT 
+clientId
+
+
+Verified there are no 
+Deny
+ statements or permission boundaries
+
+
+
+
+
+
+Question
+
+
+Given that the IAM policy should permit 
+iot:Connect
+ using the Cognito Identity ID as the MQTT 
+clientId
+, why is the connection still being denied?
+
+
+Could there be:
+
+
+
+
+Hidden requirements or subtleties for IoT Core auth via Cognito Identity Pools?
+
+
+Other misconfigurations that would cause an 
+AUTHORIZATION_FAILURE
+ despite the above?
+
+
+
+
+Any suggestions are very appreciated!
+
+
+Thanks,
+
+
+—Tom

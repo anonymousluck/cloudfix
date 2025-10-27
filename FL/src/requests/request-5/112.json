@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_1c356b7d",
+      "Effect": "allow",
+      "Action": "health:DescribeEvents",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "deny_a404081d",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_f0769600",
+      "Effect": "allow",
+      "Action": "health:DescribeEvents",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "deny_38021b86",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_4701afc5",
+      "Effect": "allow",
+      "Action": "health:DescribeEvents",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    }
+  ]
+}

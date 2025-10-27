@@ -1,0 +1,89 @@
+When creating a new data set in QuickSight, I receive an error:
+
+
+[Simba][AthenaJDBC](100071) An error has been thrown from the AWS Athena client. Access denied when writing to location: s3://<data lake bucket>/athena-workgroups/<data mart-specific prefix>/output/<guid>.csv [Execution ID: <guid>]
+
+
+
+I have the QS service role--
+arn:aws:iam::<account id>:role/service-role/aws-quicksight-service-role-v0
+. I 
+do not
+ have a role with the name 
+aws-quicksight-s3-consumers-role-v0
+.
+
+
+That role has the 4 policies that are created when you attach Athena & an S3 bucket to QS:
+
+
+
+
+AWSQuickSightIAMPolicy
+
+
+AWSQuickSightRDSPolicy
+
+
+AWSQuickSightRedshiftPolicy
+
+
+AWSQuickSightS3Policy
+
+
+
+
+AWSQuickSightS3Policy
+ contains this:
+
+
+
+
+
+
+I've added the following policy/policies to the KMS key used on the data lake S3 bucket:
+
+
+{
+    "Sid": "Allow access to data for Athena.",
+    "Effect": "Allow",
+    "Principal": {
+        "Service": "athena.amazonaws.com"
+    },
+    "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*"
+    ],
+    "Resource": "*"
+},
+{
+    "Sid": "Allow access to data for QuickSight.",
+    "Effect": "Allow",
+    "Principal": {
+        "AWS": "arn:aws:iam::<account id>:role/service-role/aws-quicksight-service-role-v0"
+    },
+    "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*"
+    ],
+    "Resource": "*"
+},
+{
+    "Sid": "Allow access to data for QuickSight.",
+    "Effect": "Allow",
+    "Principal": {
+        "Service": "quicksight.amazonaws.com"
+    },
+    "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*"
+    ],
+    "Resource": "*"
+}
+
+
+
+I'm at a bit of a loss for how to continue. I've got what feels like wide open permissions, but I still receive that error while trying to create a data set that targets anywhere in that S3 bucket.

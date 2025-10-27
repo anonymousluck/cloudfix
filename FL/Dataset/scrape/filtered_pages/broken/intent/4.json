@@ -1,0 +1,103 @@
+Hello everyone,
+
+
+I'm struggling with my CF distribution for a static website hosted in an S3 bucket.
+
+
+I have two accounts, saying A and B.
+Account A contains:
+
+
+
+
+The S3 bucket
+
+
+The CF distribution
+
+
+
+
+Account B contains:
+
+
+
+
+The KMS key
+
+
+
+
+I have followed the documentation here : 
+https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+
+
+But I'm getting the following error when accessing website:
+
+
+<Error>
+<Code>AccessDenied</Code>
+<Message>
+User: arn:aws:sts::856369053181:assumed-role/OriginAccessControlRole/EdgeCredentialsProxy+EdgeHostAuthenticationClient-MRS52-P6 is not authorized to perform: kms:Decrypt on the resource associated with this ciphertext because the resource does not exist in this Region, no resource-based policies allow access, or a resource-based policy explicitly denies access
+</Message>
+<RequestId>JWRSJ6EC33SHND8A</RequestId>
+<HostId>
+WzjKcgu8DTTXe4rfZyfMWzDlFah8sVFS6T3DY8TvqrSIe8GhnFToSmAK2U+77sJFtDF8ad+xtqM=
+</HostId>
+</Error>
+
+
+
+To details, my bucket is encrypted with SSE-KMS, bucket owner enforced, no public access.
+The CF distribution has an OAC in always sign mode (with override), and use the policy CachingOptimized, CORS-S3Origin and SecurityHeadersPolicy. It also has a CF function that is used for basic auth.
+
+
+S3 bucket policy
+
+
+
+
+
+
+CF function
+
+
+function handler(event) {
+    const authorizationHeader = event.request.headers.authorization;
+    const preferredAuthorization = "Basic xxxxxxxx";
+    if (authorizationHeader !== undefined && authorizationHeader.value === preferredAuthorization) {
+        return event.request;
+    }
+    return {
+        statusCode: 401,
+        statusDescription: "Unauthorized",
+        headers: {
+            "www-authenticate": { value: 'Basic realm="Connect"' },
+        },
+    };
+}
+
+
+
+KMS policy
+
+
+ {
+            "Sid": "AllowCloudFrontServicePrincipalSSE-KMS for home account",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "cloudfront.amazonaws.com",
+                "AWS": "arn:aws:iam::<ACCOUNT A ID>:root"
+            },
+            "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:GenerateDataKey*"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "AWS:SourceArn": "arn:aws:cloudfront::<ACCOUNT A ID>:distribution/<DISTRIBUTION ID>"
+                }
+            }
+        }

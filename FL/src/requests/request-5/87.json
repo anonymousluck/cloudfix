@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e81bc888",
+      "Effect": "allow",
+      "Action": "iot:ListThings",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_19211314",
+      "Effect": "deny",
+      "Action": "iot:ListThings",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_e2efa81a",
+      "Effect": "allow",
+      "Action": "iot:DescribeThing",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "deny_23c68cd2",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_7513916a",
+      "Effect": "allow",
+      "Action": [
+        "iot:ListThings",
+        "iot:DescribeThing"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    }
+  ]
+}

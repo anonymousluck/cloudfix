@@ -1,0 +1,35 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": [
+          "amplify.eu-south-1.amazonaws.com",
+          "amplify.me-south-1.amazonaws.com",
+          "amplify.amazonaws.com",
+          "amplify.eu-west-2.amazonaws.com",
+          "amplify.eu-central-1.amazonaws.com",
+          "amplify.ap-east-1.amazonaws.com",
+          "amplify.eu-west-1.amazonaws.com",
+          "amplify.us-west-2.amazonaws.com",
+          "amplify.ap-northeast-3.amazonaws.com",
+          "amplify.ap-south-1.amazonaws.com",
+          "amplify.us-east-2.amazonaws.com",
+          "amplify.ap-southeast-2.amazonaws.com",
+          "amplify.ca-central-1.amazonaws.com",
+          "amplify.eu-west-3.amazonaws.com",
+          "amplify.us-east-1.amazonaws.com",
+          "amplify.ap-northeast-1.amazonaws.com",
+          "amplify.ap-southeast-1.amazonaws.com",
+          "amplify.sa-east-1.amazonaws.com",
+          "amplify.eu-north-1.amazonaws.com",
+          "amplify.us-west-1.amazonaws.com",
+          "amplify.ap-northeast-2.amazonaws.com"
+        ]
+      },
+      "Action": "sts:AssumeRole",
+      "Sid": "statement1"
+    }
+  ]
+}

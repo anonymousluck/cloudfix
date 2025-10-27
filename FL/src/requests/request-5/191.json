@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_65b72c1b",
+      "Effect": "allow",
+      "Action": "es:GetObject",
+      "Resource": [
+        "arn:aws:sts::xxxxxxxxxxxx:assumed-role/domain/data.json",
+        "arn:aws:sts::xxxxxxxxxxxx:assumed-role/domain/config.xml"
+      ]
+    },
+    {
+      "id": "deny_17027052",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:sts::xxxxxxxxxxxx:assumed-role/domain/config.xml"
+    },
+    {
+      "id": "allow_b3c01241",
+      "Effect": "allow",
+      "Action": "es:GetObject",
+      "Resource": [
+        "arn:aws:sts::xxxxxxxxxxxx:assumed-role/domain/document.txt",
+        "arn:aws:sts::xxxxxxxxxxxx:assumed-role/domain/data.json"
+      ]
+    },
+    {
+      "id": "allow_f3082273",
+      "Effect": "allow",
+      "Action": "es:GetObject",
+      "Resource": "arn:aws:sts::xxxxxxxxxxxx:assumed-role/domain/document.txt"
+    },
+    {
+      "id": "deny_93d1fde7",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:sts::xxxxxxxxxxxx:assumed-role/domain/document.txt"
+    }
+  ]
+}

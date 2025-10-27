@@ -1,0 +1,12 @@
+Hi am getting permission issues while creating knowledge base in bedrock.
+
+
+Error
+Knowledge base: kb-influencer-test was failed to create. undefined User: arn:aws:iam::1234:user/xxxx@gmail.com is not authorized to perform: iam:CreatePolicyVersion on resource: policy AmazonBedrockS3PolicyForKnowledgeBase_xyz because no identity-based policy allows the iam:CreatePolicyVersion action
+
+
+Following is the inline policy that is attached to the user.
+
+
+
+Any pointers would be appreciated.

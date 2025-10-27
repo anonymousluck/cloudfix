@@ -1,0 +1,68 @@
+{
+  "Requests": [
+    {
+      "id": "deny_a63649fc",
+      "Effect": "deny",
+      "Action": "iot:ListNamedShadowsForThing",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "192.168.1.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_1849e79a",
+      "Effect": "allow",
+      "Action": "iot:ListNamedShadowsForThing",
+      "Resource": [
+        "arn:aws:iot:ap-southeast-2:<accountId>:document",
+        "arn:aws:iot:ap-southeast-2:<accountId>:file1"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iot:Connection.Thing.Attributes[department_id]": "${aws:PrincipalTag/department}"
+        }
+      }
+    },
+    {
+      "id": "allow_380314d8",
+      "Effect": "allow",
+      "Action": "iot:ListNamedShadowsForThing",
+      "Resource": [
+        "arn:aws:iot:ap-southeast-2:<accountId>:file1",
+        "arn:aws:iot:ap-southeast-2:<accountId>:data123"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iot:Connection.Thing.Attributes[department_id]": "${aws:PrincipalTag/department}"
+        }
+      }
+    },
+    {
+      "id": "deny_aa89acd3",
+      "Effect": "deny",
+      "Action": "iot:ListNamedShadowsForThing",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "StringLike": {
+          "iot:Connection.Thing.Attributes[department_id]": "${aws:PrincipalTag/department}"
+        }
+      }
+    },
+    {
+      "id": "allow_417d9061",
+      "Effect": "allow",
+      "Action": "iot:ListNamedShadowsForThing",
+      "Resource": [
+        "arn:aws:iot:ap-southeast-2:<accountId>:data123",
+        "arn:aws:iot:ap-southeast-2:<accountId>:document"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    }
+  ]
+}

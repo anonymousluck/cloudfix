@@ -1,0 +1,18 @@
+Hello,
+
+
+I'm trying use EventBridge to schedule Batch submissions. However, I'm getting this error:
+
+
+"User: arn:aws:sts::[account ID]:assumed-role/[IAM Batch invoker role] is not authorized to perform: batch:SubmitJob on resource: arn:aws:batch:[account ID]:job-definition/[job definition name]"
+
+
+
+The invoker role's permissions are as follows:
+
+
+
+
+
+
+For whatever reason, the rules work fine if I list the most recent job revision as the rule's target (i.e., arn:aws:batch:[account ID]:job-definition/[job definition name]:235). However, if I don't list the most recent revision number, I get the above error. My team updates this job definition frequently and I'm trying to make several rules like this, so manually changing the revision number every time isn't a good option. The rules also work if I just use "Resource": "*" for permissions, but this security policy is unacceptably broad for my organization. Is there a way I can get rules like this to work without listing the revision number?

@@ -1,0 +1,97 @@
+i have angular app deployed to AWS S3 bucket that is not showing the S3 bucket files.
+environment file:
+
+
+export const environment = {
+
+    aws: {
+        production: true,
+        accessKeyId: process.env.accessKeyId,
+        secretAccessKey: process.env.secretAccessKey,
+        region: 'ap-south-1'
+    }
+}
+
+
+and my service.ts has this code:
+
+
+AWS.config.update({
+        accessKeyId: process.env.accessKeyId,
+        secretAccessKey: process.env.secretAccessKey,
+        region: 'ap-south-1'
+});
+
+const bucket = new S3(AWS.config);
+
+@Injectable({
+  providedIn: 'root'
+})
+
+export class S3Service {
+
+  bucketName: string = 'angular-upload-files-2023-2024';
+  loader: EventEmitter<boolean> = new EventEmitter<boolean>();
+  currentFolder: string = 'properties2023';
+
+  constructor() {}
+
+  getFolderContent(): Observable<any> {
+    return new Observable((observer) => {
+      this.loader.next(true);
+      bucket.listObjectsV2({ Bucket: this.bucketName, Prefix: this.currentFolder, Delimiter: '/' }, (err: AWS.AWSError, data: S3.ListObjectsV2Output) => {
+        this.loader.next(true);
+        console.log(data)
+        if (err) {
+          observer.error(err);
+        }
+        else {
+          let list: any[] = [];
+          list = list.concat(data.CommonPrefixes?.map(m => { return { name: m.Prefix, contentType: 'folder' } }));
+          list = list.concat(data.Contents?.filter(m => m.Key != this.currentFolder).map(m => { return { name: m.Key, contentType: 'file', modifiedTime: m.LastModified?.toDateString() } }));
+          observer.next(list);
+        }
+
+      });
+    })
+
+  }
+}
+
+
+
+in bucket permissions I have public access and I have:
+
+
+bucket policy:
+
+
+
+
+
+
+and I have CORS:
+
+
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "GET",
+            "POST",
+            "HEAD",
+            "DELETE"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ],
+        "ExposeHeaders": [],
+        "MaxAgeSeconds": 3000
+    }
+]
+
+
+
+It is showing enpty site:

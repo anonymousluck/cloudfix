@@ -1,0 +1,290 @@
+Latest update
+
+
+I finally found documentation that says Verctor Search doesn't support dashboard. Gawd. And that one should interact with postman, but I don't understand that at all as I just cannot authenticate; even with the 
+Authorization: AWS key:secret
+ in the headers.
+
+
+Semi-solved
+
+
+The exact config as below finally resulted in being able to create the index.
+
+
+Still no dashboard.
+
+
+6 hours and going TODAY -> VECTOR SEARCH DOESN'T SUPPORT DASHBOARD. F****ME.
+
+
+I wasn't at all able to access the vector search instance without the dashboard as I couldn't create an internal user to login with.
+I guess the take away is that it only works within a VPC.
+
+
+
+
+I'm losing the will to make this work. I've recreated the collection about 4 times now assuming there must be 
+something
+ I'm doing wrong when following this tutorial: 
+https://docs.aws.amazon.com/opensearch-service/latest/developerguide/gsg-serverless.html#gsg-encryption
+.
+
+
+TLDR; I have two issues, can't create vector index and can't access dashboard
+
+
+1. this is the error I get when trying to Create vector index
+:
+
+
+1 validation error detected: Value '[collection/products]' at 'resource' failed to satisfy constraint: Member must satisfy constraint: [Member must satisfy regular expression pattern: index/[a-z][a-z0-9-]{3,32}/(?![_-])[a-z0-9][a-z0-9_-]*(?<![,:"*+/\|?#<>])]
+
+
+So there's a missing 
+index
+ somewhere, but where? Looks like it must be related to the user?
+
+
+2. any which way I configure, the dashboard is never available
+
+Given that I've set the principal IAM policy to *, the Dashboard and API resource things are allowed...
+
+
+IAM Policy
+
+
+Here's the very permissive IAM policy (yes, I know the * means I can remove all the other policies, but it was just a desperate attempt at making this work) I've connected to my user;
+
+
+
+
+
+Don't worry about the IPs for now – I know. I've also tried removing them.
+
+
+Data access policy (probably the issue?)
+
+
+Because I assumed this is where the error was, this is the only place I deviated from the tutorial and added collection resource to the rules. Note! That I can't add a * after 
+collection/products
+ due to an error.
+
+
+[
+
+
+  
+{
+
+
+    
+"Rules"
+:
+ 
+[
+
+
+      
+{
+
+
+        
+"Resource"
+:
+ 
+[
+
+
+          
+"collection/products"
+
+
+        
+]
+,
+
+
+        
+"Permission"
+:
+ 
+[
+
+
+          
+"aoss:CreateCollectionItems"
+,
+
+
+          
+"aoss:DeleteCollectionItems"
+,
+
+
+          
+"aoss:UpdateCollectionItems"
+,
+
+
+          
+"aoss:DescribeCollectionItems"
+
+
+        
+]
+,
+
+
+        
+"ResourceType"
+:
+ 
+"collection"
+
+
+      
+}
+,
+
+
+      
+{
+
+
+        
+"Resource"
+:
+ 
+[
+
+
+          
+"index/products/*"
+
+
+        
+]
+,
+
+
+        
+"Permission"
+:
+ 
+[
+
+
+          
+"aoss:CreateIndex"
+,
+
+
+          
+"aoss:DeleteIndex"
+,
+
+
+          
+"aoss:UpdateIndex"
+,
+
+
+          
+"aoss:DescribeIndex"
+,
+
+
+          
+"aoss:ReadDocument"
+,
+
+
+          
+"aoss:WriteDocument"
+
+
+        
+]
+,
+
+
+        
+"ResourceType"
+:
+ 
+"index"
+
+
+      
+}
+
+
+    
+]
+,
+
+
+    
+"Principal"
+:
+ 
+[
+
+
+      
+"BLA"
+
+
+    
+]
+,
+
+
+    
+"Description"
+:
+ 
+"products"
+
+
+  
+}
+
+
+]
+
+
+
+
+EDIT 1
+
+
+This smells funny to me when I try to create a new collection (again);
+
+
+The default principal is invalid please choose standard create option to configure this manually.
+
+
+Meaning that there is something wrong with my user? It's not malformed, I chose it in the visual search thing. But how can the IAM policy be wrong when it's so permissive...
+
+
+EDIT 2:
+
+
+Duuh, I probably have to create the index first THEN I can create the vector embeddings... I think...
+
+
+But; the OpenSearch Dashboard URL is showing up as Not supported, even thou I followed the tutorial to a T.
+
+
+EDIT 3:
+
+
+No I couldn't create the index programmatically either, there's definitely/maybe something wrong with my IAM policy. Also, I've now recreated this thing 6 times and the OpenSeach Dashboard URL is always Not Supported.
+
+
+EDIT 4:
+
+
+I logged into one of my IAM users with full admin access and a new policy with full access to OpenSearch. Same error. No dashboard. I'm going to cry.

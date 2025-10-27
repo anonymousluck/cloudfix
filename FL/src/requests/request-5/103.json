@@ -1,0 +1,48 @@
+{
+  "Requests": [
+    {
+      "id": "allow_5cc9533f",
+      "Effect": "allow",
+      "Action": "s3:PutBucketWebsite",
+      "Resource": "s3 arn/document.txt",
+      "Principal": "IAM user login to console"
+    },
+    {
+      "id": "allow_5490c8ea",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": [
+        "s3 arn/data.json",
+        "s3 arn/config.xml"
+      ],
+      "Principal": "IAM user login to console"
+    },
+    {
+      "id": "deny_934bb8a1",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "s3 arn/data.json",
+      "Principal": "IAM user login to console"
+    },
+    {
+      "id": "allow_9302bcf3",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteBucketTagging",
+        "s3:RestoreObject"
+      ],
+      "Resource": "s3 arn/config.xml",
+      "Principal": "IAM user login to console"
+    },
+    {
+      "id": "deny_e7dfb144",
+      "Effect": "deny",
+      "Action": "s3:DeleteObject",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "IAM user login to console"
+    }
+  ]
+}

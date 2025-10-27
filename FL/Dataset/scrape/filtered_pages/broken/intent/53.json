@@ -1,0 +1,105 @@
+I have a Fargate task which I'm trying to mount an EFS filesystem on for a Wordpress stack.  I've setup an IAM role for the task and declared it in the task definition[1] for both 
+taskRoleArn
+ and 
+executionRoleArn
+.  The role defines several allowed actions[2] that I've gotten from various pieces of documentation.  Also in the task definition, I tried to define (via Terraform) the 
+Volumes:[]
+ and 
+mountPoints:[]
+ too, however the task was not able to mount the EFS volume and it would fail. I removed the mount points and volumes from the task definition so it would start and then I could shell into (via SSM agent) the running container to try and debug things.
+
+
+The EFS filesystem has a File System Policy[3] applied and two Mount Targets[4] configured for my 
+efs-security-group
+[5] (allows TCP 2049 ingress, and all egress).
+
+
+When I attempt[6] to mount the EFS filesystem on the Fargate container, I get 
+Operation not permitted
+.  The [Attach] button in the EFS console is where I got the mount command from but negated using 
+sudo
+ since I'm already running the mount command as 
+root
+.
+
+
+I should mention my container uses an init wrapper to start a couple services before launching Apache in the foreground. The 
+efs
+ mount command (again, from the [Attach] button in the EFS console) may suggest this is a problem[7]?
+
+
+Any idea why the NFS mount is failing with Operation not permitted or how to get the 
+efs
+ mount to work with an init wrapper script?
+
+
+[1]
+
+
+taskRoleArn     : arn:aws:iam::123123123123:role/webhost-iam-role
+executionRoleArn: arn:aws:iam::123123123123:role/webhost-iam-role
+
+
+
+[2]
+
+
+
+
+
+
+[3]
+
+
+{
+    "Version": "2012-10-17",
+    "Id": "ExamplePolicy01",
+    "Statement": [
+        {
+            "Sid": "ExampleStatement01",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": [
+                "elasticfilesystem:ClientMount",
+                "elasticfilesystem:ClientWrite",
+                "elasticfilesystem:ClientRootAccess",
+                "elasticfilesystem:DescribeMountTargets"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+
+
+[4]
+
+
+us-east-1a, 10.100.1.63, efs-security-group
+us-east-1b, 10.100.2.171, efs-security-group
+
+
+
+[5]
+
+
+NFS, TCP, [10.100.1.0/24, 10.100.2.0/24], 2049
+
+
+
+[6]
+
+
+# mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport 10.100.1.63:/ /mnt/webfiles/
+mount.nfs4: Operation not permitted
+
+
+
+[7]
+
+
+# mount -t efs -o tls fs-0328b5ef212381290:/ /mnt/webfiles/
+Could not start amazon-efs-mount-watchdog, unrecognized init system "init_wrapper.sh"
+b'mount.nfs4: Operation not permitted'

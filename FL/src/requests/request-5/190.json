@@ -1,0 +1,48 @@
+{
+  "Requests": [
+    {
+      "id": "allow_a96562ca",
+      "Effect": "allow",
+      "Action": "s3:GetObjectAcl",
+      "Resource": [
+        "arn:aws:s3:::angular-upload-files-2023-2024/config.xml",
+        "arn:aws:s3:::angular-upload-files-2023-2024/document.txt"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "allow_e46100f4",
+      "Effect": "allow",
+      "Action": "s3:PutBucketCors",
+      "Resource": [
+        "arn:aws:s3:::angular-upload-files-2023-2024/data.json",
+        "arn:aws:s3:::angular-upload-files-2023-2024/config.xml"
+      ],
+      "Principal": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_3026de05",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:s3:::angular-upload-files-2023-2024/config.xml",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_893aa5cd",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteBucketTagging",
+        "s3:GetBucketAcl"
+      ],
+      "Resource": "arn:aws:s3:::angular-upload-files-2023-2024/data.json",
+      "Principal": "*"
+    },
+    {
+      "id": "deny_9e653d5f",
+      "Effect": "deny",
+      "Action": "s3:PutObjectTagging",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized"
+    }
+  ]
+}

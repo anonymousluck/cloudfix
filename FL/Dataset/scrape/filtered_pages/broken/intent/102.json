@@ -1,0 +1,129 @@
+I have 2 AWS accounts, Account "A" contain AWS Redshift and Account "B" has external data that crawler from S3.
+
+
+What I have done
+
+
+Account A
+
+
+
+
+Attached spectrum role to Redshift
+
+
+
+Attached inline policy in 
+role1
+ to sync between both account
+
+
+
+
+
+
+
+
+
+
+In Inline policy also add Trust relationships
+
+
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "redshift.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+Account B
+
+
+
+
+Attached role to access S3 and Glue.
+
+
+
+Attached custom role name 
+role2
+
+
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion"
+            ],
+            "Resource": [
+                "arn:aws:s3:::test*"
+            ]
+        }
+
+
+
+
+
+In 
+role2
+ also add trust relationships
+
+
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "glue.amazonaws.com",
+                "AWS": "arn:aws:iam::yyyyyyyyyy:role/role1"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+Result
+
+
+After I ran script to create external database from data catalog. Then I can query data from that external database with root. 
+But I need to query with another user.
+
+
+####To grant database permission
+
+
+I have run this script
+
+
+grant select on EXTERNAL TABLE "schema"."database"."tableName" to read_user
+
+
+
+I got this result
+
+
+Grantee can only be an IAM Role or PUBLIC for grants on external resources

@@ -1,0 +1,125 @@
+We are working on integrating our existing PBX with an AWS Lex bot. For that purpose, we are utilizing voice connectors, SIP media applications, Lambda, and AWS Lex. Below is the code for my Lambda function to call the AWS Lex bot
+
+
+var AWS = require('aws-sdk');
+
+var startBotConversationAction = {
+  "Type": "StartBotConversation",
+  "Parameters": {
+    CallId: "",
+    ParticipantTag: "",
+    "BotAliasArn": "arn:aws:lex:eu-west-2:11111111:bot-alias/ZZZZZZZ/8PPPPPPPPPP",
+    "LocaleId": "en_US",
+    "Configuration": {
+      "SessionState": {
+        "SessionAttributes": {
+          phoneNumber: "+123123123"
+        },
+        "DialogAction": {
+          "Type": "ElicitIntent"
+        }
+      },
+      "WelcomeMessages": [{
+        "Content": "I would like to pick up flowers",
+        "ContentType": "PlainText"
+      }]
+    }
+  }
+};
+
+exports.handler = async (event, context, callback) => {
+  console.log('Lambda is invoked with calldetails:' + JSON.stringify(event));
+  let actions;
+  switch (event.InvocationEventType) {
+    case 'NEW_INBOUND_CALL':
+      console.log('NEW INBOUND CALL', event.CallDetails.Participants[0].CallId);
+      //await putInfo(event);
+      startBotConversationAction.Parameters.Configuration.SessionState.SessionAttributes.phoneNumber = event.CallDetails.Participants[0].From;
+      startBotConversationAction.Parameters.CallId = event.CallDetails.Participants[0].CallId;
+      startBotConversationAction.Parameters.ParticipantTag = event.CallDetails.Participants[0].ParticipantTag;
+
+      actions = [startBotConversationAction];
+      break;
+    case 'RINGING':
+      console.log('RINGING');
+      actions = [];
+      break;
+    case 'ACTION_SUCCESSFUL':
+      console.log('ACTION SUCCESSFUL');
+      actions = [hangupAction];
+
+      break;
+    case 'HANGUP':
+      console.log('HANGUP ACTION');
+      break;
+    default:
+      console.log('FAILED ACTION');
+      callForward.Parameters.CallId = event.CallDetails.Participants[0].CallId;
+    // actions = [callForward];
+  }
+  const response = {
+    SchemaVersion: '1.0',
+    Actions: actions,
+  };
+  console.log('Sending response:' + JSON.stringify(response));
+  callback(null, response)
+};
+
+var hangupAction = {
+  Type: 'Hangup',
+  Parameters: {
+    SipResponseCode: '305',
+    ParticipantTag: '',
+  },
+};
+
+var pause = {
+  "Type": "Pause",
+  "Parameters": {
+    "CallId": "call-id-1",
+    "ParticipantTag": "LEG-A",
+    "DurationInMilliseconds": "5000"
+  }
+};
+
+
+
+
+And we are getting this as the response:
+
+
+{
+  "SchemaVersion": "1.0",
+  "Sequence": 2,
+  "InvocationEventType": "INVALID_LAMBDA_RESPONSE",
+  "CallDetails": {
+    "TransactionId": "1111",
+    "AwsAccountId": "2222222222",
+    "AwsRegion": "eu-west-2",
+    "SipRuleId": "55555555555",
+    "SipMediaApplicationId": "255555",
+    "Participants": [{
+      "CallId": "8888888888888",
+      "ParticipantTag": "LEG-A",
+      "To": "111111111111",
+      "From": "11111111111",
+      "Direction": "Inbound",
+      "StartTimeInMilliseconds": "1714046993769"
+    }]
+  },
+  "ErrorType": "InvalidActionsList",
+  "ErrorMessage": "Error while reading actions list."
+}
+
+
+
+
+But the same is working with speak action, it works perfectly to just play text and not with the bot. Also, I have given the following resource-based policy for the bot alias:
+
+
+
+
+
+
+
+Could you help me resolve this?

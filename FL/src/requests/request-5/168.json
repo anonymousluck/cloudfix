@@ -1,0 +1,65 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e25bb129",
+      "Effect": "allow",
+      "Action": "ec2:StartInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalTag/Division": "*${ec2:ResourceTag/Division}*"
+        }
+      }
+    },
+    {
+      "id": "allow_bb02c7bc",
+      "Effect": "allow",
+      "Action": "ec2:StartInstances",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ],
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalTag/Division": "*${ec2:ResourceTag/Division}*"
+        }
+      }
+    },
+    {
+      "id": "deny_58c21359",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringLike": {
+          "aws:PrincipalTag/Division": "*${ec2:ResourceTag/Division}*"
+        }
+      }
+    },
+    {
+      "id": "allow_b8c17354",
+      "Effect": "allow",
+      "Action": "ec2:StartInstances",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "deny_b10ed74a",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    }
+  ]
+}

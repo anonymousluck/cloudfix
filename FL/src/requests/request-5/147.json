@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_116bcb8b",
+      "Effect": "allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:iot:sa-east-1:195542078145:topic/$aws/provisioning-templates/esp32_fleet_prov_template/provision/config.xml"
+    },
+    {
+      "id": "deny_195f211f",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:iot:sa-east-1:195542078145:topic/$aws/provisioning-templates/esp32_fleet_prov_template/provision/data.json"
+    },
+    {
+      "id": "allow_b87a7d28",
+      "Effect": "allow",
+      "Action": "iot:Connect",
+      "Resource": [
+        "arn:aws:iot:sa-east-1:195542078145:topic/$aws/certificates/create/config.xml",
+        "arn:aws:iot:sa-east-1:195542078145:topicfilter/$aws/provisioning-templates/esp32_fleet_prov_template/provision/data.json"
+      ]
+    },
+    {
+      "id": "deny_59728e4a",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:iot:sa-east-1:195542078145:topic/$aws/provisioning-templates/esp32_fleet_prov_template/provision/config.xml"
+    },
+    {
+      "id": "allow_294999ed",
+      "Effect": "allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Connect"
+      ],
+      "Resource": "arn:aws:iot:sa-east-1:195542078145:topic/$aws/provisioning-templates/esp32_fleet_prov_template/provision/document.txt"
+    }
+  ]
+}

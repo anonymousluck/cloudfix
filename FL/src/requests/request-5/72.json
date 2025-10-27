@@ -1,0 +1,65 @@
+{
+  "Requests": [
+    {
+      "id": "deny_b8d828e4",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "AES256",
+          "aws:ResourceTag/exempted": "yes"
+        }
+      }
+    },
+    {
+      "id": "deny_62cdb3c5",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2024-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "allow_1d5b7a3a",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "AES256",
+          "aws:ResourceTag/exempted": "yes"
+        }
+      }
+    },
+    {
+      "id": "allow_48568787",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "AES256",
+          "aws:ResourceTag/exempted": "yes"
+        }
+      }
+    },
+    {
+      "id": "allow_2a197621",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    }
+  ]
+}

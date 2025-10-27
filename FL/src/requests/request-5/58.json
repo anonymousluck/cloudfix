@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_36ea7b4d",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:codecommit:*:*:document"
+    },
+    {
+      "id": "deny_6326b3db",
+      "Effect": "deny",
+      "Action": "codebuild:StartBuild",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_0fa428e0",
+      "Effect": "allow",
+      "Action": "codebuild:StartBuild",
+      "Resource": "arn:aws:codecommit:*:*:data123"
+    },
+    {
+      "id": "allow_dfd0dcee",
+      "Effect": "allow",
+      "Action": [
+        "codecommit:GitPull",
+        "codebuild:StartBuild"
+      ],
+      "Resource": [
+        "arn:aws:codebuild:*:*:project/config.xml",
+        "arn:aws:codecommit:*:*:document"
+      ]
+    },
+    {
+      "id": "allow_4f04514f",
+      "Effect": "allow",
+      "Action": "codecommit:GitPull",
+      "Resource": "arn:aws:codecommit:*:*:file1"
+    }
+  ]
+}

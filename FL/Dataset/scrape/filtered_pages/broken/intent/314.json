@@ -1,0 +1,109 @@
+This is an excerpt of our IoT policy for shadow actions on a thing that uses ShadowManager to interface with its own shadow:
+
+
+    
+
+
+
+Ideally, we want to restrict the thing to only be able to access its own shadows. That might look like this:
+
+
+    {
+      "Sid": "UpdateShadows",
+      "Effect": "Allow",
+      "Action": [
+        "iot:UpdateThingShadow",
+        "iot:ListNamedShadowsForThing",
+        "iot:GetThingShadow"
+      ],
+      "Resource": [
+        "arn:aws:iot:[region]:[account]:thing/${iot:Connection.Thing.ThingName}",
+        "arn:aws:iot:[region]:[account]:thing/${iot:Connection.Thing.ThingName}/*"
+      ]
+    }
+
+
+
+However, this results in the following error for ShadowManager:
+
+
+2023-07-21T01:41:20.225Z [ERROR] (pool-2-thread-22) com.aws.greengrass.shadowmanager.sync.strategy.BaseSyncStrategy: sync. Skipping sync request. {thing name=[my_thing_name], shadow name=[my_shadow_name]}
+com.aws.greengrass.shadowmanager.exception.SkipSyncRequestException: software.amazon.awssdk.services.iotdataplane.model.IotDataPlaneException: null (Service: IotDataPlane, Status Code: 403, Request ID: bf3dcf9f-17b7-2b56-9a30-509d2591b385, Extended Request ID: null)
+	at com.aws.greengrass.shadowmanager.sync.model.BaseSyncRequest.getCloudShadowDocument(BaseSyncRequest.java:407)
+	at com.aws.greengrass.shadowmanager.sync.model.FullShadowSyncRequest.execute(FullShadowSyncRequest.java:79)
+	at com.aws.greengrass.shadowmanager.sync.SyncHandler.lambda$static$0(SyncHandler.java:98)
+	at com.aws.greengrass.util.RetryUtils.runWithRetry(RetryUtils.java:50)
+	at com.aws.greengrass.shadowmanager.sync.SyncHandler.lambda$static$1(SyncHandler.java:96)
+	at com.aws.greengrass.shadowmanager.sync.strategy.BaseSyncStrategy.lambda$new$0(BaseSyncStrategy.java:155)
+	at com.aws.greengrass.shadowmanager.sync.strategy.BaseSyncStrategy.syncLoop(BaseSyncStrategy.java:366)
+	at com.aws.greengrass.shadowmanager.sync.strategy.RealTimeSyncStrategy.syncLoop(RealTimeSyncStrategy.java:77)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+Caused by: software.amazon.awssdk.services.iotdataplane.model.IotDataPlaneException: null (Service: IotDataPlane, Status Code: 403, Request ID: bf3dcf9f-17b7-2b56-9a30-509d2591b385, Extended Request ID: null)
+	at software.amazon.awssdk.core.internal.http.CombinedResponseHandler.handleErrorResponse(CombinedResponseHandler.java:123)
+	at software.amazon.awssdk.core.internal.http.CombinedResponseHandler.handleResponse(CombinedResponseHandler.java:79)
+	at software.amazon.awssdk.core.internal.http.CombinedResponseHandler.handle(CombinedResponseHandler.java:59)
+	at software.amazon.awssdk.core.internal.http.CombinedResponseHandler.handle(CombinedResponseHandler.java:40)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.HandleResponseStage.execute(HandleResponseStage.java:40)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.HandleResponseStage.execute(HandleResponseStage.java:30)
+	at software.amazon.awssdk.core.internal.http.pipeline.RequestPipelineBuilder$ComposingRequestPipelineStage.execute(RequestPipelineBuilder.java:206)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallAttemptTimeoutTrackingStage.execute(ApiCallAttemptTimeoutTrackingStage.java:73)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallAttemptTimeoutTrackingStage.execute(ApiCallAttemptTimeoutTrackingStage.java:42)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.TimeoutExceptionHandlingStage.execute(TimeoutExceptionHandlingStage.java:78)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.TimeoutExceptionHandlingStage.execute(TimeoutExceptionHandlingStage.java:40)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallAttemptMetricCollectionStage.execute(ApiCallAttemptMetricCollectionStage.java:50)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallAttemptMetricCollectionStage.execute(ApiCallAttemptMetricCollectionStage.java:36)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.RetryableStage.execute(RetryableStage.java:81)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.RetryableStage.execute(RetryableStage.java:36)
+	at software.amazon.awssdk.core.internal.http.pipeline.RequestPipelineBuilder$ComposingRequestPipelineStage.execute(RequestPipelineBuilder.java:206)
+	at software.amazon.awssdk.core.internal.http.StreamManagingStage.execute(StreamManagingStage.java:56)
+	at software.amazon.awssdk.core.internal.http.StreamManagingStage.execute(StreamManagingStage.java:36)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallTimeoutTrackingStage.executeWithTimer(ApiCallTimeoutTrackingStage.java:80)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallTimeoutTrackingStage.execute(ApiCallTimeoutTrackingStage.java:60)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallTimeoutTrackingStage.execute(ApiCallTimeoutTrackingStage.java:42)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallMetricCollectionStage.execute(ApiCallMetricCollectionStage.java:48)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallMetricCollectionStage.execute(ApiCallMetricCollectionStage.java:31)
+	at software.amazon.awssdk.core.internal.http.pipeline.RequestPipelineBuilder$ComposingRequestPipelineStage.execute(RequestPipelineBuilder.java:206)
+	at software.amazon.awssdk.core.internal.http.pipeline.RequestPipelineBuilder$ComposingRequestPipelineStage.execute(RequestPipelineBuilder.java:206)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ExecutionFailureExceptionReportingStage.execute(ExecutionFailureExceptionReportingStage.java:37)
+	at software.amazon.awssdk.core.internal.http.pipeline.stages.ExecutionFailureExceptionReportingStage.execute(ExecutionFailureExceptionReportingStage.java:26)
+	at software.amazon.awssdk.core.internal.http.AmazonSyncHttpClient$RequestExecutionBuilderImpl.execute(AmazonSyncHttpClient.java:193)
+	at software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.invoke(BaseSyncClientHandler.java:103)
+	at software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.doExecute(BaseSyncClientHandler.java:167)
+	at software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.lambda$execute$1(BaseSyncClientHandler.java:82)
+	at software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.measureApiCallSuccess(BaseSyncClientHandler.java:175)
+	at software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.execute(BaseSyncClientHandler.java:76)
+	at software.amazon.awssdk.core.client.handler.SdkSyncClientHandler.execute(SdkSyncClientHandler.java:45)
+	at software.amazon.awssdk.awscore.client.handler.AwsSyncClientHandler.execute(AwsSyncClientHandler.java:56)
+	at software.amazon.awssdk.services.iotdataplane.DefaultIotDataPlaneClient.getThingShadow(DefaultIotDataPlaneClient.java:221)
+	at com.aws.greengrass.shadowmanager.sync.IotDataPlaneClientWrapper.getThingShadow(IotDataPlaneClientWrapper.java:95)
+	at com.aws.greengrass.shadowmanager.sync.model.BaseSyncRequest.getCloudShadowDocument(BaseSyncRequest.java:374)
+	... 12 more
+
+
+
+If I change the policy to directly include the thing's name:
+
+
+    {
+      "Sid": "UpdateShadows",
+      "Effect": "Allow",
+      "Action": [
+        "iot:UpdateThingShadow",
+        "iot:ListNamedShadowsForThing",
+        "iot:GetThingShadow"
+      ],
+      "Resource": [
+        "arn:aws:iot:[region]:[account]:thing/[my_thing_name]",
+        "arn:aws:iot:[region]:[account]:thing/[my_thing_name]/*"
+      ]
+    }
+
+
+
+This works as you would expect. However, this policy would obviously not be able to be reused across multiple devices, which would be preferred. What is the proper solution for ensuring that ShadowManager components can only access shadows of their own thing, as it appears the 
+${iot:Connection.Thing.ThingName}
+ substitution does not work as we'd expect here?

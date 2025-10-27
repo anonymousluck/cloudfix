@@ -1,0 +1,44 @@
+Hello AWS Community,
+
+
+I am facing an issue with my AWS Amplify deployment where it fails to assume the specified IAM role. The error message I am receiving is:
+
+
+2024-08-05T07:05:21.726Z [ERROR]: !!! Unable to assume specified IAM Role. Please ensure the selected IAM Role has sufficient permissions and the Trust Relationship is configured correctly.
+
+
+
+Details:
+
+
+App ARN: arn:aws:amplify:ap-south-1:779007823631:apps/deo94wtt8tbvk
+IAM Role: arn:aws:iam::779007823631:role/romy
+Region: ap-south-1
+
+
+
+
+
+
+Attached Policies:
+AdministratorAccess
+AdministratorAccess-Amplify
+
+
+Steps Taken:
+Verified Trust Policy: The trust policy includes the necessary permissions for Amplify to assume the role.
+Checked Permissions Policies: Ensured that the role has AdministratorAccess and AdministratorAccess-Amplify policies attached.
+Reviewed Inline Policies: There are no restrictive inline policies attached to the role.
+Reviewed CloudTrail Logs: Checked for any AssumeRole events and verified that there are no denied API calls.
+Checked AWS Resources Region: Confirmed that all AWS resources are in the ap-south-1 region.
+
+
+Error Context:
+The deployment process was working fine until about 15 days ago. The last code change involved minor HTML updates and should not have impacted the IAM role or trust policy.
+
+
+Question:
+What could be the potential reasons for this issue, given that all configurations appear to be correct? Has anyone experienced similar issues with AWS Amplify deployments and IAM roles, and how were they resolved? Any insights or suggestions would be highly appreciated.
+
+
+Thank you for your assistance!

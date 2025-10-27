@@ -1,0 +1,61 @@
+Hi guys.
+Help me please.
+I have a task, I need to create a policy with these permissions
+
+
+
+
+
+
+But when I specify "Resource": [ "*" ] then I see the message
+
+
+PassRole With Star In Resource: Using the iam:PassRole action with wildcards (*) in the resource can be overly permissive because it allows iam:PassRole permissions on multiple resources. We recommend that you specify resource ARNs or add the iam:PassedToService condition key to your statement. Learn more 
+
+
+
+My task is that I could bind the "Resource" to the user account and preferably to the region in which it works. But no matter how many options I try JSON, I get an error
+
+
+My JSON code looks like this.
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+            "iam:CreateRole",
+            "iam:PutRolePolicy",
+            "iam:PassRole"
+            ],     
+            "Resource":[
+                "arn:aws:iam::123456789012:/*"
+          
+           ]
+        },
+        {
+                "Effect": "Allow",
+            "Action": [
+                "lambda:CreateFunction",
+                "lambda:InvokeAsync",
+                "lambda:InvokeFunction",
+                "lambda:UpdateAlias",
+                "lambda:CreateAlias",
+                "lambda:GetFunctionConfiguration",
+                "lambda:AddPermission",
+                "lambda:UpdateFunctionCode"
+     ],
+            "Resource": [
+                "arn:aws:lambda:eu-central-1::123456789012:user/xxxx*",
+                "arn:aws:lambda:us-west-2::123456789012:user/xxxx*"
+            ]
+        }
+]
+}
+
+
+
+I have tried many different options but can't get the result I want.
+Help me please.

@@ -1,0 +1,10 @@
+I have a lambda function with python code that connects to my opensearch service. Now when i test the code in lambda i get this error:
+
+"body": "{\"Message\":\"User: arn:aws:sts::700875800956:assumed-role/lambdaRole/testFunction is not authorized to perform: es:ESHttpGet because no identity-based policy allows the es:ESHttpGet action\"}"
+
+
+But the lambdaRole has all this permissions, so i dont know what i'm doing wrong:
+
+
+
+This is the json of the opensearchservice policy:

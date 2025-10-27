@@ -1,0 +1,107 @@
+I have deployed a Node.js 18.x AWS Lambda function using the Serverless Framework in us-west-1, and it is supposed to make outbound requests to the following services:
+
+
+
+
+Google Sheets API
+
+
+Slack API
+
+
+Twilio API
+
+
+
+
+However, my function fails to access any external internet service despite the following configurations being verified:
+
+
+The Lambda Function Is Not in a VPC
+
+
+
+
+The function is deployed with no VPC attached, which should allow full outbound internet access.
+
+
+
+
+The IAM Role Has Correct Permissions
+
+
+
+
+The Lambda execution role includes:
+
+
+AWSLambdaBasicExecutionRole
+
+
+AWSLambdaVPCAccessExecutionRole
+
+
+Custom policy allowing outbound traffic:
+
+
+
+
+
+
+
+
+CloudWatch Logs Confirm Timeouts
+
+
+
+
+API Gateway is working correctly and is logging API calls.
+
+
+Lambda logs show that all outbound HTTP requests fail with timeouts, including basic connectivity checks like:
+
+axios.get("https://httpbin.org/get", { timeout: 5000 });
+
+
+
+
+We Deployed to Multiple Regions and Observed the Same Issue
+
+
+
+
+We deployed to both us-west-1 and us-east-1, and the function fails in the exact same way.
+
+
+This rules out a region-specific issue.
+
+
+
+
+CloudWatch Logs Are Working and Show No Other Errors
+
+
+
+
+No permission errors or other AWS-related failures appear in CloudWatch.
+
+
+
+
+Additional Notes:
+
+
+
+
+We initially suspected service control policies (SCPs), but they are disabled at the organizational level.
+
+
+The function is not using NAT Gateways or private subnets, which could restrict outbound traffic.
+
+
+The behavior persists across all redeployments and manual IAM updates.
+
+
+
+
+Running out of things to check now so I figured I'll reach out to the community and see if anyone might have ideas.

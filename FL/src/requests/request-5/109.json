@@ -1,0 +1,73 @@
+{
+  "Requests": [
+    {
+      "id": "allow_a01c56f8",
+      "Effect": "allow",
+      "Action": "logs:DeleteLogStream",
+      "Resource": [
+        "arn:aws:logs:ap-northeast-1:0123456789:log-group:session-manager:log-stream:data123",
+        "arn:aws:logs:ap-northeast-1:0123456789:log-group:session-manager:log-stream:file1"
+      ],
+      "Principal": "ssm.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": [
+            "0123456789"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_8c6260b0",
+      "Effect": "allow",
+      "Action": "logs:FilterLogEvents",
+      "Resource": "arn:aws:logs:ap-northeast-1:0123456789:log-group:session-manager:log-stream:file1",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "allow_407a6f2f",
+      "Effect": "allow",
+      "Action": "logs:PutLogEvents",
+      "Resource": "arn:aws:logs:ap-northeast-1:0123456789:log-group:session-manager:log-stream:document",
+      "Principal": "ssm.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": [
+            "0123456789"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_0bb5d04f",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:logs:ap-northeast-1:0123456789:log-group:session-manager:log-stream:data123",
+      "Principal": "ssm.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": [
+            "0123456789"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_50b46691",
+      "Effect": "deny",
+      "Action": "logs:GetLogEvents",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::123456789012:role/service-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    }
+  ]
+}

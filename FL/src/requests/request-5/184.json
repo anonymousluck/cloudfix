@@ -1,0 +1,81 @@
+{
+  "Requests": [
+    {
+      "id": "allow_3bb313fc",
+      "Effect": "allow",
+      "Action": [
+        "kms:DescribeKey",
+        "kms:CreateGrant"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::xxxxxxxxxxxx:root",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "xxxxxxxxxxxx",
+          "kms:ViaService": "sns.us-east-1.amazonaws.com"
+        }
+      }
+    },
+    {
+      "id": "allow_c4ec3ce0",
+      "Effect": "allow",
+      "Action": [
+        "kms:UpdateKeyDescription",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::xxxxxxxxxxxx:root",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "xxxxxxxxxxxx",
+          "kms:ViaService": "sns.us-east-1.amazonaws.com"
+        }
+      }
+    },
+    {
+      "id": "deny_923caa48",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "xxxxxxxxxxxx",
+          "kms:ViaService": "sns.us-east-1.amazonaws.com"
+        }
+      }
+    },
+    {
+      "id": "deny_541e25fb",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Principal": "arn:aws:iam::xxxxxxxxxxxx:root",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "xxxxxxxxxxxx",
+          "kms:ViaService": "sns.us-east-1.amazonaws.com"
+        }
+      }
+    },
+    {
+      "id": "allow_bc75a4bc",
+      "Effect": "allow",
+      "Action": [
+        "kms:RetireGrant",
+        "kms:ListAliases"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "xxxxxxxxxxxx",
+          "kms:ViaService": "sns.us-east-1.amazonaws.com"
+        }
+      }
+    }
+  ]
+}

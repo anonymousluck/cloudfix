@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_54ae75a6",
+      "Effect": "allow",
+      "Action": [
+        "secretsmanager:CreateSecret",
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:us-east-1:388429313303:secret:xyz_secret-EdyEFK"
+    },
+    {
+      "id": "deny_d36929c2",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:secretsmanager:us-east-1:388429313303:secret:xyz_secret-EdyEFK"
+    },
+    {
+      "id": "deny_1241e2a4",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:secretsmanager:us-east-1:388429313303:secret:xyz_secret-EdyEFK"
+    },
+    {
+      "id": "allow_3439622f",
+      "Effect": "allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:us-east-1:388429313303:secret:xyz_secret-EdyEFK"
+    },
+    {
+      "id": "allow_4786d65e",
+      "Effect": "allow",
+      "Action": "secretsmanager:CreateSecret",
+      "Resource": "arn:aws:secretsmanager:us-east-1:388429313303:secret:xyz_secret-EdyEFK"
+    }
+  ]
+}

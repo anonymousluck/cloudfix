@@ -1,0 +1,110 @@
+Hello, I am trying to export cloud watch logs to s3 in another account(
+Account A
+) by 
+boto3's create_export_task
+ with lambda in 
+AccountB
+
+but got access denied message in lambda log.
+
+
+"errorMessage": "An error occurred (AccessDeniedException) when calling the CreateExportTask operation: Please ensure that the export role and the destination bucket have all the required permissions as per the documentation.",
+"errorType": "AccessDeniedException",
+
+
+
+Other points I confiremd are below:
+
+
+
+
+s3 access log in AccouA said operation PutObject was access denied ,although when I rewrite lambda to use 
+put_object
+ it was successfull.
+
+
+I can export logs to Account A's bucket from accountB's console as admin role.
+
+
+
+
+I am wondering which permissions I have to modify.
+
+
+
+
+Role
+
+
+Lambda has permissions below.
+
+
+
+
+
+
+bucket policy
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::AccountB:role/ExportLogToS3Role"
+            },
+            "Action": "s3:DeleteObject",
+            "Resource": "arn:aws:s3:::DestinationBucket/*"
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "logs.ap-northeast-1.amazonaws.com"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": "arn:aws:s3:::DestinationBucket",
+            "Condition": {
+                "ArnLike": {
+                    "aws:SourceArn": "arn:aws:logs:ap-northeast-1:AccountB:log-group:*"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "logs.ap-northeast-1.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::DestinationBucket/*",
+           "Condition": {
+                "ArnLike": {
+                    "aws:SourceArn": "arn:aws:logs:ap-northeast-1:AccountB:log-group:*"
+                }
+            }
+            
+        }
+    },
+    {
+        "Effect": "Allow",
+        "Principal": {
+            "AWS": [
+                "arn:aws:iam::AccountB:role/ExportLogToS3Role"
+            ]
+        },
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::DestinationBucket/*"
+    },
+    {
+        "Effect": "Allow",
+        "Principal": {
+            "AWS": [
+                "arn:aws:iam::AccountB:role/ExportLogToS3Role"
+            ]
+        },
+        "Action": "s3:PutObject",
+        "Resource": "arn:aws:s3:::DestinationBucket/*",
+      
+    }
+]
+}

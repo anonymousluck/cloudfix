@@ -1,0 +1,30 @@
+Hi!
+I'm currently running a 
+secondary process on gamelift instances
+ to help with server log gathering. This process needs some AWS permissions, which it acquires by doing an 
+assumeRole on the fleet's InstanceRole.
+
+This instanceRole is setup with the following trust policy :
+
+
+
+
+
+
+I haven't been monitoring that logging process very closely, and recently discovered that it wasn't able to assume this role anymore.
+I've been trying to specify the gamelift region, to no avail. The only way I was able to re-assume the role from the instance was to get the instance's role through get-caller-identity (after ssm-ing on the instance), and adding this auto-generated role to the trust policy by hand.
+
+
+Here's the error that happens when attempting to assume-role from the gamelift fleet:
+
+
+sh-4.2$ aws sts assume-role --role-arn=arn:aws:iam::<accountId1>:role/the-role-i-want-to-assume --role-session-name=testassumesession
+An error occurred (AccessDenied) when calling the AssumeRole operation: User: arn:aws:sts::<accountId2>:assumed-role/DevAppStack-58eee978-59ae-42a0-9a8-AppInstanceRole-EDM3O84AF9S0/i-09dbb0c0bde30b348 is not authorized to perform: sts:AssumeRole on resource: arn:aws:iam::<accountId1>:role/the-role-i-want-to-assume
+
+
+
+I'm kind of in the dark about what the default "assumed-role" we see here really is: I presume it's a default AWS account that represents gamelift, but I'm not too sure about it ?
+
+
+Any ideas why the assumeRole doesn't work anymore, or ideas of things to try out ?
+Thanks !

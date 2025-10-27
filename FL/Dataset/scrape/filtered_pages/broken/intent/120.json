@@ -1,0 +1,145 @@
+Details;
+I am using adminetluser while connecting to the cluster. adminetluser is a super user and also the owner of the resultant table and the view that I am invoking refresh on.
+
+
+I am using redsiftetluser as the iam user for the task.
+The task is broadcasting kinesis stream data into redshift realtime. kinesis stream is connected to mongodb DB using triggers and connected through eventbridge. External schema is created in redshift from kinesis using redshiftkinesisrole which is an iam role used for the tasks.
+
+
+redsiftetluser has the following permissions:
+
+
+
+
+AdministratorAccess
+
+
+AmazonEventBridgeFullAccess
+
+
+AmazonRedshiftAllCommandsFullAccess
+
+
+AmazonRedshiftDataFullAccess
+
+
+AmazonRedshiftFullAccess
+
+
+AmazonRedshiftQueryEditorV2FullAccess
+
+
+and an inline policy which looks like below
+
+
+
+
+
+
+
+redshiftkinesisrole has the following policies attached;
+
+
+
+
+AmazonEventBridgeFullAccess
+
+
+AmazonRedshiftDataFullAccess
+
+
+An inline policy which looks like below
+
+
+
+
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "UseTemporaryCredentialsForAllServerlessWorkgroups",
+"Effect": "Allow",
+"Action": "redshift-serverless:GetCredentials",
+"Resource": [
+"arn:aws:redshift-serverless:
+:
+:workgroup/*"
+]
+}
+]
+}
+
+
+
+
+and anothe inline policy for kinesis access which looks like this
+
+
+
+
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "ReadStream",
+"Effect": "Allow",
+"Action": [
+"kinesis:DescribeStreamSummary",
+"kinesis:GetShardIterator",
+"kinesis:GetRecords",
+"kinesis:DescribeStream"
+],
+"Resource": "
+"
+},
+{
+"Sid": "ListStream",
+"Effect": "Allow",
+"Action": [
+"kinesis:ListStreams",
+"kinesis:ListShards"
+],
+"Resource": "
+"
+}
+]
+}
+
+
+
+
+and finally the trust relationships for the redshiftkinesisrole looks like this
+
+
+
+
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "S1",
+"Effect": "Allow",
+"Principal": {
+"Service": "events.amazonaws.com"
+},
+"Action": "sts:AssumeRole"
+},
+{
+"Sid": "S2",
+"Effect": "Allow",
+"Principal": {
+"AWS": "arn:aws:iam::{account_id}:user/redshiftetl"
+},
+"Action": "sts:AssumeRole"
+}
+]
+}
+
+
+So with this setup, I am able to refresh the views and update the table realtime when I run the query manually in redshift but it fails when scheduled. And the error message is "only owner of the view can invoke refresh".
+
+
+I am stuck here from days and don't know what to do. Tried hundred things but nothing seems to work? Are the environments variables different for redhsift schedule queries and redhsift console? DO I need more permissions or a different setup?
+
+
+Please help.

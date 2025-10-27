@@ -1,0 +1,49 @@
+{
+  "Requests": [
+    {
+      "id": "deny_465a02f8",
+      "Effect": "deny",
+      "Action": "kinesis:ListShards",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_9f33a020",
+      "Effect": "allow",
+      "Action": [
+        "kinesis:PutRecord",
+        "kinesis:GetShardIterator"
+      ],
+      "Resource": [
+        "arn:aws:kinesis:ap-south-1:4***********:stream/**file1",
+        "arn:aws:kinesis:ap-south-1:4***********:stream/**document"
+      ]
+    },
+    {
+      "id": "allow_24125289",
+      "Effect": "allow",
+      "Action": [
+        "kinesis:GetRecords",
+        "kinesis:PutRecord"
+      ],
+      "Resource": [
+        "arn:aws:kinesis:ap-south-1:4***********:stream/**file1",
+        "arn:aws:kinesis:ap-south-1:4***********:stream/**data123"
+      ]
+    },
+    {
+      "id": "deny_a717f21c",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:kinesis:ap-south-1:4***********:stream/**data123"
+    },
+    {
+      "id": "allow_057a20b1",
+      "Effect": "allow",
+      "Action": "kinesis:PutRecords",
+      "Resource": [
+        "arn:aws:kinesis:ap-south-1:4***********:stream/**document",
+        "arn:aws:kinesis:ap-south-1:4***********:stream/**data123"
+      ]
+    }
+  ]
+}

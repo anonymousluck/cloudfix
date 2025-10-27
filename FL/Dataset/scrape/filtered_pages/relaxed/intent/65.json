@@ -1,0 +1,117 @@
+Hi,
+I need to keep minimum privilege access to Amazon Simple Systems Management at the pod level in Amazon Elastic Kubernetes Service (Amazon EKS) from my application with AWS Identity and Access Management (IAM) roles for service accounts (IRSA).
+
+
+** IAM policy and role**
+
+
+
+
+
+
+Trusted entities
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::234695550184:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/XYZ652C28241B8E83EA131BAB6C7F389"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "oidc.eks.us-west-2.amazonaws.com/id/XYZ652C28241B8E83EA131BAB6C7F389:aud": "sts.amazonaws.com",
+                    "oidc.eks.us-west-2.amazonaws.com/id/XYZ652C28241B8E83EA131BAB6C7F389:sub": "system:serviceaccount:default:test-service-account"
+                }
+            }
+        }
+    ]
+}
+
+
+
+Also, I have annotated the role to cluster's service account. I have verified that annotation using following command.
+
+
+kubectl describe serviceaccount test-service-account -n default
+
+
+I have got the following result,
+
+
+Name:                        test-service-account
+Namespace:               default
+Labels:                       app.kubernetes.io/managed-by=eksctl
+Annotations:             eks.amazonaws.com/role-arn: arn:aws:iam::123612345184:role/test-role
+Image pull secrets:   <none>
+Mountable secrets:   <none>
+Tokens:                      <none>
+Events:                       <none>
+
+
+
+Configure a Pod to use a service account
+
+
+We used the below yaml to configurer
+
+
+cat >my-deployment-11.yaml <<EOF
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "test-cronjob-1"
+spec:
+  schedule: "*/3 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: test-service-account
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: eks.amazonaws.com/nodegroup
+                        operator: In
+                        values:
+                          - jrm-node-group-1       
+          imagePullSecrets:
+            - name: jrm-secret-name
+          containers:
+            - name: snapshotter
+              image: 436692850155.dkr.ecr.us-west-2.amazonaws.com/jrm_snapshotter:qa_testdb07
+              imagePullPolicy: Always
+          restartPolicy: OnFailure          
+EOF
+
+
+
+using SDK and C# to get assumeRoleResponse
+
+
+ var assumeRoleRequest = new AssumeRoleRequest
+        {
+            RoleArn = "arn:aws:iam::245692850184:role/my-role",
+            RoleSessionName = "my-role",
+            DurationSeconds = 900, // Adjust the duration as needed
+        };
+
+        var stsClient = new Amazon.SecurityToken.AmazonSecurityTokenServiceClient(new AmazonSecurityTokenServiceConfig
+        {
+            RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(region)
+        });
+
+        var assumeRoleResponse = stsClient.AssumeRoleAsync(assumeRoleRequest).GetAwaiter().GetResult();
+
+
+
+when cronjob ran our application, we got the below exception
+
+
+
+Thanks

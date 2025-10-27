@@ -1,0 +1,22 @@
+Tl;dr: How long does it take for IAM Identity Management user attribute changes to propagate?
+
+
+Hi there!
+
+
+I set up a policy so that users, whose Division attribute matches a Tag "Division" on an instance, shall be able to start/stop it. This is working, but I noticed that my test user still can manage the instance even after I changed the Division attribute, and the policy condition should fail. Does anyone know why there is a delay, how long that can be, and what I can do to get the "real" value, not what it has been before?
+
+
+I am asking because all the docs I found said that such changes were more or less instantaneous. But I have spent quite some time on this, debugging, trying to figure out why my test policy did not work, talking to ChatGPT for hours and trying all the suggestions (some rather good ones actually), wondering what kind of stupid mistake I am doing all the time. I learnt about the IAM Policy Simulator that way, and there it 
+was
+ working. So why not in real life?
+
+
+A problem with the policy simulator is that I cannot pick my test user as that comes from IAM Identity Management, not IAM - the test user shows up as assumed-role/AWSReservedSSO_DevTeamMemberAccess_xxx/testuser", but not in the policy simulator. There I can only select the AWSReservedSSO_DevTeamMemberAccess_xxx role, but that itself does not have a Division. However, the simulator detects that I am comparing "aws:PrincipalTag/Division" and offers to fill the values. When I fill the values as the test user has them set, all is working. And also in reality, unless I change the Dision. Then it takes a while. Even signing out and in again does not seem to help here reliably.
+
+
+Best regards,
+Alex
+
+
+FYI, this is the policy:

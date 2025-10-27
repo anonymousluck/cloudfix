@@ -1,0 +1,35 @@
+I am trying to configure my IAM policy which would allow a user to only view the bucket and place objects, delete and update the folder/files within that bucket, but deny bucket creation. I have already added the following to my IAM policy but it is of no use as it will still allow the user to create a bucket. How to achieve this goal?
+
+
+	"Version": "2012-10-17",
+	"Statement": [
+		,
+                {
+			"Effect": "Deny",
+			"Action": "s3:CreateBucket",
+			"Resource": "*"
+		},
+		{
+			"Effect": "Deny",
+			"Action": "s3:CreateBucket",
+			"NotResource": "arn:aws:s3:::*"
+		},
+		{
+			"Action": [
+				"s3:ListBucket",
+				"s3:GetBucketLocation"
+			],
+			"Effect": "Allow",
+			"Resource": "arn:aws:s3:::my-bucket"
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"s3:GetObject",
+				"s3:PutObject",
+				"s3:DeleteObject"
+			],
+			"Resource": "arn:aws:s3:::my-bucket/*"
+		}
+	]
+}

@@ -1,0 +1,51 @@
+My Batch job fails with the error CannotPullContainerError (failed to copy: httpReadSeeker). I'm using a private VCP and defined all the required Endpoints:
+
+
+
+
+com.amazonaws.eu-central-1.s3
+
+
+com.amazonaws.eu-central-1.ecr.api
+
+
+com.amazonaws.eu-central-1.ecr.dkr
+
+
+com.amazonaws.eu-central-1.logs
+
+
+com.amazonaws.eu-central-1.ecs
+
+
+com.amazonaws.eu-central-1.ecs-agent
+
+
+com.amazonaws.eu-central-1.ecs-telemetry
+
+
+
+
+For the S3 endpoint, the policy is the default one:
+
+
+
+
+
+
+The image is stored in a ECR private repository and exists (the process runs just fine when using Batch with EC2 instead of Fargate).
+
+
+The Computing Env uses the Service role: AWSServiceRoleForBatch
+
+
+The Batch job uses a custom executionRoleArn that has the standard policy AmazonECSTaskExecutionRolePolicy on it.
+
+
+I have been looking in re:Post for similar errors and no solution works for me (when using a private ensure the use of endpoints, be sure that S3 endpoint has access to starport...).
+
+
+Thanks,
+
+
+David

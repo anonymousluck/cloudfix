@@ -1,0 +1,363 @@
+Hello,
+I have a huge issue with setting up my build in a gamelift fleet because I cannot see what is going wrong and do not know how to improve it.
+
+
+My problems can be broken down as followed:
+
+
+
+
+No access to logs, neither by downloading the logs with the download button on the web interface or by creating the url with "get_game_session_log_url" with aws client or on aws lambda. I also cannot ssh into the instance.
+
+
+Independently of the logs I cannot make the connection work between client and server in Unity Netcode. My instance shows status ACTIVE on aws gamelift, but when i try to join in unity with Netcode, with the same Ip adress, port and same setup which worked on the Anywhere fleet I receive this error: " Failed to connect to server"
+
+
+
+
+I really do not know where the issues are because I tried to strictly follow the documentation for aws gamelift and unity netcode and it works on an ANYWHERE fleet but not on the ec2 managed fleet. I was hoping that anyone can help me to identify a mistake I made or similar or at least help to receive the debug logs. I also tried to solve the problem with AI for a long time but nothing has helped so far. It told me to set the port settings as described in the coming section and other minor things but nothing has helped me.
+
+
+Reproducibility:
+
+Basically I did the following: I tested my build with an Anywhere fleet to see if my Unity Netcode protocols work. Everything was fine, so I made a linux (x86_64) build, did "chmod + serverMultiplayer.x86_64" and zipped everything like this: " zip -r serverMultiplayer.zip serverMultiplayer.x86_64 serverMultiplayer_Data UnityPlayer.so libdecor-0.so.0 libdecor-cairo.so". I uploaded the zip to S3 and the created a build in gamelift which I use in my fleet. My fleet uses c7a.medium instances with fleet type spot. Furthermore, EC2 port settings are set as: 7776 - 7778 TCP protocol and 0.0.0.0/0 IP address range. For both build and fleet I basically use the same IAM role which has FULL S3 and gamelift permissions and the following trusted entity :
+
+
+
+
+The fleet set up successfully finishes with the events: FLEET_STATE_ACTIVE and FLEET_SCALING_EVENT and shows status Active.
+My gamelift launch script is attached to a gameobject in unity and I use the same scene to enter the multiplayer session from the single player. The idea is to load a multiplayer scene additively for both server and client. All of this worked fine with an Anywhere fleet.
+My script for initializing gamelift is attached in the following and I launch an instance in my fleet with a lambda function where I call create_game_session. This all worked fine and my game session is created and shows the status ACTIVE.
+
+
+using UnityEngine;
+using System.Collections.Generic;
+using Aws.GameLift.Server;
+using Aws.GameLift.Server.Model;
+using System;
+using Unity.Netcode;
+using Aws.GameLift;
+using Unity.Netcode.Transports.UTP;
+
+using System.Security.Cryptography;
+
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
+using System.IO;
+#pragma warning disable CS4014
+
+public class ServerStartServer : MonoBehaviour
+{
+    [SerializeField] UnityTransport transport;
+    [SerializeField] private ushort defaultPort = 7777; // you must somehow make a decision function to choose the port. This should be based on a daetabase...
+    [SerializeField] string sceneNameMultiplayerScene = "AVAXRMultiplayer";
+    [SerializeField] UnityMainThreadDispatcher unityMainThreadDispatcher;
+    [SerializeField] Logger logger;
+    private bool _isGameLiftInitialized = false;
+ 
+    private static readonly RNGCryptoServiceProvider _rng = new RNGCryptoServiceProvider();
+    private const string PREFIX = "PID";
+    private DynamoDBMultiplayer dynamoDbService;
+    private string mutliplayerSessionID = "";
+    private Aws.GameLift.Server.Model.GameSession gameSessionNew;
+    private void Start()
+    {
+
+        // Initialize GameLift SDK
+        // var gameLiftData = GetGameLiftDataFromCLI();
+        string sdkVersion = GameLiftServerAPI.GetSdkVersion().Result; // 5.2.0
+        UnityEngine.Debug.Log("GameLift SDK version: " + sdkVersion);
+        UnityEngine.Debug.Log("try entering as: " + Application.platform.ToString());
+        if (Application.platform == RuntimePlatform.WindowsEditor) { return; }
+#if UNITY_SERVER
+        UnityEngine.Debug.Log("server start server begins.");
+            InitializeGameLiftServer();
+        
+#endif     
+        
+    }
+
+
+    public static string GenerateProcessID()
+    {
+        byte[] randomBytes = new byte[6]; // 6 bytes = 12 hex chars
+        _rng.GetBytes(randomBytes);
+
+        // Convert to base64 and remove special chars
+        string base64 = Convert.ToBase64String(randomBytes)
+            .Replace("+", "")
+            .Replace("/", "")
+            .Replace("=", "");
+
+        // Take first 8 chars and format
+        return $"{PREFIX}{base64.Substring(0, 4)}";
+    }
+    private void InitializeGameLiftServer()
+    {
+        logger.SetBucketKeyDir("TEST");
+        // Initialize GameLift SDK
+        GenericOutcome initOutcome = null;
+        if (Application.platform == RuntimePlatform.WindowsServer)
+        {
+            UnityEngine.Debug.Log("Setup as windows server");
+            string processID = GenerateProcessID() ;
+            string fleetID = "arn:aws:gamelift:eu-central-1:*****************:fleet/**********************";
+            string hostId = "testServerBuild1";
+            string authToken = "************************";
+            string webSocketUrl = "wss://eu-central-1.api.amazongamelift.com";
+            ServerParameters serverParameters = new ServerParameters(webSocketUrl, processID, hostId, fleetID, authToken);
+            initOutcome = GameLiftServerAPI.InitSDK(serverParameters);
+        }
+        else
+        {
+
+            UnityEngine.Debug.Log("Setup as linux server");
+            ServerParameters serverParameters = new ServerParameters(null, null, null, null, null);
+            initOutcome = GameLiftServerAPI.InitSDK(serverParameters);
+        }
+
+        if (initOutcome.Success)
+        {
+            _isGameLiftInitialized = true;
+            UnityEngine.Debug.Log("GameLift SDK initialized successfully");
+            /// you must somehow find available ports in a database!!!
+            // Set up process parameters
+            List<string> logPaths = new List<string>();
+            logPaths.Add("C:\\game\\serverOut.txt");
+            ProcessParameters processParams = new ProcessParameters(
+                OnStartGameSession,
+                OnUpdateGameSession,
+                OnProcessTerminate,
+                OnHealthCheck,
+                defaultPort,
+                new LogParameters(logPaths)
+                
+            );
+
+            Console.SetOut(new StreamWriter("serverOut.txt"));
+            Console.SetError(new StreamWriter("serverErr.txt"));
+
+            // Notify GameLift that the process is ready
+            var readyOutcome = GameLiftServerAPI.ProcessReady(processParams);
+            if (readyOutcome.Success)
+            {
+                
+                UnityEngine.Debug.Log("ProcessReady succeeded. ");
+            }
+            else
+            {
+                UnityEngine.Debug.LogError("ProcessReady failed: " + readyOutcome.Error.ToString());
+            }
+        }
+        else
+        {
+            UnityEngine.Debug.LogError("GameLift SDK initialization failed: " + initOutcome.Error.ToString());
+
+        }
+    }
+
+    public void EnterSession()
+    {
+        if (LaunchNetcode(gameSessionNew))
+        {
+            UnityEngine.Debug.Log("Begin switching scenes");
+            NetworkManager.Singleton.SceneManager.OnSceneEvent += HandleSceneEvent;
+
+            NetworkManager.Singleton.SceneManager.LoadScene(sceneNameMultiplayerScene, LoadSceneMode.Additive);
+        }
+        else
+        {
+            UnityEngine.Debug.LogError("Failed to switch scenes or to launch netcode");
+        }
+
+    }
+
+
+    void HandleSceneEvent(SceneEvent scene)
+    {
+
+        UnityEngine.Debug.Log("Server loaded scene and proceeds to synchronize session with dynamo");
+      //  SynchronizeSessionWithDynamo(gameSessionNew);
+        NetworkManager.Singleton.SceneManager.OnSceneEvent -= HandleSceneEvent;
+
+    }
+
+    private bool LaunchNetcode(Aws.GameLift.Server.Model.GameSession gameSession)
+    {
+
+
+
+        int port = gameSession.Port > 0 ? gameSession.Port : defaultPort;
+
+
+        UnityEngine.Debug.Log($"Server started on {gameSession.IpAddress.ToString()}:{port}"); // on anywhere successful
+        string ipAddress = gameSession.IpAddress.ToString();
+        if (Application.platform == RuntimePlatform.WindowsServer) // only testing
+        {
+            ipAddress = "127.0.0.1";
+        }
+        
+        NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(ipAddress, (ushort)defaultPort);
+        UnityEngine.Debug.Log("transport setup successful"); // on anywhere successful
+        if (NetworkManager.Singleton.StartServer()) // is called on anywhere
+        {
+
+            mutliplayerSessionID = gameSession.GameSessionId;
+
+            
+            
+            UnityEngine.Debug.Log("Network server started successfully");
+            return true;
+        }
+        else
+        {
+            UnityEngine.Debug.LogError("Failed to start network server. Check if the port is already in use or if the network settings are correct.");
+            return false;
+        }
+        
+    }
+
+
+
+    private string GetValueFromProperties(Aws.GameLift.Server.Model.GameSession gameSession, string key)
+    {
+        if (gameSession.GameProperties.TryGetValue(key, out string value))
+        {
+            return value;
+            // Use 'group' here
+        }
+        else
+        {
+            return "";
+            // Handle the case where "group" is not found
+        }
+
+    }
+
+    private void OnStartGameSession(Aws.GameLift.Server.Model.GameSession gameSession)
+    {
+        UnityEngine.Debug.Log($"GameSession started: {gameSession.GameSessionId}");
+        try
+        {
+            gameSessionNew = gameSession;
+
+
+
+            unityMainThreadDispatcher.Enqueue(() =>
+            {
+                EnterSession();
+            });
+
+            
+            var activateOutcome = GameLiftServerAPI.ActivateGameSession();
+            UnityEngine.Debug.Log("GameSession activated successfully");
+            if (!activateOutcome.Success)
+            {
+                UnityEngine.Debug.LogError($"Failed to activate session: {activateOutcome.Error}");
+                StopGameLiftGameSession();
+            }
+
+        }
+        catch (Exception e)
+        {
+            UnityEngine.Debug.LogError($"Error starting game session: {e.Message}");
+        }
+    }
+
+
+    public async Task StopGameLiftGameSession()
+    {
+        await dynamoDbService.DeleteItemAsync(mutliplayerSessionID);
+        // Step 1: Shut down networking
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
+        {
+            NetworkManager.Singleton.Shutdown();
+            
+            UnityEngine.Debug.Log("Network shutdown complete.");
+        }
+
+        
+
+        // Step 2: Notify GameLift (if initialized)
+        if (_isGameLiftInitialized)
+        {
+            try
+            {
+                // Optionally terminate player sessions first
+
+
+                // Notify GameLift the process is ending
+                var processEndOutcome = GameLiftServerAPI.ProcessEnding();
+                if (processEndOutcome.Success)
+                {
+                    UnityEngine.Debug.Log("GameLift session terminated gracefully.");
+                    
+                }
+                else
+                {
+                    UnityEngine.Debug.LogError($"Failed to end process: {processEndOutcome.Error}");
+                }
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogError($"Error stopping GameLift session: {e.Message}");
+            }
+            finally
+            {
+                _isGameLiftInitialized = false;
+            }
+        }
+    }
+    private void OnProcessTerminate()
+    {
+        UnityEngine.Debug.Log("Process termination requested");
+        dynamoDbService.DeleteItemAsync(mutliplayerSessionID);
+        // Clean up and shut down
+        if (NetworkManager.Singleton.IsListening)
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
+
+        // Notify GameLift the process is ending
+        if (_isGameLiftInitialized)
+        {
+            GameLiftServerAPI.ProcessEnding();
+            GameLiftServerAPI.Destroy();
+
+
+        }
+
+    }
+
+    private bool OnHealthCheck()
+    {
+        // Implement custom health checks here
+        return true;
+    }
+
+    private void OnUpdateGameSession(Aws.GameLift.Server.Model.UpdateGameSession updateGameSession)
+    {
+        UnityEngine.Debug.Log("Game session updated: " + updateGameSession.GameSession.GameSessionId);
+        // Handle match backfill or other session updates
+    }
+    private void OnApplicationQuit()
+    {
+        if (_isGameLiftInitialized)
+        {
+            dynamoDbService.DeleteItemAsync(mutliplayerSessionID);
+            GameLiftServerAPI.ProcessEnding();
+            GameLiftServerAPI.Destroy();
+        }
+    }
+
+}
+
+public class GameLiftData
+{
+    public string FleetId { get; set; }
+    public string ComputeName { get; set; }
+    public string AuthToken { get; set; }
+    public string WebSocketUrl { get; set; }
+    public string ProcessId { get; set; }
+    public string HostId { get; set; }
+}

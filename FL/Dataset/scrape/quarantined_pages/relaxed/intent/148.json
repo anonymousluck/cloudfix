@@ -1,0 +1,23 @@
+My amplify app is failing to build due to inability to assume an IAM role:
+
+
+2024-05-24T13:55:21.182Z [ERROR]: !!! Unable to assume specified IAM Role. Please ensure the selected IAM Role has sufficient permissions and the Trust Relationship is configured correctly.
+2024-05-24T13:55:21.260Z [INFO]: # Starting environment caching...
+2024-05-24T13:55:21.261Z [INFO]: # Environment caching completed
+
+
+
+I have already seen other posts on this, including a stack overflow post 
+https://stackoverflow.com/questions/62715046/unable-to-assume-specified-iam-role-when-deploying-with-aws-amplify-using-github
+.
+
+
+But I already tried updating my trust policy for the role configured to use all the possible amplify service endpoints:
+
+
+
+
+
+
+From 
+here

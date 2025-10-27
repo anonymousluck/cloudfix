@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "allow_34cc1cd2",
+      "Effect": "allow",
+      "Action": "s3:ListBucketMultipartUploads",
+      "Resource": "arn:aws:s3:::<bucket_name>"
+    },
+    {
+      "id": "deny_3e90b6d5",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::<bucket_name>"
+    },
+    {
+      "id": "deny_a5da4018",
+      "Effect": "deny",
+      "Action": "s3:ListBucketMultipartUploads",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    }
+  ]
+}

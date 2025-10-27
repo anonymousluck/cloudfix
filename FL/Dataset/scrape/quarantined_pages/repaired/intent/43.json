@@ -1,0 +1,17 @@
+Hello,
+
+
+I have a Lambda function that is called asynchronously. With this lambda function is associated a role with a trust relationship policy that allows only this lambda function to assume it, like this:
+
+
+
+
+
+
+It's working well.
+
+
+Now, to manage the lambda failures, I want to create an OnFailure destination. But I can't. The API calls PutFunctionEventInvokeConfig or UpdateFunctionEventInvokeConfig fail at the validation of the Trust Relationship policy, stating that I need to add the Lambda service as a Trusted Entities.
+
+
+Does someone know why a destination configuration needs the role to be accessible by the entire Lambda service and if there are still ways to limit what can access this role please?

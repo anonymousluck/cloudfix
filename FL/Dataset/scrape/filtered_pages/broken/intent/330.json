@@ -1,0 +1,21 @@
+Hello,
+
+
+I used to have an ElasticSearchService instance (t2.micro.search) set up to enable a search functionality for an app hosted on Heroku. It was working fine, but recently timeout errors became frequent. I signed into the AWS console to see if there is any information. First there was a message that the instance should be upgraded. I tried to upgrade but the only option I could see was t2.micro.search (or other previous generation instances). The second message was to update the service software, so I tried that. After 2 days the update is still not completed. It is stuck at one of the steps and doesn't move forward.
+
+
+In the meantime, I tried to set up a new instance (t3.small.search) using the same settings as the previous one. However, when I tried to build the index from Heroku, I got this error:
+TransportError(403, '{"Message":"User: anonymous is not authorized to perform: es:ESHttpPost with an explicit deny in a resource-based policy"}'
+
+
+I realized my access policy has "Deny" instead of "Allow" I had before:
+
+
+
+
+
+
+I tried to change it to "Allow" but the console would not allow me to save the settings ("Apply a restrictive access policy to your domain").
+
+
+Does somebody know how to set up the access policy so I can continue to use AWS OpenSearch for a Heroku app?

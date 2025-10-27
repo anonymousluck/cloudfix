@@ -1,0 +1,11 @@
+I'm stuck understanding how I can write an IAM policy that allows a cognito identity with assumed credentials to publish MQTT messages to IoT things.  I would like to have an attribute companyId stored on my cognito identity (that works) but also tag the IoT thing with this company Id so that I can enforce access control.  The IAM conditional would match the user's companyId to the IoT thing's resource tag: companyId.
+
+
+My understanding is that currently i cannot tag IoT things.  So, how are other people enforcing policies like this?  It appears IoT policies do not have conditionals either.
+
+
+Use case:
+User A of company 1 can MQTT publish from mobile app to all IoT Things associated with company 1.  User A cannot MQTT publish to IoT things of other companies.
+
+
+I can do this with an IAM policy but can't figure out how to do that for IoT Thing , specifically MQTT publishing

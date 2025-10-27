@@ -1,0 +1,12 @@
+I have an AWS S3 bucket configured as a website endpoint that is sat behind a CloudFront distribution. I can access the root page just fine. When I attempt to access other pages on my website (e.g. 
+/about
+ or 
+/contact
+) CloudFront returns a 403. My S3 bucket access control policy is below:
+
+
+
+
+
+
+Please let me know what other information I need to provide.

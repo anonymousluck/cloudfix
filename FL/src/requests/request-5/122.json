@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "deny_35b11a68",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "deny_533cc2ea",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::name_of_bucket"
+    },
+    {
+      "id": "allow_649a9a0e",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::name_of_bucket"
+    }
+  ]
+}

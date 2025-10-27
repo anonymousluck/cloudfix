@@ -1,0 +1,13 @@
+I have a role defined which is cross account assumed by a central technical user
+
+
+Account A - techuser
+
+
+Account B - role2assume
+
+
+In the trust policy of the role2assume I limit the "sts:AssumeRole" to the user from Account A in conjunction with an external ID. Now I want to further limit the assumption to a specific IP CIDR within our corporate network (only access via VPN).
+Following Policy returns with the error "No private IP CIDR allowed", where as 
+https://aws.amazon.com/de/blogs/security/establishing-a-data-perimeter-on-aws/
+ states that SourceIP can contain a corporate Network range.

@@ -1,0 +1,174 @@
+Hello, I'm trying to import a Windows image to EC2 using the 
+ImportImage
+ feature, but I keep encountering the following error:
+
+
+InvalidParameter: The service role admin provided does not exist or does not have sufficient permissions.
+
+
+
+Context:
+
+
+I’ve created the required IAM role for VM Import/Export, but the error persists despite following the standard documentation. Here are the details:
+
+
+
+
+
+
+IAM Role Policy for 
+vmimport
+ Role
+ (as per AWS documentation):
+
+
+
+
+
+
+
+
+
+Trust Relationship
+ for 
+vmimport
+:
+
+
+{
+
+
+  
+"Version"
+:
+ 
+"2012-10-17"
+,
+
+
+  
+"Statement"
+:
+ 
+[
+
+
+    
+{
+
+
+      
+"Effect"
+:
+ 
+"Allow"
+,
+
+
+      
+"Principal"
+:
+ 
+{
+
+
+        
+"Service"
+:
+ 
+"ec2.amazonaws.com"
+
+
+      
+}
+,
+
+
+      
+"Action"
+:
+ 
+"sts:AssumeRole"
+
+
+    
+}
+
+
+  
+]
+
+
+}
+
+
+
+
+
+
+Policies attached to the user account:
+
+
+
+
+AdministratorAccess
+
+
+AmazonEC2FullAccess
+
+
+AmazonS3FullAccess
+
+
+AWSImportExportFullAccess
+
+
+VMImportExportRoleForAWSConnector
+
+
+
+
+
+
+
+
+Steps I’ve Taken:
+
+
+
+
+I ensured that the 
+vmimport
+ role is correctly created and has the necessary policies (
+vmimport
+, S3 permissions, EC2 permissions).
+
+
+Double-checked that the trust relationship allows EC2 to assume the role.
+
+
+Verified the bucket permissions and ensured the region aligns with EC2 and S3.
+
+
+
+
+Despite all this, the error persists. It seems related to role or permission configuration, but I can't pinpoint the issue.
+
+
+Questions:
+
+
+
+
+Is there anything specific I’m missing or doing wrong in configuring the 
+vmimport
+ role or the permissions?
+
+
+Are there any additional steps I need to take to resolve this error?
+
+
+
+
+Any guidance would be greatly appreciated. Thanks in advance!

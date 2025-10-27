@@ -1,0 +1,58 @@
+The below works, but AWS console complains.
+
+Overly permissive trust policy exists in your trust relationships
+Broad access: Principals that include a wildcard (*, ?) can be overly permissive.
+
+
+The reason the principalARN is not in the AWS Principal section but in the condition is because of the self trust. See, 
+https://aws.amazon.com/blogs/security/announcing-an-update-to-iam-role-trust-policy-behavior/
+. I am creating the Role and attaching the trust policy via cloud formation and it won't let me add it's own ARN in Principal AWS section even before it is created.
+
+
+
+
+
+
+So I am trying to figure out a way without wildcard.
+
+
+Using root or account in the AWS principal instead  as below is not working. That is, the access is denied for that particular principal arn
+
+
+"Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::111122223333:root"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+    "ArnEquals": {
+      "aws:PrincipalArn": "arn:aws:iam::111122223333:role/ExampleCorpRole"
+    }
+  }
+    }
+  ]
+}```
+
+
+Other solution that also didn't work. The access is denied for that particular principal arn.
+
+```{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Deny",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {
+                "ArnNotEquals": {
+                    "aws:PrincipalArn": "arn:aws:iam::<ACCOUNT_ID>:role/RoleName"
+                }
+            }
+        }
+    ]
+}```

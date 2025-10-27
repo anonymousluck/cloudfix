@@ -1,0 +1,161 @@
+Hello,
+
+
+When the following three recurring messages appear in MediaLive > Channel > Alerts, what should I investigate?
+
+
+
+
+MPEGTS muxer for mediaID [1] unable to close output or stream.
+
+
+OutputDataBackground failed to send file for URL after [3] attempts, error [
+
+
+MPEGTS muxer for mediaID [1] unable to open output or stream.
+
+
+
+
+
+
+For reference, the settings are as follows:
+
+
+[Input]: RTMP push
+
+
+[Channel Details]:
+
+
+
+
+IAM role:  I have created an IAM role, referring to the following link: 
+https://repost.aws/questions/QUgBBsHg0XRMCPOP__pec4Hw/failed-to-retrieve-mediapackage-credentials-for-channel-id
+
+In particular, for MediaPackage, I have allowed all actions by using a wildcard (*) for permissions:
+
+
+
+
+
+
+
+
+
+This configuration grants full permissions for all actions within MediaPackage and applies to all resources.
+
+
+
+
+Pipeline: Single pipeline
+
+
+
+
+[Output Groups Detail: 2 HLS Output Groups]
+
+
+Settings for the first HLS Group:
+
+
+
+
+HLS Group Destination A: 
+https://b09fbxxxx.mediapackage.ap-xxxx.amazonaws.com/in/v2/3654c1xxxx/3654c1xxxx/channel
+
+
+Credentials: Used an existing parameter
+
+
+CDN Settings: HLS Webdav
+
+
+
+
+Settings for the second HLS Group:
+
+
+
+
+HLS Group Destination A: s3://****/live2vod/$dt$/HLS/index
+
+
+CDN Settings: HLS Basic Put
+
+
+
+
+The second HLS Group works without any issues, and the content is successfully saved as VOD.
+However, it appears that there is an issue with the first HLS Group, which sends content to MediaPackage.
+When the MediaPackage Channel's HLS endpoint URL is accessed with Safari, it shows a 404 error on a blank screen.
+
+
+Based on the CloudWatch logs from MediaPackage (with some personal information redacted), it reveals the following:
+
+
+
+
+
+
+EgressAccessLogs: It shows a 404 status code.
+
+
+
+
+
+
+IngressAccessLogs: It shows a 401 status code.
+
+
+
+
+
+
+EgressAccessLogs Example:
+
+
+
+
+
+
+{
+    "timestamp": "2023-11-01T07:09:10.537127Z",
+    "clientIp": "xxxx",
+    "processingTime": 0.036,
+**    "statusCode": "404",**
+    "receivedBytes": 437,
+    "sentBytes": 243,
+    "method": "GET",
+    "request": "https://acexxxx.mediapackage.ap-xxxx.amazonaws.com:443/out/v1/xxxx/index.m3u8",
+    "protocol": "HTTP/2.0",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Whale/3.21.192.22 Safari/537.36",
+    "account": "xxxx",
+}
+
+
+
+
+
+IngressAccessLogs Example:
+
+
+
+
+{
+    "timestamp": "2023-11-01T06:59:15.466445Z",
+    "clientIp": "****",
+    "processingTime": 0.009999999999999998,
+**    "statusCode": "401",**
+    "receivedBytes": 285432,
+    "sentBytes": 803,
+    "method": "PUT",
+    "request": "https://b09fbxxxx.mediapackage.ap-xxxx.amazonaws.com:443/in/v2/3654c1xxxx/3654c1xxxx/channel_480p20231101T065833_00006.ts",
+    "protocol": "HTTP/1.1",
+    "userAgent": "AWSElementalMediaLive",
+}
+
+
+
+I sincerely appreciate your help.
+To protect personal information, certain details have been masked with "xxxx"

@@ -1,0 +1,32 @@
+I am encountering a "CredentialsProviderError" in my AWS Lambda function. The Lambda function is designed to interact with Amazon S3.   The primary task of this Lambda function involves fetching a JSON file from a specified S3 bucket and responding with the retrieved data.
+
+
+Despite having an IAM role associated with the function and the appropriate policies attached, the Lambda execution is failing to load credentials from any providers. This operation worked seamlessly when the Lambda function was utilizing AWS SDK v2. However, upon migrating to AWS SDK v3, the Lambda function encounters a "CredentialsProviderError."
+
+
+The Lambda function does not explicitly set AWS SDK credentials, as it is expected to inherit them from the execution role.
+
+
+Execution Role Trust Policy:
+
+
+
+
+
+
+IAM Policy Attached to Execution Role:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "s3-object-lambda:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

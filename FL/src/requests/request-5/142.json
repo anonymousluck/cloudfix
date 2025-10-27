@@ -1,0 +1,65 @@
+{
+  "Requests": [
+    {
+      "id": "deny_509598c5",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    },
+    {
+      "id": "allow_6d308ffc",
+      "Effect": "allow",
+      "Action": "sso:DeleteAccountAssignment",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "deny_2ff64479",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "allow_0cd089e8",
+      "Effect": "allow",
+      "Action": [
+        "sso:DetachManagedPolicyFromPermissionSet",
+        "sso:DeleteAccountAssignment"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_23e6315b",
+      "Effect": "allow",
+      "Action": "sso:DeletePermissionSet",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringNotEquals": {
+          "iam:PermissionsBoundary": "ARN of the PB"
+        }
+      }
+    }
+  ]
+}

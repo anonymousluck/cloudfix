@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_dd51404c",
+      "Effect": "allow",
+      "Action": [
+        "rekognition:CreateFaceLivenessSession",
+        "rekognition:StartFaceLivenessSession"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_31a7e8eb",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_82a38554",
+      "Effect": "allow",
+      "Action": "rekognition:CreateFaceLivenessSession",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_d853888d",
+      "Effect": "allow",
+      "Action": "rekognition:StartFaceLivenessSession",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_f36072e9",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_a694f3e0",
+      "Effect": "deny",
+      "Action": "s3:DeleteBucket",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_b678c617",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteBucketCors",
+        "s3:RestoreObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_ac0194b3",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketWebsite",
+        "s3:DeleteBucketLifecycle"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_b7d12c17",
+      "Effect": "allow",
+      "Action": "s3:DeleteObjectTagging",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "deny_1497d231",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

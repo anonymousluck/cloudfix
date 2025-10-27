@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_3e7a2d23",
+      "Effect": "allow",
+      "Action": [
+        "tag:GetResources",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": "arn:aws:sqs:us-east-1:<account_of_sqs(current_account)>:prisma-que"
+    },
+    {
+      "id": "allow_36a22d33",
+      "Effect": "allow",
+      "Action": "iam:GetRole",
+      "Resource": "arn:aws:sqs:us-east-1:<account_of_sqs(current_account)>:prisma-que"
+    },
+    {
+      "id": "allow_d54a724e",
+      "Effect": "allow",
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:sqs:us-east-1:<account_of_sqs(current_account)>:prisma-que"
+    },
+    {
+      "id": "deny_a7f0541a",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:sqs:us-east-1:<account_of_sqs(current_account)>:prisma-que"
+    },
+    {
+      "id": "deny_93a6e472",
+      "Effect": "deny",
+      "Action": "tag:GetResources",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    }
+  ]
+}

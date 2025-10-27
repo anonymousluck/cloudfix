@@ -1,0 +1,50 @@
+I have setup a lambda using the invokeModel API in Account A but I'm trying to pass Bedrock URIs that live in a different account Account B. I keep getting this error:
+
+
+Your account does not have access to the specified S3 resource. (Service: BedrockRuntime, Status Code: 400, ...) 
+
+
+
+I'm able to getObjects from the lambda code itself but when I use the InvokeModel API is when I get the Error. I have Bucket Key disabled for simplicity, this is the bucket policy:
+
+
+
+
+
+
+This is the lambda execution role:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "crossAccountS3Access",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::account_b_bucket_name",
+                "arn:aws:s3:::account_b_bucket_name/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:InvokeModel"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "DecryptKMSKey",
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+            ],
+            "Resource": "arn:aws:kms:us-east-1:ACCOUNT_B:key/*"
+        }
+    ]
+}

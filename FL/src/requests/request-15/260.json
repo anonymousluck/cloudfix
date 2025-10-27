@@ -1,0 +1,184 @@
+{
+  "Requests": [
+    {
+      "id": "deny_20e5741d",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::denied-bucket-0/file-0.txt",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::339712767340:distribution/EQDQLH88I63IN"
+        }
+      }
+    },
+    {
+      "id": "deny_16ee50fe",
+      "Effect": "deny",
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:s3:::denied-bucket-1/file-1.txt",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::339712767340:distribution/EQDQLH88I63IN"
+        }
+      }
+    },
+    {
+      "id": "allow_072ba6ca",
+      "Effect": "allow",
+      "Action": "kms:ReEncrypt",
+      "Resource": "arn:aws:s3:::cik-front-end/file-33-13.txt",
+      "Principal": "arn:aws:iam::123456789012:role/service-role",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_a43021e4",
+      "Effect": "allow",
+      "Action": "elasticloadbalancing:DescribeLoadBalancers",
+      "Resource": "arn:aws:s3:::cik-front-end/file-22-1.txt",
+      "Principal": "arn:aws:iam::123456789012:role/service-role",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_b3eceaa1",
+      "Effect": "allow",
+      "Action": "es:DescribeElasticsearchDomains",
+      "Resource": "arn:aws:s3:::cik-front-end/file-40-10.txt",
+      "Principal": "arn:aws:iam::123456789012:user/alice",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "allow_557856c3",
+      "Effect": "allow",
+      "Action": "autoscaling:DescribeAutoScalingGroups",
+      "Resource": "arn:aws:s3:::cik-front-end/file-44-7.txt",
+      "Principal": "arn:aws:iam::123456789012:user/alice",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_55b90936",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::cik-front-end-forbidden/file.txt",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::339712767340:distribution/EQDQLH88I63IN"
+        }
+      }
+    },
+    {
+      "id": "allow_0ce6b2fe",
+      "Effect": "allow",
+      "Action": "config:GetComplianceDetailsByConfigRule",
+      "Resource": "arn:aws:s3:::cik-front-end/file-42-2.txt",
+      "Principal": "arn:aws:iam::123456789012:user/alice",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "deny_2c344811",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::different-cik-front-end/file.txt",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::339712767340:distribution/EQDQLH88I63IN"
+        }
+      }
+    },
+    {
+      "id": "allow_e61062f8",
+      "Effect": "allow",
+      "Action": "s3:PutBucketLifecycle",
+      "Resource": "arn:aws:s3:::cik-front-end/file-44-8.txt",
+      "Principal": "arn:aws:iam::123456789012:user/bob",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_580ff5c0",
+      "Effect": "allow",
+      "Action": "autoscaling:DeleteAutoScalingGroup",
+      "Resource": "arn:aws:s3:::cik-front-end/file-22-10.txt",
+      "Principal": "arn:aws:iam::123456789012:user/bob",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "allow_dd214097",
+      "Effect": "allow",
+      "Action": "ec2:StartInstances",
+      "Resource": "arn:aws:s3:::cik-front-end/file-35-11.txt",
+      "Principal": "arn:aws:iam::123456789012:user/alice",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_4da50869",
+      "Effect": "allow",
+      "Action": "iam:AddUserToGroup",
+      "Resource": "arn:aws:s3:::cik-front-end/file-16-19.txt",
+      "Principal": "arn:aws:iam::123456789012:user/alice",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_6c7eafd9",
+      "Effect": "deny",
+      "Action": "s3:PutBucketLifecycle",
+      "Resource": "arn:aws:s3:::completely-different-bucket/file.txt",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::339712767340:distribution/EQDQLH88I63IN"
+        }
+      }
+    },
+    {
+      "id": "deny_a4fb5425",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::denied-bucket-2/file-2.txt",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::339712767340:distribution/EQDQLH88I63IN"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "allow_4c4363dc",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:*:*:988484848483:data123",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_f7731248",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": [
+        "arn:aws:*:*:988484848483:file1",
+        "arn:aws:*:*:988484848483:data123"
+      ],
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    },
+    {
+      "id": "deny_689e6aae",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:*:*:988484848483:file1",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role"
+    },
+    {
+      "id": "deny_7e4bc102",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:*:*:988484848483:document",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    },
+    {
+      "id": "allow_b82642ab",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": [
+        "arn:aws:*:*:988484848483:file1",
+        "arn:aws:*:*:988484848483:document"
+      ],
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_8ef42746",
+      "Effect": "allow",
+      "Action": "secretsmanager:DescribeSecret",
+      "Resource": "arn:aws:secretsmanager:eu-central-1:{mskAccId}:secret:AmazonMSK_eos-datapipeline-ads-all-prod-12345",
+      "Principal": "arn:aws:iam::123456789012:user/bob"
+    },
+    {
+      "id": "deny_0f6f42ef",
+      "Effect": "deny",
+      "Action": "secretsmanager:DescribeSecret",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::123456789012:user/bob"
+    },
+    {
+      "id": "deny_e4b892aa",
+      "Effect": "deny",
+      "Action": "secretsmanager:DescribeSecret",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized"
+    },
+    {
+      "id": "allow_fed8b400",
+      "Effect": "allow",
+      "Action": "secretsmanager:getSecretValue",
+      "Resource": "arn:aws:secretsmanager:eu-central-1:{mskAccId}:secret:AmazonMSK_eos-datapipeline-ads-all-prod-12345",
+      "Principal": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_ef162201",
+      "Effect": "allow",
+      "Action": [
+        "secretsmanager:getSecretValue",
+        "secretsmanager:DescribeSecret"
+      ],
+      "Resource": "arn:aws:secretsmanager:eu-central-1:{mskAccId}:secret:AmazonMSK_eos-datapipeline-ads-all-prod-12345",
+      "Principal": "kafka.amazonaws.com"
+    }
+  ]
+}

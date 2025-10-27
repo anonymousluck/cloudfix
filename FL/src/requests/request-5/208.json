@@ -1,0 +1,49 @@
+{
+  "Requests": [
+    {
+      "id": "allow_b656e810",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketPolicy",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "allow_475d5392",
+      "Effect": "allow",
+      "Action": "s3:PutBucketCors",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "deny_2918a454",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_fb6c948d",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketVersioning",
+        "s3:PutBucketTagging"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "deny_d6d78191",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    }
+  ]
+}

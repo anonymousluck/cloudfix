@@ -1,0 +1,87 @@
+{
+  "Requests": [
+    {
+      "id": "allow_546c9e28",
+      "Effect": "allow",
+      "Action": [
+        "application-autoscaling:PutScalingPolicy",
+        "datapipeline:DescribeObjects"
+      ],
+      "Resource": [
+        "arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsightsdata123",
+        "arn:aws:dynamodb:us-east-1:(redacted):table/devin_data123"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iam:PassedToService": [
+            "application-autoscaling.amazonaws.com",
+            "application-autoscaling.amazonaws.com.cn",
+            "dax.amazonaws.com"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_a2c26543",
+      "Effect": "allow",
+      "Action": [
+        "resource-groups:ListGroupResources",
+        "cloudwatch:DescribeAlarmsForMetric"
+      ],
+      "Resource": "arn:aws:application-autoscaling:us-east-1:(redacted):scalable-target/config.xml",
+      "Condition": {
+        "StringEquals": {
+          "iam:AWSServiceName": [
+            "replication.dynamodb.amazonaws.com",
+            "dax.amazonaws.com",
+            "dynamodb.application-autoscaling.amazonaws.com",
+            "contributorinsights.dynamodb.amazonaws.com",
+            "kinesisreplication.dynamodb.amazonaws.com"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_a3173d68",
+      "Effect": "allow",
+      "Action": [
+        "kinesis:DescribeStreamSummary",
+        "resource-groups:GetGroupQuery"
+      ],
+      "Resource": "arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsightsdata123",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    },
+    {
+      "id": "deny_b5e294e2",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsightsfile1",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_52c0598c",
+      "Effect": "deny",
+      "Action": "ec2:DescribeSecurityGroups",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "StringEquals": {
+          "iam:AWSServiceName": [
+            "replication.dynamodb.amazonaws.com",
+            "dax.amazonaws.com",
+            "dynamodb.application-autoscaling.amazonaws.com",
+            "contributorinsights.dynamodb.amazonaws.com",
+            "kinesisreplication.dynamodb.amazonaws.com"
+          ]
+        }
+      }
+    }
+  ]
+}

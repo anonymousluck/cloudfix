@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_53162fab",
+      "Effect": "allow",
+      "Action": "kms:ListResourceTags",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Principal": "arn:aws:iam::444555666777:user/external-user"
+    },
+    {
+      "id": "allow_01f3282a",
+      "Effect": "allow",
+      "Action": "kms:CreateGrant",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::Your_account_ID:root"
+    },
+    {
+      "id": "deny_cb382f6e",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    },
+    {
+      "id": "allow_dd679ef6",
+      "Effect": "allow",
+      "Action": "kms:EnableKey",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ],
+      "Principal": "logs.region.amazonaws.com"
+    },
+    {
+      "id": "deny_a7ac18f7",
+      "Effect": "deny",
+      "Action": "kms:GenerateDataKeyWithoutPlaintext",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "logs.region.amazonaws.com"
+    }
+  ]
+}

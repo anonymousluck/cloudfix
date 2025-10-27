@@ -1,0 +1,25 @@
+{
+  "Requests": [
+    {
+      "id": "deny_31d3a696",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:ses:eu-west-1:222222222222:identity/mydomain.com",
+      "Principal": "arn:aws:iam::444555666777:user/external-user"
+    },
+    {
+      "id": "deny_1b624162",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:ses:eu-west-1:222222222222:identity/mydomain.com",
+      "Principal": "arn:aws:iam::111111111111:root"
+    },
+    {
+      "id": "allow_56ca9bad",
+      "Effect": "allow",
+      "Action": "ses:SendRawEmail",
+      "Resource": "arn:aws:ses:eu-west-1:222222222222:identity/mydomain.com",
+      "Principal": "arn:aws:iam::111111111111:root"
+    }
+  ]
+}

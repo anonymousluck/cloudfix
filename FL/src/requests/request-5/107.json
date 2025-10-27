@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "deny_75894ce1",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:autoscaling:*:*:autoScalingGroup/document.txt"
+    },
+    {
+      "id": "deny_c7f9c1ad",
+      "Effect": "deny",
+      "Action": "autoscaling:CreateAutoScalingGroup",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_0be4e5b8",
+      "Effect": "allow",
+      "Action": "autoscaling:CreateAutoScalingGroup",
+      "Resource": "arn:aws:autoscaling:*:*:autoScalingGroup/config.xml"
+    },
+    {
+      "id": "allow_8211f99f",
+      "Effect": "allow",
+      "Action": "autoscaling:CreateAutoScalingGroup",
+      "Resource": "arn:aws:autoscaling:*:*:autoScalingGroup/data.json"
+    },
+    {
+      "id": "allow_9a0a61dc",
+      "Effect": "allow",
+      "Action": "autoscaling:CreateAutoScalingGroup",
+      "Resource": [
+        "arn:aws:autoscaling:*:*:autoScalingGroup/document.txt",
+        "arn:aws:autoscaling:*:*:autoScalingGroup/config.xml"
+      ]
+    }
+  ]
+}

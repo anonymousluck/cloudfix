@@ -1,0 +1,39 @@
+Trying my luck here since AWS Support gave no response to my ticket (Business support)
+
+
+Background; I've setup an ingestion pipeline according to official documentation 
+https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configure-client-s3.html
+.
+
+
+These are logs from CloudFlare HTTP traffic.
+
+
+SQS, OS, and pipeline is in account A, while S3 bucket is in account B. The bucket in account B is already whitelisted for the OS role from account A:
+
+
+{
+"Effect": "Allow",
+"Principal": {
+"AWS": "arn:aws:iam::ACCOUNT_A_ID:role/os-pipeline-role"
+},
+"Action": "s3:
+",
+"Resource": "arn:aws:s3:::LOG_BUCKET_IN_ACCOUNT_B/
+"
+}
+
+
+Policy for "os-pipeline-role"
+
+
+,
+
+
+But when looking at the logs for ingestion pipeline, I noticed an error regarding S3, which seems to be an access issue:
+
+
+2023-10-16T17:44:46.934 [Thread-11] ERROR org.opensearch.dataprepper.plugins.source.SqsWorker - Error processing from S3: null (Service: S3, Status Code: 403, Request ID: REDACTED, Extended Request ID: REDACTED). Retrying with exponential backoff.
+
+
+What am I missing here?

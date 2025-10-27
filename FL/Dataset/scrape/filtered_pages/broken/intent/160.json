@@ -1,0 +1,37 @@
+My developer continually receives this message when he tries to access our S3 bucket:
+
+
+
+
+When checking regions we have found that the region of the bucket Cape Town (Africa) is disabled for him.
+
+
+
+I created a policy for him to be able to enable/disable regions:
+
+
+
+
+
+But when he goes to the drop down and selects Manage regions, he gets taken to this page:
+
+
+
+
+Which leads to a request to upload cc info etc.
+
+
+Other permissions given:
+
+
+
+
+FullS3Access
+
+
+MultiRegion Access
+
+
+
+
+Please help!

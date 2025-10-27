@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_da3df39b",
+      "Effect": "allow",
+      "Action": "iot:Publish",
+      "Resource": [
+        "arn:aws:iot:ap-south-1:779522177923:topic/ESP1/pub",
+        "arn:aws:iot:ap-south-1:779522177923:topic/ESP1/sub"
+      ]
+    },
+    {
+      "id": "deny_8def6536",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:iot:ap-south-1:779522177923:topicfilter/ESP1/sub"
+    },
+    {
+      "id": "allow_641d7488",
+      "Effect": "allow",
+      "Action": [
+        "iot:Connect",
+        "iot:Receive"
+      ],
+      "Resource": "arn:aws:iot:ap-south-1:779522177923:topicfilter/ESP1/sub"
+    },
+    {
+      "id": "deny_9272fe55",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:iot:ap-south-1:779522177923:client/ESP1"
+    },
+    {
+      "id": "allow_b60bae00",
+      "Effect": "allow",
+      "Action": [
+        "iot:Receive",
+        "iot:Subscribe"
+      ],
+      "Resource": "arn:aws:iot:ap-south-1:779522177923:topic/ESP1/pub"
+    }
+  ]
+}

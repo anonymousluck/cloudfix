@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_b61f87f0",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_b4567c26",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_720f83ce",
+      "Effect": "allow",
+      "Action": "iot:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_582fa70a",
+      "Effect": "allow",
+      "Action": "iot:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_de4589c3",
+      "Effect": "allow",
+      "Action": "iot:GetObject",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+I'm attempting to get my Fargate Task to access an SSM store. The error I'm getting from cloud logs is:
+
+
+
+
+Unable to Extract SSM parameters! AccessDeniedException: User: arn:aws:sts::9xxxxxxxxxxx:assumed-role/my-latest-fargate-role/b9b873c1d5e44520a58e26993e3bad63 is not authorized to perform: ssm:GetParameter on resource: arn:aws:ssm:us-west-2:9xxxxxxxxxx:parameter/my_url because no identity-based policy allows the ssm:GetParameter action
+
+
+
+
+The resulting AIM role looks like this:
+
+
+
+
+
+
+I'm not certain why this isn't working. If it matters, the parameter itself is a plain text string, because I'm testing that before I try to extract encrypted ones.
+
+
+I've confirmed that this role is attached to the right task. The entire deployment is going as expected. This is the only error I'm getting.
+
+
+Typescript code is this in case that matters:
+
+
+try {
+    console.log("Attempting to extract parameters from AWS SSM");
+    const ssmClient = new SSMClient({ region: 'us-west-2' });
+    const command = {
+        Name: 'name_of_parameter',
+        WithDecryption: true
+    };
+    const request = new GetParameterCommand(command);
+    const my_url = await ssmClient.send(request);
+    console.log("extracted secret parameter", mongo_url);
+    //@ts-ignore
+    config.my_url = mongo_url.Parameter.Value || "could not extract value";
+}
+catch (e) {
+    console.log("Unable to Extract SSM parameters!", e);
+}

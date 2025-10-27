@@ -1,0 +1,63 @@
+Hello,
+
+
+I need a lambda function in python to access the RestFul API of our MWAA on a private VPC.
+
+
+The lambda runs on the same VPC and subnet as the MWAA environment.
+
+
+We were able to connect the lambda to the CLI interface following the available 
+example
+.
+
+
+But I want to use the RESTFul API of Airflow for programmatic access using 
+boto3.client('mwaa')..invoke_rest_api()
+ and we are unable to make that work.
+
+
+The error is:
+
+An error occurred (AccessDeniedException) when calling the InvokeRestApi operation: Private webserver environments can only call InvokeRestApi within a VPC.
+
+
+As said above the network configuration (VPC, subnets) sounds ok.
+
+
+We looked more closely at the IAM execution role of the task and followed instructions given 
+there
+.
+But that did not work. I am not even seeing a trace of the access in the MWAA web server logs.
+
+
+My IAM policy is:
+
+
+  
+
+
+
+We also tried without the Airflow role, in our case /Admin at the end:
+
+
+  {
+        "Action": [
+            "airflow:InvokeRestApi"
+        ],
+        "Effect": "Allow",
+        "Resource": "arn:aws:airflow:us-west-2:{account-redacted}:environment/{airflow-env-redacted}"
+    },
+
+
+
+But that did not work either.
+
+
+I must say the second bullet in the blue notes below the policy example are unclear to me. Do I need both policy entries so that 1) the regular policy control let the lambda request go, and 2) airflow authorizes the access ?
+
+
+Thanks
+
+
+Thomas

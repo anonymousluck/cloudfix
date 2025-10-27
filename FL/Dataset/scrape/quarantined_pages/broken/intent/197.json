@@ -1,0 +1,245 @@
+Recently AWS announce 
+https://docs.aws.amazon.com/pt_br/cli/latest/reference/transfer/create-web-app.html
+
+
+This is amazing feature. I have few questions on use cases can be implemented vai Web App.
+
+
+
+
+I have tried and tested our SSO identity integration with Web Apps and it works perfectly but It is very unclear on how to control the access the files to user from given S3 bucket.
+
+
+We want to restrict access to files to user's homedirectory. In Transfer family workflow, we have set option to copy files to ${transfer:username}/ directory but I do not see any such option in Web App configuration. How to control the user's access to their own directory based on usr_name.
+
+
+Can both SFTP and Web App use same S3 bucket for user's seamless experience?
+
+
+
+
+Hoping to learn more about transfer family server.
+
+
+######################################## 1/07/2024 Updates #########
+
+
+I have deployed WebApp successfully and was able to see S3 objects on the WebApp Console with SSO login. But that does not fulfill our final requirement so updating all steps for help if you anyone has used similar scenario before.
+
+
+I have created webApp with Identity Center integration and here is IAM Role attached to WebApp
+
+IAM Role: AWSTransferWebAppIdentityBearer-us-west-2
+
+
+Trust Policy:
+
+
+
+
+
+
+IAM Policy
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetDataAccess",
+                "s3:ListCallerAccessGrants",
+                "s3:ListAccessGrantsInstances"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+
+
+Created S3 bucket with CORS and bucket Policy:
+
+
+# S3 Bucket Policy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowListingOfUserFolder",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::1111111111:role/service-role/AWSTransferWebAppIdentityBearer-us-west-2"
+            },
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::webappbucket-012025",
+            "Condition": {
+                "StringLike": {
+                    "s3:prefix": "${aws:username}/*"
+                }
+            }
+        }
+    ]
+}
+
+
+
+Cross-origin resource sharing (CORS)
+
+
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "GET",
+            "PUT",
+            "POST",
+            "DELETE",
+            "HEAD"
+        ],
+        "AllowedOrigins": [
+            "https://webapp-2222222222.transfer-webapp.us-west-2.on.aws"
+        ],
+        "ExposeHeaders": [
+            "last-modified",
+            "content-length",
+            "etag",
+            "x-amz-version-id",
+            "content-type",
+            "x-amz-request-id",
+            "x-amz-id-2",
+            "date",
+            "x-amz-cf-id",
+            "x-amz-storage-class",
+            "access-control-expose-headers"
+        ],
+        "MaxAgeSeconds": 3000
+    }
+]
+
+
+
+Created S3 grant instance with IAM Identity Center:
+Registered S3 Grant Location:
+
+
+Grant Location IAM Role: AWSTransferWebAppIdentityAccessGrantLocation
+
+Trust Policy
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "access-grants.s3.amazonaws.com"
+            },
+            "Action": [
+                "sts:AssumeRole",
+                "sts:SetContext"
+            ]
+        }
+    ]
+}
+
+
+
+IAM Policy
+
+
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "ObjectLevelReadPermissions",
+			"Effect": "Allow",
+			"Action": [
+				"s3:GetObject",
+				"s3:GetObjectVersion",
+				"s3:GetObjectAcl",
+				"s3:GetObjectVersionAcl",
+				"s3:ListMultipartUploadParts"
+			],
+			"Resource": [
+				"arn:aws:s3:::*"
+			],
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceAccount": "1111111111"
+				},
+				"ArnEquals": {
+					"s3:AccessGrantsInstanceArn": [
+						"arn:aws:s3:us-west-2:1111111111:access-grants/default"
+					]
+				}
+			}
+		},
+		{
+			"Sid": "ObjectLevelWritePermissions",
+			"Effect": "Allow",
+			"Action": [
+				"s3:PutObject",
+				"s3:PutObjectAcl",
+				"s3:PutObjectVersionAcl",
+				"s3:DeleteObject",
+				"s3:DeleteObjectVersion",
+				"s3:AbortMultipartUpload"
+			],
+			"Resource": [
+				"arn:aws:s3:::*"
+			],
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceAccount": "1111111111"
+				},
+				"ArnEquals": {
+					"s3:AccessGrantsInstanceArn": [
+						"arn:aws:s3:us-west-2:1111111111:access-grants/default"
+					]
+				}
+			}
+		},
+		{
+			"Sid": "BucketLevelReadPermissions",
+			"Effect": "Allow",
+			"Action": [
+				"s3:ListBucket"
+			],
+			"Resource": [
+				"arn:aws:s3:::*"
+			],
+			"Condition": {
+				"StringEquals": {
+					"aws:ResourceAccount": "1111111111"
+				},
+				"ArnEquals": {
+					"s3:AccessGrantsInstanceArn": [
+						"arn:aws:s3:us-west-2:1111111111:access-grants/default"
+					]
+				}
+			}
+		},
+		{
+			"Sid": "KMSPermissions",
+			"Effect": "Allow",
+			"Action": [
+				"kms:Decrypt",
+				"kms:GenerateDataKey"
+			],
+			"Resource": [
+				"*"
+			]
+		}
+	]
+}
+
+
+
+I have two folder in S3 bucket for two users and both are accessible to both users. Trying to restrict folder list access to current logged in user only. Can somebody help if it is achievable in webapp configuration. WebApp feature is very basic, like college project.

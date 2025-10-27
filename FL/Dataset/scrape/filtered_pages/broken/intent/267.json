@@ -1,0 +1,41 @@
+When I try to enable Transfer Acceleration for my S3 bucket both as the root user or an IAM user with the s3:PutAccelerateConfiguration permission, I get the below access denied error:
+
+
+
+
+
+My s3 bucket is in ap-southeast-2 a region which is in the 
+supported regions list
+ for transfer acceleration.
+
+
+The IAM user has all the required permissions: AdministratorAccess; AmazonS3FullAccess; and the s3:PutAccelerateConfiguration permission explicitly on all resources.
+
+
+The block public access setting is off.
+
+
+The S3 bucket has the below policy:
+
+
+
+
+
+
+
+
+
+
+We have also tried the suggestion 
+here
+. But that too doesn't work.
+
+
+
+
+
+
+Why does it give the Access Denied error to the IAM user despite having all required permissions?
+
+
+Why does it give this error despite trying to enable this as the root user (the bucket owner)?

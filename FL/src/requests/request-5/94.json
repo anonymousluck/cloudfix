@@ -1,0 +1,25 @@
+{
+  "Requests": [
+    {
+      "id": "deny_8aa4cead",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "SNS-topic-ARN",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    },
+    {
+      "id": "allow_d22f2e77",
+      "Effect": "allow",
+      "Action": "SNS:Publish",
+      "Resource": "SNS-topic-ARN",
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    },
+    {
+      "id": "deny_b83dee9c",
+      "Effect": "deny",
+      "Action": "SNS:Publish",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::444555666777:user/external-user"
+    }
+  ]
+}

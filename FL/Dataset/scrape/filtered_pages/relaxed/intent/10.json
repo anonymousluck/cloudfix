@@ -1,0 +1,77 @@
+Hi there,
+
+
+I am trying to integrate IAM Identity Center with Redshift. We manage Users and Groups from IAM Identity Center from Management account where the Redshift cluster exists in an OU account. By following the by following the 
+guide
+
+
+
+
+Created an IAM role required for creating Redshift IDC Application.
+
+
+Created Redshift IDC Application via 
+create-redshift-idc-application
+
+
+Verified 
+IdcOnboardStatus
+ is Completed, and Redshift application is displayed from IAM Identity Center from Management Account.
+
+
+Assigned existing user group from IAM Identity Center in Redshift.
+
+
+
+
+There is a step asking to create a role with command 
+CREATE ROLE <idcnamespace:rolename>;
+ which is failing with an error
+
+
+ERROR: registered identity provider does not exist for "AWSIDC:AWS ADMINS"
+
+
+
+Hence the fact that, 
+AWSIDC
+ is the default value for identity namespace and 
+AWS ADMINS
+ is the user group assigned to Redshift. I am currently stuck at this point and don't know how to proceed.
+
+
+Redshift-IDC-SSO-Role
+ role has the required policy
+
+
+
+
+
+
+Here is the request/response for 
+create-redshift-idc-application
+ api.
+
+
+aws redshift create-redshift-idc-application \
+--idc-instance-arn 'arn:aws:sso:::instance/ssoins-******** \
+--idc-display-name 'redshift-data-uat' \
+--iam-role-arn 'arn:aws:iam::*******:role/Redshift-IDC-SSO-Role' \
+--redshift-idc-application-name 'redshift-data-uat'
+
+{
+    "IdcInstanceArn": "arn:aws:sso:::instance/ssoins-******",
+    "RedshiftIdcApplicationName": "redshift-data-uat",
+    "RedshiftIdcApplicationArn": "arn:aws:redshift:us-east-1:******:redshiftidcapplication:******************",
+    "IdentityNamespace": "AWSIDC",
+    "IdcDisplayName": "redshift-data-uat",
+    "IamRoleArn": "arn:aws:iam::******:role/Redshift-IDC-SSO-Role",
+    "IdcManagedApplicationArn": "arn:aws:sso::******:application/ssoins-******/apl-******",
+    "IdcOnboardStatus": "Completed",
+    "AuthorizedTokenIssuerList": [],
+    "ServiceIntegrations": []
+}
+
+
+
+Thanks for the help

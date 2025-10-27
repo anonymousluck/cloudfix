@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "allow_3d948dbd",
+      "Effect": "allow",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:rds-db:*:<accountid>:dbuser:cluster-avcd/<user>"
+    },
+    {
+      "id": "deny_670c330d",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:rds-db:*:<accountid>:dbuser:cluster-avcd/<user>"
+    },
+    {
+      "id": "deny_eaf970d3",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:rds-db:*:<accountid>:dbuser:cluster-avcd/<user>"
+    }
+  ]
+}

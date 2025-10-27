@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_42b70b19",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_ac41bfc0",
+      "Effect": "allow",
+      "Action": "bedrock:GetObject",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_a0c8c308",
+      "Effect": "allow",
+      "Action": "bedrock:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_422a54a8",
+      "Effect": "allow",
+      "Action": "bedrock:GetObject",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_a38ffadd",
+      "Effect": "deny",
+      "Action": "bedrock:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    }
+  ]
+}

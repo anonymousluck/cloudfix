@@ -1,0 +1,7 @@
+ClientError: An error occurred (AccessDeniedException) when calling the CreateInferenceComponent operation: User:  arn:aws:sts::x:assumed-role/xx-xx-xx-xx-user-service-role/SageMaker is not authorized to  perform: sagemaker:CreateInferenceComponent on resource:  arn:aws:sagemaker:us-west-2:x:inference-component/DEMO-1741933531-3bf5-inference-component-1 with an explicit deny in an identity-based policy
+
+
+We did add
+
+
+,

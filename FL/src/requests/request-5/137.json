@@ -1,0 +1,74 @@
+{
+  "Requests": [
+    {
+      "id": "allow_de38e7db",
+      "Effect": "allow",
+      "Action": "s3:AbortMultipartUpload",
+      "Resource": [
+        "arn:aws:s3:::demo-amazon-s3-bucket/document.txt",
+        "arn:aws:kinesis:us-west-2:654654323652:stream/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%"
+      ],
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_3cf1d4b7",
+      "Effect": "allow",
+      "Action": "logs:PutLogEvents",
+      "Resource": "arn:aws:es:us-west-2:654654323652:domain/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/_nodes",
+      "Condition": {
+        "StringEquals": {
+          "kms:ViaService": "s3.us-west-2.amazonaws.com"
+        },
+        "StringLike": {
+          "kms:EncryptionContext:aws:s3:arn": [
+            "arn:aws:s3:::%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/*",
+            "arn:aws:s3:::%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_f2b5cf93",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:logs:us-west-2:654654323652:log-group:%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%:log-stream:document",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_e42a1bde",
+      "Effect": "allow",
+      "Action": [
+        "kinesis:GetShardIterator",
+        "ec2:DeleteNetworkInterface"
+      ],
+      "Resource": [
+        "arn:aws:logs:us-west-2:654654323652:log-group:/aws/kinesisfirehose/demo-firehose-stream:log-stream:data123",
+        "arn:aws:es:us-west-2:654654323652:domain/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%/_stats"
+      ],
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    },
+    {
+      "id": "deny_d6350dd6",
+      "Effect": "deny",
+      "Action": "ec2:DescribeNetworkInterfaces",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    }
+  ]
+}

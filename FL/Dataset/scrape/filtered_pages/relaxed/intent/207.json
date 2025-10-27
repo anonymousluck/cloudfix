@@ -1,0 +1,47 @@
+I would like to lock down user access to the following operations on iot "Things":
+
+
+ListThingsInThingGroup,
+UpdateThingShadow,
+GetThingShadow
+
+
+I am aware that there are iot policy variables for the connected device, but I believe that only represents the attributes of the connecting device, not the device that is being accessed in the above operations.
+
+
+Never the less, I tried it and it did not work:
+
+
+    ,
+
+
+
+I found a list with Condition keys for iot at this url . 
+https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsiot.html
+
+
+An interesting one that I thought might be useful is iot:ThingGroupArn. As Things themselves can't have Tags to use with ResourceTag, ThingGroup could be used in the same way.
+
+
+However, this list of iot policy variables doesn't contain any condition keys for the operations above.
+
+
+Never the less, I tried it and it didn't work.
+
+
+  {
+      "Effect": "Allow",
+      "Action": "iot:ListNamedShadowsForThing",
+      "Resource": "arn:aws:iot:ap-southeast-2:<accountId>:*",
+      "Condition": {
+        "StringLike": {
+          "aws:ThingGroupArn": [
+            "arn:aws:iot:ap-southeast-2::thinggroup/department-id-${aws:PrincipalTag/deparpmentid}"
+          ]
+        }
+      }
+    }
+
+
+
+Has anyone found a successful strategy for implementing a policy as above?

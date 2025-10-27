@@ -1,0 +1,221 @@
+There are two aws accounts 222222222222 , 777777777777 & are inside organization. I need to copy restore points from backup vault in 222222222222 to vault in 777777777777 using lambda function in 222222222222 [same region - us-east-2]. The role used by lambda is following AWSBackupFullAccess , IAMFullAccess and custom policy below
+
+
+
+
+
+
+
+Below are the assume role contents used by lambda function AdministratorAccess,AWSBackupFullAccess,IAMFullAccess and custom inline policy below
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncryptTo",
+                "kms:GenerateDataKey",
+                "kms:GenerateDataKeyWithoutPlaintext",
+                "kms:GenerateDataKeyPairWithoutPlaintext",
+                "backup:CopyIntoBackupVault",
+                "kms:GenerateDataKeyPair",
+                "kms:ReEncryptFrom"
+            ],
+            "Resource": [
+                "arn:aws:backup:us-east-2:777777777777:backup-vault:ohio-jig-vault",
+                "arn:aws:kms:us-east-2:777777777777:key/mrk-c621aa87087b4fb49d7498a0e0c07cc2"   //CMK used by ohio-jig-vault
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": "*"
+        }
+    ]
+}
+
+
+
+below is the lambda function in 222222222222 ohio region where restorepoints are hardcoded
+
+
+import boto3
+import json
+
+def lambda_handler(event, context):
+
+    source_region = 'us-east-2'
+    destination_region = 'us-east-2'
+    
+
+    source_backup_vault_name = 'zzush-intermediate-vault-ohio'
+    destination_backup_vault_arn = 'arn:aws:backup:us-east-2:777777777777:backup-vault:ohio-jig-vault'
+    recovery_point_arn = 'arn:aws:rds:us-east-2:222222222222:snapshot:awsbackup:copyjob-1ec55b91-94cf-dd7d-cfce-9470cb953973'
+    iam_role_arn = 'arn:aws:iam::777777777777:role/zzushBackupRole'
+    
+
+    source_backup_client = boto3.client('backup', region_name=source_region)
+    destination_backup_client = boto3.client('backup', region_name=destination_region)
+
+    try:
+        response = destination_backup_client.start_copy_job(
+            RecoveryPointArn=recovery_point_arn,
+            SourceBackupVaultName=source_backup_vault_name,
+            DestinationBackupVaultArn=destination_backup_vault_arn,
+            IamRoleArn=iam_role_arn
+        )
+        return {
+            'statusCode': 200,
+            'body': json.dumps(f"Copy job started successfully: {response['CopyJobId']}")
+        }
+    except Exception as e:
+        print(f"Error starting copy job: {str(e)}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps('Error starting copy job')
+        }
+
+
+
+The cmk kms key used in vault of 777777777777 has below policy which seems pretty relaxed
+
+
+{
+    "Version": "2012-10-17",
+    "Id": "key-consolepolicy-3",
+    "Statement": [
+        {
+            "Sid": "Enable IAM User Permissions",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::777777777777:root"
+            },
+            "Action": "kms:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow access for Key Administrators",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "arn:aws:iam::777777777777:role/aws-service-role/organizations.amazonaws.com/AWSServiceRoleForOrganizations",
+                    "arn:aws:iam::777777777777:role/aws-service-role/trustedadvisor.amazonaws.com/AWSServiceRoleForTrustedAdvisor",
+                    "arn:aws:iam::777777777777:role/aws-service-role/backup.amazonaws.com/AWSServiceRoleForBackup",
+                    "arn:aws:iam::777777777777:role/aws-service-role/mrk.kms.amazonaws.com/AWSServiceRoleForKeyManagementServiceMultiRegionKeys",
+                    "arn:aws:iam::777777777777:role/aws-service-role/access-analyzer.amazonaws.com/AWSServiceRoleForAccessAnalyzer",
+                    "arn:aws:iam::777777777777:role/aws-service-role/support.amazonaws.com/AWSServiceRoleForSupport",
+                    "arn:aws:iam::777777777777:role/ushBackupRole"
+                ]
+            },
+            "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+                "kms:ReplicateKey",
+                "kms:UpdatePrimaryRegion",
+                "kms:RotateKeyOnDemand"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow use of the key",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "arn:aws:iam::777777777777:role/aws-service-role/organizations.amazonaws.com/AWSServiceRoleForOrganizations",
+                    "arn:aws:iam::777777777777:role/aws-service-role/trustedadvisor.amazonaws.com/AWSServiceRoleForTrustedAdvisor",
+                    "arn:aws:iam::777777777777:role/aws-service-role/backup.amazonaws.com/AWSServiceRoleForBackup",
+                    "arn:aws:iam::222222222222:root",
+                    "arn:aws:iam::777777777777:role/aws-service-role/mrk.kms.amazonaws.com/AWSServiceRoleForKeyManagementServiceMultiRegionKeys",
+                    "arn:aws:iam::777777777777:role/aws-service-role/access-analyzer.amazonaws.com/AWSServiceRoleForAccessAnalyzer",
+                    "arn:aws:iam::777777777777:role/aws-service-role/support.amazonaws.com/AWSServiceRoleForSupport",
+                    "arn:aws:iam::777777777777:role/ushBackupRole"
+                ]
+            },
+            "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:DescribeKey"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow attachment of persistent resources",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "arn:aws:iam::777777777777:role/aws-service-role/organizations.amazonaws.com/AWSServiceRoleForOrganizations",
+                    "arn:aws:iam::777777777777:role/aws-service-role/trustedadvisor.amazonaws.com/AWSServiceRoleForTrustedAdvisor",
+                    "arn:aws:iam::777777777777:role/aws-service-role/backup.amazonaws.com/AWSServiceRoleForBackup",
+                    "arn:aws:iam::222222222222:root",
+                    "arn:aws:iam::777777777777:role/aws-service-role/mrk.kms.amazonaws.com/AWSServiceRoleForKeyManagementServiceMultiRegionKeys",
+                    "arn:aws:iam::777777777777:role/aws-service-role/access-analyzer.amazonaws.com/AWSServiceRoleForAccessAnalyzer",
+                    "arn:aws:iam::777777777777:role/aws-service-role/support.amazonaws.com/AWSServiceRoleForSupport",
+                    "arn:aws:iam::777777777777:role/ushBackupRole"
+                ]
+            },
+            "Action": [
+                "kms:CreateGrant",
+                "kms:ListGrants",
+                "kms:RevokeGrant"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "Bool": {
+                    "kms:GrantIsForAWSResource": "true"
+                }
+            }
+        },
+        {
+            "Sid": "Allow access from AWS Organizations accounts to copy backups",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": [
+                "kms:CreateGrant",
+                "kms:Decrypt",
+                "kms:GenerateDataKey*",
+                "kms:DescribeKey"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalOrgID": "o-076e27lqr9"
+                }
+            }
+        }
+    ]
+}
+
+
+
+I have enabled Cross-account backup,Backup policies and Cross-account monitoring from AWS Backup settings.
+
+
+after running lambda I get the error below in lambda test
+
+
+Error starting copy job: An error occurred (AccessDeniedException) when calling the StartCopyJob operation: Insufficient privileges to perform this action.
+
+
+so far i have checked the cloudtrail logs and nothing help ful have appeared apart from the same log above. Any clue what is missing here ?

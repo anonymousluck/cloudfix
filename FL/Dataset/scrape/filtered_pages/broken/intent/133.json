@@ -1,0 +1,25 @@
+I'm attempting to set up permissions for a user account on AWS Transfer Service with SFTP protocol. I have a use case where a user should be able to add a file to a directory but not list the files in it.
+
+
+When I tweak the IAM role to deny 's3:ListBucket' for a specific subdirectory the put operation fails as well. Theoretically s3 does allow to Put object without having the ability to list the prefixes. AWS transfer service however seems to be implicitly using the list bucket operation before put. Has anyone managed to deny listing ability while still being able to upload.
+
+
+IAM policy :
+
+
+
+
+
+
+The output from SFTP client:
+
+
+sftp> cd data/incoming
+sftp> ls
+Couldn't read directory: Permission denied
+sftp> put /Users/foo/Downloads/test.log
+Uploading /Users/foo/Downloads/test.log to /data/incoming/test.log
+remote open("/data/incoming/test.log"): Permission denied
+sftp> get test-one.txt
+Fetching /data/incoming/test-one.txt to test-one.txt
+sftp> exit

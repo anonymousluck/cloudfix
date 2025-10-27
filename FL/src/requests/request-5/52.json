@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_d890181d",
+      "Effect": "allow",
+      "Action": [
+        "lex:RecognizeText",
+        "lex:StartConversation"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_a3bf6393",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_bd527bae",
+      "Effect": "allow",
+      "Action": [
+        "lex:RecognizeText",
+        "lex:PutSession"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_d9d4b148",
+      "Effect": "allow",
+      "Action": "lex:StartConversation",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_90f81f08",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    }
+  ]
+}

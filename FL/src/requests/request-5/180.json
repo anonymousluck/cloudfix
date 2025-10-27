@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_47f6a46a",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:ssm:*:*:session/$(aws:username)-file1"
+    },
+    {
+      "id": "allow_9f7aedaf",
+      "Effect": "allow",
+      "Action": "ssm: ResumeSession",
+      "Resource": [
+        "arn:aws:ssm:*:*:session/$(aws:username)-data123",
+        "arn:aws:ssm:*:*:session/$(aws:username)-document"
+      ]
+    },
+    {
+      "id": "deny_9cec2abc",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:ssm:*:*:session/$(aws:username)-document"
+    },
+    {
+      "id": "allow_35d033b1",
+      "Effect": "allow",
+      "Action": "ssm: ResumeSession",
+      "Resource": "arn:aws:ssm:*:*:session/$(aws:username)-data123"
+    },
+    {
+      "id": "allow_26ba0720",
+      "Effect": "allow",
+      "Action": [
+        "ssm: TerminateSession",
+        "ssm: StartSession"
+      ],
+      "Resource": "arn:aws:ssm:*:*:session/$(aws:username)-data123"
+    }
+  ]
+}

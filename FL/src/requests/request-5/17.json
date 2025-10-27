@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "allow_2b4672fa",
+      "Effect": "allow",
+      "Action": "events:PutEvents",
+      "Resource": "arn:aws:events:us-east-1:xxxx:event-bus/default"
+    },
+    {
+      "id": "deny_80a26fd8",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:events:us-east-1:xxxx:event-bus/default"
+    },
+    {
+      "id": "deny_4a117ba7",
+      "Effect": "deny",
+      "Action": "events:PutEvents",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    }
+  ]
+}

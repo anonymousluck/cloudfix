@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_d0db8642",
+      "Effect": "allow",
+      "Action": [
+        "kms:DisableKey",
+        "kms:CreateAlias"
+      ],
+      "Resource": [
+        "arn:aws:ec2:my-region:XXXXXXXXXXX:subnet/my-subnet-with-internet-access",
+        "arn:aws:ec2:my-region:XXXXXXXXXXX:data123"
+      ]
+    },
+    {
+      "id": "deny_ecaef117",
+      "Effect": "deny",
+      "Action": "kms:DescribeKey",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "deny_a790cce6",
+      "Effect": "deny",
+      "Action": "ec2:RevokeSecurityGroupIngress",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_820467a8",
+      "Effect": "allow",
+      "Action": "ec2:DescribeKeyPairs",
+      "Resource": "arn:aws:ec2:my-region:XXXXXXXXXXX:security-group/sg-SLAVE"
+    },
+    {
+      "id": "allow_024b4773",
+      "Effect": "allow",
+      "Action": "kms:ListResourceTags",
+      "Resource": [
+        "arn:aws:ec2:my-region:XXXXXXXXXXX:document",
+        "arn:aws:ec2:my-region:XXXXXXXXXXX:data123"
+      ]
+    }
+  ]
+}

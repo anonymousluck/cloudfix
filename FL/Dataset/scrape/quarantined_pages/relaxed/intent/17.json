@@ -1,0 +1,501 @@
+I am not able to setup resource policies for cloudtrail EventDataStore with cloudformation. It claims that the the resource policy already exists, this is partially true as the console shows an empty policy and the API returns a "empty" default policy:
+
+
+Resource handler returned message: "Resource of type 'AWS::CloudTrail::ResourcePolicy' with identifier '{"/properties/ResourceArn":"arn:aws:cloudtrail:eu-central-1:zys:eventdatastore/69edcf3e-5cb8-4333-a4c7-891e75a1d923"}' already exists." (RequestToken: 75673759-cef9-1d5a-a984-0adfbb61e3d0, HandlerErrorCode: AlreadyExists)
+
+
+
+I even tried to import the resource (what was working fine), but i could not apply updates to it due some unknown errors (strangely drift detection did work):
+
+
+Resource handler returned message: "Invalid request provided: AWS::CloudTrail::ResourcePolicy" (RequestToken: 710cb863-4605-cbfc-8bf8-aba0b193070f, HandlerErrorCode: InvalidRequest)
+
+
+
+Not all very helpful and i am lost how to achieve that.
+
+
+Parameters
+:
+
+
+  
+Retention
+:
+
+
+    
+Type
+:
+ Number
+
+    
+Default
+:
+ 
+365
+
+
+  
+SecurityAccountId
+:
+
+
+    
+Type
+:
+ String
+
+
+
+Resources
+:
+
+
+  
+EventDataStore
+:
+
+
+    
+Type
+:
+ AWS
+:
+:
+CloudTrail
+:
+:
+EventDataStore
+
+    
+DeletionPolicy
+:
+ Retain
+
+    
+Properties
+:
+
+
+      
+Name
+:
+ aws
+-
+org
+-
+events
+
+      
+MultiRegionEnabled
+:
+ 
+true
+
+
+      
+IngestionEnabled
+:
+ 
+true
+
+
+      
+#FederationEnabled: true
+
+
+      
+#FederationRoleArn: "arn:aws:iam::account-id:role/federation-role-name"
+
+
+      
+BillingMode
+:
+ 
+"EXTENDABLE_RETENTION_PRICING"
+
+
+      
+RetentionPeriod
+:
+ 
+!Ref
+ Retention
+
+      
+OrganizationEnabled
+:
+ 
+true
+
+
+      
+TerminationProtectionEnabled
+:
+ 
+true
+
+
+      
+InsightsDestination
+:
+ 
+!GetAtt
+ InsightsEventsDataStore.EventDataStoreArn
+
+      
+InsightSelectors
+:
+
+
+        
+-
+ 
+InsightType
+:
+ 
+"ApiCallRateInsight"
+
+
+        
+-
+ 
+InsightType
+:
+ 
+"ApiErrorRateInsight"
+
+
+      
+AdvancedEventSelectors
+:
+
+
+        
+-
+ 
+Name
+:
+ 
+"ManagementEventSelectors"
+
+
+          
+FieldSelectors
+:
+
+
+            
+-
+ 
+Field
+:
+ 
+"eventCategory"
+
+
+              
+Equals
+:
+ 
+[
+"Management"
+]
+
+
+
+
+  
+# destination store for the insights events
+
+
+  
+InsightsEventsDataStore
+:
+
+
+    
+Type
+:
+ AWS
+:
+:
+CloudTrail
+:
+:
+EventDataStore
+
+    
+DeletionPolicy
+:
+ Retain
+
+    
+Properties
+:
+
+
+      
+Name
+:
+ aws
+-
+org
+-
+insights
+
+      
+MultiRegionEnabled
+:
+ 
+false
+
+
+      
+IngestionEnabled
+:
+ 
+true
+
+
+      
+BillingMode
+:
+ 
+"EXTENDABLE_RETENTION_PRICING"
+
+
+      
+RetentionPeriod
+:
+ 
+!Ref
+ Retention
+
+      
+OrganizationEnabled
+:
+ 
+true
+
+
+      
+TerminationProtectionEnabled
+:
+ 
+true
+
+
+      
+AdvancedEventSelectors
+:
+
+
+        
+-
+ 
+Name
+:
+ 
+"InsightEventSelectors"
+
+
+          
+FieldSelectors
+:
+
+
+            
+-
+ 
+Field
+:
+ 
+"eventCategory"
+
+
+              
+Equals
+:
+ 
+[
+"Insight"
+]
+
+
+
+
+
+  
+ResourcePolicyEventDataStore
+:
+
+
+    
+Type
+:
+ AWS
+:
+:
+CloudTrail
+:
+:
+ResourcePolicy
+
+    
+DeletionPolicy
+:
+ Delete
+
+    
+Properties
+:
+
+
+      
+ResourceArn
+:
+ 
+!GetAtt
+ EventDataStore.EventDataStoreArn
+
+      
+ResourcePolicy
+:
+
+
+        
+Fn::Sub
+:
+ 
+|
+
+
+          
+
+
+
+
+  
+ResourcePolicyInsightsEventsDataStore
+:
+
+
+    
+DeletionPolicy
+:
+ Delete
+
+    
+Type
+:
+ AWS
+:
+:
+CloudTrail
+:
+:
+ResourcePolicy
+
+    
+Properties
+:
+
+
+      
+ResourceArn
+:
+ 
+!GetAtt
+ InsightsEventsDataStore.EventDataStoreArn
+
+      
+ResourcePolicy
+:
+
+
+        
+Fn::Sub
+:
+ 
+|
+
+
+          {
+
+            "Version": "2012-10-17",
+
+            "Statement": [
+
+              {
+
+                "Effect": "Allow",
+
+                "Principal":
+
+                {
+
+                  "Service": "cloudtrail.amazonaws.com"
+
+                },
+
+                "Action":
+
+                [
+
+                  "cloudtrail:StartQuery",
+
+                  "cloudtrail:StartDashboardRefresh",
+
+                  "cloudtrail:GetEventDataStore",
+
+                  "cloudtrail:GetQueryResults"
+
+                ],
+
+                "Condition": {
+
+                  "StringEquals": {
+
+                      "AWS:SourceAccount":"${AWS::AccountId}"
+
+                  }
+
+                }
+
+              },
+
+              {
+
+                "Sid": "AllowSecurityAccount",
+
+                "Effect": "Allow",
+
+                "Principal": {
+
+                  "AWS": [
+
+                      "arn:aws:iam::${SecurityAccountId}:root"
+
+                  ]
+
+                },
+
+                "Action": [
+
+                  "cloudtrail:StartQuery",
+
+                  "cloudtrail:StartDashboardRefresh",
+
+                  "cloudtrail:GetEventDataStore",
+
+                  "cloudtrail:GetQueryResults"
+
+                ]
+
+              }
+
+            ]
+
+          }

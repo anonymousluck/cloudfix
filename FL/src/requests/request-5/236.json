@@ -1,0 +1,67 @@
+{
+  "Requests": [
+    {
+      "id": "deny_0c3e12bf",
+      "Effect": "deny",
+      "Action": "GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "s3:DataAccessPointAccount": "ACCOUNT_ID"
+        }
+      }
+    },
+    {
+      "id": "allow_5766d32a",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:s3:::BUCKET_NAME",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "allow_2ca8bbf6",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:s3:::BUCKET_NAME/data.json",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "s3:DataAccessPointAccount": "ACCOUNT_ID"
+        }
+      }
+    },
+    {
+      "id": "allow_85a0a485",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": [
+        "arn:aws:s3:::BUCKET_NAME/config.xml",
+        "arn:aws:s3:::BUCKET_NAME/data.json"
+      ],
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "s3:DataAccessPointAccount": "ACCOUNT_ID"
+        }
+      }
+    },
+    {
+      "id": "deny_02102eb9",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:s3:::BUCKET_NAME/data.json",
+      "Principal": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2024-01-01T00:00:00Z"
+        }
+      }
+    }
+  ]
+}

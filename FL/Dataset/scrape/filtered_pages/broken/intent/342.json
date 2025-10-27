@@ -1,0 +1,12 @@
+Is there a way we can restrict the access to AWS resources for certain user ids through an assumed role session name ? Something like below ?
+
+
+
+
+
+
+I tried multiple combinations for 
+StringEquals
+ and 
+aws:PrincipalArn
+ fields but didn't get it working.

@@ -1,0 +1,67 @@
+Hi,
+I have an AWS organization with multiple account (
+root_account
+, 
+account_1
+, 
+account_2
+, ... 
+account_n
+). What I'm trying to do is, starting from an user in 
+root_account
+, be able to assume role in any of the others organization accounts (
+account_x
+).
+In every 
+account_x
+ I've created a role 
+account_example_role
+ with the following trust relationship:
+
+
+
+
+
+
+while in 
+root_account
+ I have the role 
+root_example_role
+ with the following plicy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::<account_1>:role/account_example_role",
+                "arn:aws:iam::<account_2>:role/account_example_role",
+                ...
+                "arn:aws:iam::<account_x>:role/account_example_role"
+            ]
+        }
+    ]
+}
+
+
+
+and this seems to work, but it's hard to maintain.
+
+
+I was wondering if there is a way to specify an organization wide role arn inside the 
+root_example_role
+ policy, something like this:
+
+
+"Resource": "arn:aws:organizations::<root_account_id>:organization/o-<org-ID>/role/account_example_role"
+
+
+
+so that it's no longer needed to update the 
+root_example_role
+ policy for every new account in the organization.

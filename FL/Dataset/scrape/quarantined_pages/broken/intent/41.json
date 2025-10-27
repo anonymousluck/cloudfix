@@ -1,0 +1,22 @@
+I faced an issue when my CF template needed more parameters that are availiable by CloudFormation (200)
+I found a way, where i can store several parameter values in one parameter and then split them using !Split
+
+
+Also i found that CF can refference parameters from AWS SSM parameter store (
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-ssm
+) and in AWS documaentation it is shown that i can directly use parameter from SSM in my CF code, but when i try to deploy it on my stack it fails
+
+
+this is the resource i'm tring to create
+IAMRoleTest:
+Type: "AWS::IAM::Role"
+Properties:
+Path: "/"
+RoleName: '{{resolve:ssm:Rolename:1}}'
+AssumeRolePolicyDocument: ""
+MaxSessionDuration: 3600
+ManagedPolicyArns:
+- !Sub "arn:aws:iam::${AWS::Region}:policy/PolicyName"
+
+
+Rolename parameter in SSM is named "test-role"

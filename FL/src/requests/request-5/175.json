@@ -1,0 +1,49 @@
+{
+  "Requests": [
+    {
+      "id": "deny_6e92198d",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::my-bucket-name/${aws:PrincipalTag/org_id}/data.json"
+    },
+    {
+      "id": "deny_5ae8e962",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_70038b1e",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListMultipartUploadParts",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket-name/${aws:PrincipalTag/org_id}/data.json",
+        "arn:aws:s3:::my-bucket-name/${aws:PrincipalTag/org_id}/config.xml"
+      ]
+    },
+    {
+      "id": "allow_160733ed",
+      "Effect": "allow",
+      "Action": "s3:ListMultipartUploadParts",
+      "Resource": [
+        "arn:aws:s3:::my-bucket-name/${aws:PrincipalTag/org_id}/config.xml",
+        "arn:aws:s3:::my-bucket-name/${aws:PrincipalTag/org_id}/document.txt"
+      ]
+    },
+    {
+      "id": "allow_b5469e73",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteObject",
+        "s3:AbortMultipartUpload"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket-name/${aws:PrincipalTag/org_id}/data.json",
+        "arn:aws:s3:::my-bucket-name/${aws:PrincipalTag/org_id}/document.txt"
+      ]
+    }
+  ]
+}

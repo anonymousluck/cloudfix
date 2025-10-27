@@ -1,0 +1,124 @@
+{
+  "Requests": [
+    {
+      "id": "deny_b848fff1",
+      "Effect": "deny",
+      "Action": "s3:GetBucketLocation",
+      "Resource": "arn:aws:s3:::mybucket-forbidden/file.txt",
+      "Principal": "arn:aws:iam::33333333:role/service-role/my_authRole",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI"
+        }
+      }
+    },
+    {
+      "id": "allow_51fe7b33",
+      "Effect": "allow",
+      "Action": "iam:DeleteGroup",
+      "Resource": "arn:aws:s3:::mybucket/file-39-4.txt",
+      "Principal": "arn:aws:iam::123456789012:user/alice",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "deny_b0287c0a",
+      "Effect": "deny",
+      "Action": "s3:PutBucketCors",
+      "Resource": "arn:aws:s3:::denied-bucket-0/file-0.txt",
+      "Principal": "arn:aws:iam::33333333:role/service-role/my_authRole",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI"
+        }
+      }
+    },
+    {
+      "id": "deny_d8baa8ac",
+      "Effect": "deny",
+      "Action": "s3:GetBucketLogging",
+      "Resource": "arn:aws:s3:::completely-different-bucket/file.txt",
+      "Principal": "arn:aws:iam::33333333:role/service-role/my_authRole",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "allow_895df0ea",
+      "Effect": "allow",
+      "Action": "guardduty:CreateIPSet",
+      "Resource": "arn:aws:s3:::mybucket/file-0-6.txt",
+      "Principal": "arn:aws:iam::33333333:role/service-role/forbidden-my_authRole",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_e929b64c",
+      "Effect": "allow",
+      "Action": "kms:DescribeKey",
+      "Resource": "arn:aws:s3:::mybucket/file-38-1.txt",
+      "Principal": "arn:aws:iam::33333333:role/service-role/forbidden-my_authRole",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_7bdc5b13",
+      "Effect": "allow",
+      "Action": "sqs:ListQueueTags",
+      "Resource": "arn:aws:s3:::mybucket/file-28-6.txt",
+      "Principal": "arn:aws:iam::125989556825:role/service-role/my_authRole",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "deny_5e76697f",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::different-mybucket/file.txt",
+      "Principal": "arn:aws:iam::33333333:role/service-role/my_authRole",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "allow_4be08922",
+      "Effect": "allow",
+      "Action": "cloudwatch:PutMetricData",
+      "Resource": "arn:aws:s3:::mybucket/file-6-9.txt",
+      "Principal": "arn:aws:iam::33333333:role/service-role/forbidden-my_authRole",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_d1642ec3",
+      "Effect": "allow",
+      "Action": "s3:GetBucketLogging",
+      "Resource": "arn:aws:s3:::mybucket/file-7-16.txt",
+      "Principal": "arn:aws:iam::33333333:role/service-role/forbidden-my_authRole",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    }
+  ]
+}

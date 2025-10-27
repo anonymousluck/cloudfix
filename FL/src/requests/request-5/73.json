@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_a9d071c9",
+      "Effect": "deny",
+      "Action": "sqs:ListQueues",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "deny_2d5d2a72",
+      "Effect": "deny",
+      "Action": "sqs:ListQueues",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_58bafe45",
+      "Effect": "allow",
+      "Action": "sqs:ListQueues",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_21903670",
+      "Effect": "allow",
+      "Action": "sqs:ListQueues",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "allow_1dd9dcdc",
+      "Effect": "allow",
+      "Action": "sqs:ListQueues",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    }
+  ]
+}

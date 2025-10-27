@@ -1,0 +1,29 @@
+When other AWS users are trying to access my bucket with their crawler, they are getting the below error.
+"Crawler Error:
+User does not have access to target s3://test-bucket-mis6389/evdata/"
+
+
+My s3 bucket contains a data file. So, other AWS users while running the crawler, the get the above error.
+This is my bucket policy.
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "AllowAccessFromMultipleAccounts",
+"Effect": "Allow",
+"Principal": {
+"AWS": "
+"
+},
+"Action": "s3:GetObject",
+"Resource": "arn:aws:s3:::test-bucket-mis6389/
+"
+}
+]
+}
+
+
+The crawler is attached the role containing with below custom policy and aws managed policy:
+
+and aws managed policy:
+AWSGlueServiceRole

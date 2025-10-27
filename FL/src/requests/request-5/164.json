@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_94da7778",
+      "Effect": "allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::goldcoast-tvod/config.xml"
+    },
+    {
+      "id": "allow_ae9ced3f",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteBucket",
+        "s3:GetObjectAcl"
+      ],
+      "Resource": [
+        "arn:aws:s3:::goldcoast-tvod",
+        "arn:aws:s3:::goldcoast-tvod/data.json"
+      ]
+    },
+    {
+      "id": "deny_181f64c4",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::goldcoast-tvod/data.json"
+    },
+    {
+      "id": "deny_2ba6d19b",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3:::goldcoast-tvod/data.json"
+    },
+    {
+      "id": "allow_c2d1b712",
+      "Effect": "allow",
+      "Action": "s3:CreateBucket",
+      "Resource": "arn:aws:s3:::goldcoast-tvod/config.xml"
+    }
+  ]
+}

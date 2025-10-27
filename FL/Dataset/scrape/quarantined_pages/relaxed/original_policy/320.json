@@ -1,0 +1,12 @@
+{
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "batchoperations.s3.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole",
+      "Sid": "statement1"
+    }
+  ]
+}

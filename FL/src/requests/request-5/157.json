@@ -1,0 +1,68 @@
+{
+  "Requests": [
+    {
+      "id": "allow_ce657de5",
+      "Effect": "allow",
+      "Action": "ec2:StartInstances",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:ec2:*:*:instance/config.xml"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Product": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_5cbdd6c9",
+      "Effect": "allow",
+      "Action": "lambda:UpdateFunctionCode",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "deny_7f8c061b",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Name": "true"
+        }
+      }
+    },
+    {
+      "id": "deny_5d9add14",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "allow_1e742339",
+      "Effect": "allow",
+      "Action": [
+        "ec2:RunInstances",
+        "lambda:DeleteFunction"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:ec2:*:*:volume/document.txt"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Name": "true"
+        }
+      }
+    }
+  ]
+}

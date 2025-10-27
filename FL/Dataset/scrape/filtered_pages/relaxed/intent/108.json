@@ -1,0 +1,35 @@
+Hi Team,
+
+
+I am trying to create an object in outpostss3 bucket using aws cli command but getting connection closed error. I have given the required permissions to bucket and accesspoint. Below is the command which i am running for creating object in s3 bucket using accesspoints
+
+
+aws s3api put-object --bucket arn:aws:s3-outposts:us-west-2:593793065716:outpost/op-06d594d204174c310/accesspoint/a207804-ci-outpost-bucket1-access-point --key example-object.txt --body /home/ratnakumarch/AWS_CDK/confirmation-devops-outpost-IaC/3rdpartylicenses.txt --profile 593793065716_AWSAdministratorAccess --region us-west-2
+
+
+Connection was closed before we received a valid response from endpoint URL: "
+https://a207804-ci-outpost-bucket1-access-point-593793065716.op-06d594d204174c310.s3-outposts.us-west-2.amazonaws.com/example-object.txt
+".
+Please find the same below
+
+
+accesspoint policy
+
+
+
+bucket policy:
+{
+"Version": "2012-10-17",
+"Id": "ExampleBucketPolicy2",
+"Statement": [
+{
+"Sid": "statement1",
+"Effect": "Allow",
+"Principal": {
+"AWS": "arn:aws:iam::593793065716:role/aws-service-role/s3-outposts.amazonaws.com/AWSServiceRoleForS3OnOutposts"
+},
+"Action": "s3-outposts:*",
+"Resource": "arn:aws:s3-outposts:us-west-2:593793065716:outpost/op-06d594d204174c310/bucket/a207804-ci-outpost-bucket1"
+}
+]
+}

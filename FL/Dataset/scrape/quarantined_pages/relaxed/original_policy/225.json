@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SMSVoice",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "sms-voice.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "accountId"
+        }
+      }
+    }
+  ]
+}

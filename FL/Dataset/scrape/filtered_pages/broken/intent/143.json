@@ -1,0 +1,55 @@
+Dear AWS experts,
+
+
+I am trying to build a monitoring dashboard that will monitor the status of AWS Health Dashboard, where we want to monitor the status of the Transcribe service in the Ohio region.
+
+
+I am using the lambda function to monitor the AWS Health Dashboard. When I run the lambda function, I get the following response:
+
+
+"errorMessage": "An error occurred (SubscriptionRequiredException) when calling the DescribeEvents operation: "
+
+
+
+Lambda Function:
+
+
+import boto3
+
+def lambda_handler(event, context):
+    health = boto3.client('health')
+    response = health.describe_events()
+    status = response['events'][0]['statusCode']
+    
+    s3 = boto3.client('s3')
+    s3.put_object(Bucket='status_m', Key='health-dashboard-status.txt', Body=status)
+
+
+
+The region is set to 
+us-east-2 Ohio
+.
+
+
+Function log:
+
+
+START RequestId: d359f1e0-a14f-49c9-ba53-5234917f6e2f Version: $LATEST
+[WARNING]	2023-05-08T11:27:48.662Z	d359f1e0-a14f-49c9-ba53-5234917f6e2f	Client is configured with the deprecated endpoint: us-east-2
+[ERROR] ClientError: An error occurred (SubscriptionRequiredException) when calling the DescribeEvents operation: 
+
+
+
+Note: The role associated with the lambda function has a custom policy called 
+AWSHealthReadOnlyAccess
+ that looks like the below:
+
+
+
+
+
+
+I am not sure what I am missing here. I appreciate your help in advance.
+
+
+Kind Regards

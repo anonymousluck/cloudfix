@@ -1,0 +1,34 @@
+As subject, I've been struggling with this all day and can't find a solution.
+
+
+I have a SNS topic, and a SQS queue subscribed to it. Creation of both, and the subscription, is done programatically using the v3 javascript SDK. I can see the two resources and the subscription in the console.
+
+
+When I write to the topic, nothing appears on the queue (polled from the console). The queue access policy looks like this:
+
+
+{
+  "Version": "2012-10-17",
+  "Id": "arn:aws:sqs:eu-west-1:98xxxxx8745:nocodebots/SQSDefaultPolicy"
+}
+
+
+
+If I select the subscription in the console (SNS Subscription) and click the "Subscribe to AmazonSNS topic" button, the access policy changes to this:
+
+
+
+
+
+
+Everything now works - messages posted to the topic are routed to the queue.
+
+
+So I assume I need to give the SNS Topic permission to write to the SQS queue.
+I'm also assuming I need to create a policy to do this, but it seems I need my Account ID in the policy. Is this necessary, given that I have Arns for the Topic and Queue and the QueueUrls?? The same piece of code, in the same context builds both, and the subscription is successful, so surely I have everything to also grant the permission at the same time?
+
+
+Scratching my head!
+
+
+David

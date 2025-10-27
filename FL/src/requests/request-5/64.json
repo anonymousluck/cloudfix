@@ -1,0 +1,51 @@
+{
+  "Requests": [
+    {
+      "id": "deny_57f206a2",
+      "Effect": "deny",
+      "Action": "s3:PutBucketLogging",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    },
+    {
+      "id": "deny_cbf827b5",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_8e456f69",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketVersioning",
+        "s3:GetObjectTagging"
+      ],
+      "Resource": [
+        "arn:aws:s3:::<bucket-name>/data.json",
+        "arn:aws:s3:::<bucket-name>/config.xml"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "allow_e8e5e99c",
+      "Effect": "allow",
+      "Action": "s3:GetBucketCors",
+      "Resource": [
+        "arn:aws:s3:::<bucket-name>/config.xml",
+        "arn:aws:s3:::<bucket-name>/data.json"
+      ],
+      "Principal": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_b2e3eb7d",
+      "Effect": "allow",
+      "Action": "s3:GetBucketTagging",
+      "Resource": [
+        "arn:aws:s3:::<bucket-name>/config.xml",
+        "arn:aws:s3:::<bucket-name>/data.json"
+      ],
+      "Principal": "*"
+    }
+  ]
+}

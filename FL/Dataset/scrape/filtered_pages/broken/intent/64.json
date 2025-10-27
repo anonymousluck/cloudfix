@@ -1,0 +1,19 @@
+I have an SNS topic for the ChatOps and I configured Slack to send messages via sns. The test message is working fine.
+Now Im creating a response plan in the incident manager to send the message to Slack. But which I click on save button Im getting the following error.
+
+
+There was an error in creating the response plan.
+Topic policy does not allow the service to publish to these SNS topics: arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager
+
+
+
+But as per the 
+Incident Manager Doc,
+ I have added the following line into the SNS access policy.
+
+
+
+
+
+
+Not sure where is the error.

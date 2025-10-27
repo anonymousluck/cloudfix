@@ -1,0 +1,6 @@
+Hi I am trying to create a policy that restrict uploading objects without encryption, also want to create an exemption for certain buckets tagged with reserved tag 
+exempted
+ this doesn't seem to work, i think the reason probably is that tags at the bucket level are not checked when object resource is being added.
+
+
+Is there an alternative to create SCP exemptions at bucket level?

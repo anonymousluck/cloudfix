@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_99b650a3",
+      "Effect": "allow",
+      "Action": "s3:GetBucketLifecycle",
+      "Resource": "arn:aws:s3:::-useast"
+    },
+    {
+      "id": "deny_debe19d1",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::-useast"
+    },
+    {
+      "id": "deny_45bca792",
+      "Effect": "deny",
+      "Action": "s3:GetObjectAcl",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_8d969434",
+      "Effect": "allow",
+      "Action": "s3:GetBucketTagging",
+      "Resource": [
+        "arn:aws:s3:::-useast",
+        "arn:aws:imagebuilder:us-east-1::component///1"
+      ]
+    },
+    {
+      "id": "allow_8d0b65b0",
+      "Effect": "allow",
+      "Action": "imagebuilder:ListComponents",
+      "Resource": [
+        "arn:aws:s3:::-useast",
+        "arn:aws:imagebuilder:us-east-1::component///1"
+      ]
+    }
+  ]
+}

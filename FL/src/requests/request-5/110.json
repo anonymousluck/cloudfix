@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_5d1c3fe8",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::no-name-games.com/config.xml",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_dc182b78",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::no-name-games.com/document.txt",
+        "arn:aws:s3:::no-name-games.com/config.xml"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "allow_22733810",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::no-name-games.com/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/bob"
+    },
+    {
+      "id": "deny_875fe391",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    },
+    {
+      "id": "deny_db4738b7",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "*"
+    }
+  ]
+}

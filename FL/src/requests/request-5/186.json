@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "deny_b7061649",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:ssm:us-west-2::parameter/document.txt"
+    },
+    {
+      "id": "allow_a03649c2",
+      "Effect": "allow",
+      "Action": "kms:Decrypt",
+      "Resource": "arn:aws:ssm:us-west-2::parameter/data.json"
+    },
+    {
+      "id": "deny_029d1fa8",
+      "Effect": "deny",
+      "Action": "ssm:DescribeParameters",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_836bb51e",
+      "Effect": "allow",
+      "Action": [
+        "ssm:GetParameters",
+        "kms:Decrypt"
+      ],
+      "Resource": "arn:aws:ssm:us-west-2::parameter/data.json"
+    },
+    {
+      "id": "allow_d1ccb4bb",
+      "Effect": "allow",
+      "Action": "kms:Decrypt",
+      "Resource": "arn:aws:kms:us-west-2::key/config.xml"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::{account A of organization A}:root"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "ArnLike": {
+          "aws:PrincipalArn": "arn:aws:iam::{account A of organization A}:assumed-role/AWSReservedSSO_*"
+        }
+      },
+      "Sid": "statement1"
+    }
+  ]
+}

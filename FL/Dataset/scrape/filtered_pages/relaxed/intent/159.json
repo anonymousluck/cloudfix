@@ -1,0 +1,6 @@
+I am trying to send cloudwatch logs using Amazon Data Firehose to OpenSearch Serverless Collection.  But I received this error while writing to OpenSearchServerless Collection Via FireHose (attached SC)
+
+
+
+
+IAM role for Amazon Data FireHose

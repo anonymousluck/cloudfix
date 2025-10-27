@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_fffc65da",
+      "Effect": "allow",
+      "Action": "sagemaker:CreateInferenceComponent",
+      "Resource": [
+        "arn:aws:sagemaker:*:xx:endpoint/data.json",
+        "arn:aws:sagemaker:*:xx:endpoint/document.txt"
+      ]
+    },
+    {
+      "id": "deny_5df71fd4",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:sagemaker:*:xx:inference-component/document.txt"
+    },
+    {
+      "id": "allow_240d39c3",
+      "Effect": "allow",
+      "Action": "sagemaker:CreateInferenceComponent",
+      "Resource": "arn:aws:sagemaker:*:xx:inference-component/config.xml"
+    },
+    {
+      "id": "deny_43e5b80c",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:sagemaker:*:xx:endpoint/config.xml"
+    },
+    {
+      "id": "allow_4c9d5829",
+      "Effect": "allow",
+      "Action": "sagemaker:CreateInferenceComponent",
+      "Resource": "arn:aws:sagemaker:*:xx:endpoint/config.xml"
+    }
+  ]
+}

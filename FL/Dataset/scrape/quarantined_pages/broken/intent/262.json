@@ -1,0 +1,26 @@
+Hi,
+So i have a use case,
+i have created users in my Azure AD and created application and configured SSO with Iam Identity center in AWS,
+users are reflecting in AWS from AZure AD which I have added to application. all seems fine as assigned users also able to login with my sso URL to AWS account
+
+
+but I want to allow each user to switch role when they logged in to their AWS account
+
+
+I have tried to give trust relationship as below:
+
+
+
+
+
+
+but still when I am trying to login to role ,  I am not able to switch,
+can some please help me on how can I achieve this??
+
+
+So, on high level, I want to make my user switch role after they logged in to aws account using identity center URL but not able to switch getting error,
+"Invalid information in one or more fields
+Check your information or contact your administrator."
+
+
+I am using external identity provider as Azure AD in my IAM identity center

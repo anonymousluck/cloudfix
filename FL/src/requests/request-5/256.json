@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_4b58d6b2",
+      "Effect": "allow",
+      "Action": "SQS:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    },
+    {
+      "id": "deny_bd83d288",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    },
+    {
+      "id": "allow_9804ac71",
+      "Effect": "allow",
+      "Action": "SQS:GetObject",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user"
+    },
+    {
+      "id": "deny_096cc985",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    },
+    {
+      "id": "allow_fe48826d",
+      "Effect": "allow",
+      "Action": "SQS:GetObject",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "*"
+    }
+  ]
+}

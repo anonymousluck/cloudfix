@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_cea29e36",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:s3:::yyyyy-opensearch-snapshots/config.xml"
+    },
+    {
+      "id": "allow_e9327314",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::yyyyy-opensearch-snapshots/config.xml",
+        "arn:aws:s3:::yyyyy-opensearch-snapshots"
+      ]
+    },
+    {
+      "id": "allow_e8ad5045",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::yyyyy-opensearch-snapshots/config.xml"
+    },
+    {
+      "id": "allow_a4cd57ae",
+      "Effect": "allow",
+      "Action": "s3:DeleteObject",
+      "Resource": "arn:aws:s3:::yyyyy-opensearch-snapshots/config.xml"
+    },
+    {
+      "id": "deny_47726b56",
+      "Effect": "deny",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    }
+  ]
+}

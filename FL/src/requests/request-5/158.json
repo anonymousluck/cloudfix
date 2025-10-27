@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_dd06c604",
+      "Effect": "deny",
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "sns.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "119690846692"
+        }
+      }
+    },
+    {
+      "id": "deny_385537ce",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:sqs:eu-west-1:<YOUR_ACCOUNT_ID>:ams-eu-sp-traffic-queue",
+      "Principal": "arn:aws:iam::444555666777:user/external-user",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "allow_04d6556f",
+      "Effect": "allow",
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:sqs:eu-west-1:<YOUR_ACCOUNT_ID>:ams-eu-sp-traffic-queue",
+      "Principal": "sns.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "119690846692"
+        }
+      }
+    }
+  ]
+}

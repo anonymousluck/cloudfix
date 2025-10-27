@@ -1,0 +1,133 @@
+I've been following a combination of the following two guides:
+
+
+
+
+This one
+ from AWS which details using IOT with a ESP32
+
+
+And 
+this one
+ that if specific to an esp8266
+
+
+
+
+But despite following each guide as well as I can, my esp8266 connects to WIFI but never connects to IOT
+
+
+Here's my sketch
+
+
+#include "secrets.h"
+#include <PubSubClient.h>
+#include <WiFiClientSecure.h>
+//#include <MQTTClient.h>
+#include <ArduinoJson.h>
+#include <ESP8266WiFi.h>
+
+
+// The MQTT topics that this device should publish/subscribe
+#define AWS_IOT_PUBLISH_TOPIC   "esp8266/pub"
+#define AWS_IOT_SUBSCRIBE_TOPIC "esp8266/sub"
+
+WiFiClientSecure net; 
+
+BearSSL::X509List cert(AWS_CERT_CA);
+BearSSL::X509List client_crt(AWS_CERT_CRT);
+BearSSL::PrivateKey key(AWS_CERT_PRIVATE);
+//MQTTClient client = MQTTClient(256);
+
+PubSubClient client(net);
+
+void connectAWS()
+{
+  
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+  Serial.println("Connecting to Wi-Fi");
+
+  while (WiFi.status() != WL_CONNECTED){
+    delay(500);
+    Serial.print(".");
+  }
+
+  // Configure WiFiClientSecure to use the AWS IoT device credentials
+  
+  
+  //net.setCACert(AWS_CERT_CA);
+  //net.setCertificate(AWS_CERT_CRT);
+  //net.setPrivateKey(AWS_CERT_PRIVATE);
+  
+  net.setTrustAnchors(&cert);
+  net.setClientRSACert(&client_crt, &key);
+  
+  // Connect to the MQTT broker on the AWS endpoint we defined earlier
+  client.setServer(AWS_IOT_ENDPOINT, 8883);
+
+  // Create a message handler
+  client.setCallback(messageHandler);
+
+  Serial.print("Connecting to AWS IOT");
+
+  while (!client.connect(THINGNAME)) {
+    Serial.print(".");
+    delay(100);
+  }
+
+  if(!client.connected()){
+    Serial.println("AWS IoT Timeout!");
+    return;
+  }
+
+  // Subscribe to a topic
+  client.subscribe(AWS_IOT_SUBSCRIBE_TOPIC);
+
+  Serial.println("AWS IoT Connected!");
+}
+
+void publishMessage()
+{
+  StaticJsonDocument<200> doc;
+  doc["time"] = millis();
+  doc["sensor_a0"] = analogRead(0);
+  char jsonBuffer[512];
+  serializeJson(doc, jsonBuffer); // print to client
+
+  client.publish(AWS_IOT_PUBLISH_TOPIC, jsonBuffer);
+}
+
+void messageHandler(char *topic, byte *payload, unsigned int length) {
+  Serial.print("incoming: ");
+  Serial.print(topic);
+  Serial.print(" - ");
+  for (int i = 0; i < length; i++)
+  {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+  
+//  StaticJsonDocument<200> doc;
+//  deserializeJson(doc, payload);
+//  const char* message = doc["message"];
+}
+
+void setup() {
+  Serial.begin(9600);
+  connectAWS();
+}
+
+void loop() {
+  publishMessage();
+  client.loop();
+  delay(1000);
+}
+
+
+
+Additionally I confirmed that my thingname is correct and that my thing has an active and attached certificate with an attached policy that contains what I believe to be the right information. I've tried all the similar suggestions on repost but none have solved my problem and I am out of ideas of what could be wrong.
+
+
+Edit
+: Here is my policy

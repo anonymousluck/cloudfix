@@ -1,0 +1,38 @@
+I have defined the policy for a role in aws as:
+
+
+Statement":[
+	,
+	{
+	"Effect": "Allow",
+	"Action":[
+		"ssm:StartSession",
+		"ssm:TerminateSession",
+		"ssm:DescribeSessions",
+		"ssm:GetConnectionStatus"
+	],
+	"Resource: ["arn:aws:ec2:*:*:instance/*"]
+	},
+	{
+	"Action": [
+		"ssm: StartSession",
+		"ssm: TerminateSession",
+		"ssm: SendCommand"],
+	"Effect": "Allow",
+	"Resource: [
+		"arn:aws:ssm:*:*:document/AWS-RunShellScript",
+		"arn:aws:ssm:*:*:document/AWS-StartSSHSession",
+		"arn:aws:ssm:*:*:document/AWS-StartPortForwardingSessionToRemoteHost",
+		"arn:aws:ssm:*:*:document/SSM-SessionManagerRunShell"]
+	}
+]
+
+
+
+However, I still received a notification from aws:
+
+
+"In June 2024, we communicated to you about a change to AWS Systems Manager Session Manager where users with an AWS Identity and Access Management (IAM) policy scoped down to allow specific session documents must explicitly grant access to the SSM-SessionManagerRunShell document to start interactive shell sessions."
+
+
+I already updated my policy back in June as you see I add this permission. But still got this email in beginning of October. What did I do wrong here in setting up the policy?

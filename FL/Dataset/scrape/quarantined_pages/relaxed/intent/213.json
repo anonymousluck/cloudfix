@@ -1,0 +1,22 @@
+I have an OpenSearch domain deployed in AWS and want to manage it through Terraform provider. I have the following provider block. How do I set up an IAM role that can be used to access this domain through Terraform?
+
+
+provider "opensearch" {
+  aws_region = "<region>"
+  aws_profile = "<profile>"
+  healthcheck = true
+  url = "<domain_url>"
+  sign_aws_requests = false
+  aws_assume_role_arn = "<role_arn>"
+}
+
+
+
+I have tried by creating a role with the following trust policy and admin privileges, and added this role to the provider.
+
+
+
+
+
+
+But this does not work and gives me │ Error: elastic: Error 401 (Unauthorized) when I do terraform apply.

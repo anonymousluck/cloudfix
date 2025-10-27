@@ -1,0 +1,187 @@
+I have a few accounts in the following structure:
+
+
+
+
+mycompany-management
+ (billing account)
+
+
+
+
+mycompany-artifacts
+ (where ECR registry lives)
+
+
+mycompany-production
+ (where EKS lives)
+
+
+mycompany-development
+ (another account where a different EKS lives)
+
+
+
+
+
+
+
+
+We set up our account structure this way so that our container images live in a single place and are accessed by the various accounts using IAM roles on EKS nodes. Each node role for each node group for each EKS cluster is added to each ECR repository's IAM policy to grant access to either pull or push (or both) actions.
+
+
+This resource-based policy works for assigning what a given IAM principal can 
+do
+ with resources in the ECR repository, but unfortunately this cannot be used to allow the critical 
+ecr:GetAuthorizationToken
+ action required to allow 
+docker login
+ to work. That specific permission needs to have a wildcard for resources, and assigning them on the repository doesn't accomplish anything.
+
+
+I have created a role in the artifacts account where ECR lives, and even though I have granted the role access to ECR actions in the ECR repository policy, it does not work without assigning a policy to the role allowing 
+ecr:GetAuthorizationToken
+.
+
+
+ECR Repository IAM Policy
+
+
+Here is the IAM policy attached to the ECR repository directly:
+
+
+
+
+
+Note that for 
+AllowPush
+, I am granting access to a role 
+in the same account
+ which is the artifacts account.
+
+
+For 
+AllowPull
+, I am granting access to a role 
+across accounts
+ in the production account to the EKS node role to allow EKS in that account to pull images from this account.
+
+
+The above is insufficient and does not work, as clients cannot generate a login password for 
+docker login
+.
+
+
+IAM Role Attached Policy
+
+
+Since the "push role" above is in the same account, I have created an IAM policy and attached it to the role with the following contents:
+
+
+{
+
+
+    
+"PolicyVersion"
+:
+ 
+{
+
+
+        
+"Document"
+:
+ 
+{
+
+
+            
+"Statement"
+:
+ 
+[
+
+
+                
+{
+
+
+                    
+"Action"
+:
+ 
+"ecr:GetAuthorizationToken"
+,
+
+
+                    
+"Effect"
+:
+ 
+"Allow"
+,
+
+
+                    
+"Resource"
+:
+ 
+"*"
+,
+
+
+                    
+"Sid"
+:
+ 
+"AllowGetAuthToken"
+
+
+                
+}
+
+
+            
+]
+,
+
+
+            
+"Version"
+:
+ 
+"2012-10-17"
+
+
+        
+}
+
+
+    
+}
+
+
+}
+
+
+The combination of the ECR repository policy and this IAM role-attached policy allow the 
+ecr-push-my-demo-service
+ role to authenticate with ECR and to then push images to the repository.
+
+
+Problem
+
+
+The problem, of course, is that there doesn't appear to be a way for me to allow 
+ecr:GetAuthorizationToken
+ from an IAM principal that is not in the local account, in my case a cross-account role.
+
+
+Given an IAM role in another account, is there 
+any
+ way to allow it to generate an ECR authorization token for Docker login, or is there no way to do this?
+
+
+Alternately, is there a way to configure EKS in my production account to use the node role to 
+assume
+ a role in the artifacts account, granting access?

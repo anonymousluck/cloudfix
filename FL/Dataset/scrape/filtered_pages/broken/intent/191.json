@@ -1,0 +1,19 @@
+Hello.
+
+
+I am trying to configure specific iam permission for an user. I need a permission for only read tables from existing Data Catalog.
+So, I have configured this policiy:
+
+
+
+
+
+
+But, no errors appear in aws console, but data is not visible.
+IAM policy simulator says: "denied   Implicitly denied (no matching statements).", but I dont understand what is missing. Is there any way to validate what is missing or where is the error?
+
+
+I have tried to give AdministratorAccess to this user, but the same issue, data is no visible, so I have a question: as I have not configured AWS Glue from the beginning, could AWS Glue have been configured for allowing access to some roles or users? how?
+
+
+Thanks.

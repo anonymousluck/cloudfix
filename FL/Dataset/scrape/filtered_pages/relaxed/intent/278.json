@@ -1,0 +1,22 @@
+Bucket policy:
+
+
+
+
+
+From AWS CLI, got the "Access Denied" error when trying the List Bucket command as the above $username:
+
+
+C:>aws s3api list-buckets --profile $username
+
+
+An error occurred (AccessDenied) when calling the ListBuckets operation: Access Denied
+
+
+However, the same command above with the "Default" profile works fine:
+
+
+C:>aws s3api list-buckets (works fine)
+
+
+The AWS CLI installed is the latest version as of today, June 9 2023.

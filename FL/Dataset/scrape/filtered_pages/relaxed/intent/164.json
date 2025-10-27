@@ -1,0 +1,3 @@
+Here is the policy for which I get 403 error when I tried to send email from X account on behalf of Y. The Y account has both idenity and template.
+X is able to access idenity but not template.
+this policy is added to lambda in account X

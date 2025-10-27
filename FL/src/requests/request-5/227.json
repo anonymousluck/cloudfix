@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_c5ff37d7",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:sqs:eu-west-1:98xxxxx8745:nocodebots",
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "deny_6e6f2a67",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:sqs:eu-west-1:98xxxxx8745:nocodebots",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceArn": "arn:aws:sns:eu-west-1:98xxxxx8745:nocodebots"
+        }
+      }
+    },
+    {
+      "id": "allow_dd67339a",
+      "Effect": "allow",
+      "Action": "SQS:SendMessage",
+      "Resource": "arn:aws:sqs:eu-west-1:98xxxxx8745:nocodebots",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceArn": "arn:aws:sns:eu-west-1:98xxxxx8745:nocodebots"
+        }
+      }
+    }
+  ]
+}

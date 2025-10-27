@@ -1,0 +1,28 @@
+My best understanding of the "arn:aws:iam::[account-id]:root" principal is that it refers to all IAM users and roles in that account. Although I have found some confusing explanations of it, this one from the IAM course in AWS Skill Builder had a clear description:
+
+
+"When you use an AWS account identifier as the principal in a policy, you delegate authority to the account. Within that account, the permissions in the policy statement can be granted to all identities, including IAM users and roles in that account. "
+
+
+So I wanted to put that to the test by creating the following S3 bucket policy:
+
+
+
+
+
+
+My expectation was: any user (or assumed role) that is present in my account can list objects in this bucket without an explicit identity policy.
+Reality: access denied.
+
+
+Everything is happening in a single account (no cross-account activity)
+
+
+My confusion is compounded by the fact that the S3 example bucket policies use this format as well (
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html
+) and that the KMS default key policy (
+https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-root-enable-iam
+) also uses the ":root" principal for encryption/decryption access but that it also refused me access.
+
+
+How is this "account identifier" / "account principal" supposed to work? Am I completely misinterpreting the explanation I quoted above?

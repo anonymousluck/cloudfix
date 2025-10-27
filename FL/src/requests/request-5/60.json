@@ -1,0 +1,71 @@
+{
+  "Requests": [
+    {
+      "id": "allow_d36c9759",
+      "Effect": "allow",
+      "Action": "route53:ChangeResourceRecordSets",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "id": "deny_f7019bf3",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "route53:ChangeResourceRecordSetsRecordTypes": [
+            "A",
+            "AAAA"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_8418e551",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    },
+    {
+      "id": "allow_17962e76",
+      "Effect": "allow",
+      "Action": "route53:ChangeResourceRecordSets",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "route53:ChangeResourceRecordSetsRecordTypes": [
+            "A",
+            "AAAA"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_70cc0774",
+      "Effect": "allow",
+      "Action": "route53:ChangeResourceRecordSets",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "route53:ChangeResourceRecordSetsRecordTypes": [
+            "A",
+            "AAAA"
+          ]
+        }
+      }
+    }
+  ]
+}

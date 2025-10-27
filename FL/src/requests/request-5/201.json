@@ -1,0 +1,62 @@
+{
+  "Requests": [
+    {
+      "id": "allow_1393f770",
+      "Effect": "allow",
+      "Action": "ec2:DeleteTags",
+      "Resource": "arn:aws:ec2:*:*:instance/data.json",
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Team": "true"
+        }
+      }
+    },
+    {
+      "id": "deny_ca226580",
+      "Effect": "deny",
+      "Action": "ec2:DeleteTags",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_2749fa69",
+      "Effect": "allow",
+      "Action": [
+        "ec2:RunInstances",
+        "ec2:DeleteTags"
+      ],
+      "Resource": "arn:aws:ec2:*:*:instance/data.json",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "deny_58772c1a",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:ec2:*:*:instance/document.txt",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "192.168.1.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_4065ad72",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:ec2:*:*:instance/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+I've followed 
+https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html
+ to set up the following resources:
+
+
+A DynamoDB table with name H42318K04D
+
+
+IAM role with name "IoTCertificateExchangedRole" and the following inline policy:
+
+
+
+
+
+
+and trust policy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "credentials.iot.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+An IoT Thing with name "H42318K04D" and attached active IoT certificate with the following certificate policy:
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": {
+    "Effect": "Allow",
+    "Action": "iot:AssumeRoleWithCertificate",
+    "Resource": "arn:aws:iot:us-west-2:<accountId>:rolealias/IoTCertificateExchangedRoleAlias"
+  }
+}
+
+
+
+An IoT role alias with name "IoTCertificateExchangedRoleAlias", which is associated with the "IoTCertificateExchangedRole" role mentioned earlier.
+
+
+I was able to obtain temporary credential via the curl command:
+
+
+curl --cert device.crt --key device.key -H "z-amzn-iot-thingname: H42318K04D" https://<IoT credential provider endpoint>/role-aliases/IoTCertificateExchangedRoleAlias/credentials
+
+
+
+And use the temporary credentials to call 
+aws dynamodb describe-table --table-name H42318K04D --region us-west-2
+. However, whenever the IAM inline policy uses the 
+${credentials-iot:ThingName}
+ variable as indicated above, the call failed with:
+
+
+An error occurred (AccessDeniedException) when calling the DescribeTable operation: User: arn:aws:sts::<accountId>:assumed-role/IoTCertificateExchangedRole/db296615613581f5a82e70ae071e49a45c561e3b95598f1dd3c3194f19fcb4ab is not authorized to perform: dynamodb:DescribeTable on resource: arn:aws:dynamodb:us-west-2:<accountId>:table/H42318K04D because no identity-based policy allows the dynamodb:DescribeTable action
+
+
+
+When I updated the inline policy to the following and made the call again using the same set of credentials:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": {
+        "Effect": "Allow",
+        "Action": [
+            "dynamodb:DescribeTable"
+        ],
+        "Resource": "arn:aws:dynamodb:us-west-2:<accountId>:table/H42318K04D"
+    }
+}
+
+
+
+It correctly returned the table information.
+
+
+So, ${credentials-iot:ThingName} does not appear to be functioning correctly?
+
+
+Update: I did notice that the curl command always returns temporary credentials regardless of whether/what is supplied as the 
+z-amzn-iot-thingname
+ header.

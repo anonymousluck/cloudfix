@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_282d674c",
+      "Effect": "allow",
+      "Action": [
+        "aoss:ListCollections",
+        "aoss:GetSecurityPolicy"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_905d85b1",
+      "Effect": "allow",
+      "Action": [
+        "aoss:ListTagsForResource",
+        "aoss:CreateCollection"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_a0e99125",
+      "Effect": "deny",
+      "Action": "aoss:CreateAccessPolicy",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "deny_6d9778e5",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_8a3b6a34",
+      "Effect": "allow",
+      "Action": [
+        "aoss:CreateSecurityPolicy",
+        "aoss:ListAccessPolicies"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+Hi team,
+I want to read tables from redshift using glue (Account-a) and perform some transformation and load into S3 (Account-b). Is there any way I can do this. I have added trust relationships in account-b and added bucket policy for the bucket so that glue can assume the role and load into S3.
+
+
+Trust relationship:
+
+
+
+
+
+
+Bucket Policy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowGlueAccess",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<Account-a>:root"
+            },
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::test-bucket",
+                "arn:aws:s3:::test-bucket/*"
+            ]
+        }
+    ]
+
+
+
+Glue Script:
+
+
+bucket_name = "test-bucket"
+key = "000.csv"
+s3_client = boto3.client('s3')
+
+df = glueContext.create_dynamic_frame.from_options(connection_type="redshift") // I am able to read table
+df = df.toDF()
+csv_buffer = StringIO()
+df.toPandas().to_csv(csv_buffer, index=False)
+
+s3_client.put_object(Bucket=bucket_name, Key=key, Body=csv_buffer.getvalue())
+
+
+
+I am getting an error: Error Category: TIMEOUT_ERROR; ConnectTimeoutError: Connect timeout on endpoint URL
+
+
+I did try to assume role using script and getting error: Error Category: TIMEOUT_ERROR; ConnectTimeoutError: Connect timeout on endpoint URL: "
+https://sts.amazonaws.com/
+"
+
+
+Any help would be much appreciated

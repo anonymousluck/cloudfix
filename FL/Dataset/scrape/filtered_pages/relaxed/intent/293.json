@@ -1,0 +1,19 @@
+Hi all
+
+
+I can see account principals as follows. The following is a part of KMS key policy. What does that mean?
+
+
+Any IAM resources including users and roles in that account? Or any resources in that account?
+
+
+    
+
+
+
+I've looked at the documentation - 
+https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html
+, but it does not say clearly.
+
+
+Thanks.

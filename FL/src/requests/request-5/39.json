@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "deny_630594e3",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::[REDACTED BUCKET NAME]/document.txt",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_a1b6743a",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::[REDACTED BUCKET NAME]/config.xml",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    },
+    {
+      "id": "allow_05683601",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::[REDACTED BUCKET NAME]/document.txt",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_e761e195",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::[REDACTED BUCKET NAME]/data.json",
+        "arn:aws:s3:::[REDACTED BUCKET NAME]/document.txt"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "deny_86b20c30",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::[REDACTED BUCKET NAME]/data.json",
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    }
+  ]
+}

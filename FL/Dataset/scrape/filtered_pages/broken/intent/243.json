@@ -1,0 +1,25 @@
+Hi all,
+We have service hosted on ECS Fargate & we have an OpenSearch Domain that has fine-grained access enabled[user].
+On Service side we have enabled the OpenSearchServiceReadOnlyAccess since service is just doing get /search operations on the OpenSearch Domain
+
+
+
+On OpenSearch Domain side we have below -
+
+
+
+When a Service ECS task try to make search calls on OpenSearch Domain we get a bellow error -
+
+
+User: arn:aws:sts::xxxxxxxxxxxx:assumed-role/service-TaskRole/54bbad32d1f24ee99e40f74f36f076b5 is not authorized to perform: es:ESHttpPost because no identity-based policy allows the es:ESHttpPost action
+
+
+
+Can some one help . Do I need to add an Identity based policy like below -
+
+
+
+
+
+
+Or is there anything else we want to do ?

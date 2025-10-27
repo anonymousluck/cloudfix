@@ -1,0 +1,33 @@
+I have a flutter project running in an AWS S3 bucket which I can access thanks to its domain 
+https://web.buzoku.store
+, from said url the redirections work correctly. However, when I try to access a url from the browser, example:
+
+https://web.buzoku.store/entrepreneurship/tuyyo
+ access denied occurs
+
+
+<Error>
+<Code>AccessDenied</Code>
+<Message>Access Denied</Message>
+</Error>
+
+
+
+I have CORS configuration and in Policies Bucket the code that I leave below. So I was hoping it would work, but it doesn't.
+
+
+CORS
+"AllowedOrigins": [
+"https://web.buzoku.store/*"
+]
+
+
+
+Policies Bucket:
+
+
+
+
+
+
+I'm additionally working with CloudFront, but I didn't see that I could do anything from there. Thanks for the help

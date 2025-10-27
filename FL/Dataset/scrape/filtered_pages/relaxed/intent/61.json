@@ -1,0 +1,11 @@
+I'm experiencing an intermittent HTTP 429 error in AWS CodeBuild when the build is triggered through a Lambda function. The same build works perfectly fine when manually triggered through the AWS Console.
+
+
+git fetch failed with exit status 128: POST git-upload-pack 
+error: RPC failed; HTTP 429 curl 22 The requested URL returned error: 429
+fatal: the remote end hung up unexpectedly
+for primary source and source version refs/heads/otg-beta
+
+
+
+Permissions

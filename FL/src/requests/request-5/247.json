@@ -1,0 +1,65 @@
+{
+  "Requests": [
+    {
+      "id": "deny_c557ec1c",
+      "Effect": "deny",
+      "Action": "s3:ListMultipartUploadParts",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_169d5053",
+      "Effect": "allow",
+      "Action": "s3:AbortMultipartUpload",
+      "Resource": "arn:aws:s3:::grafana-athena-query-results-document",
+      "Condition": {
+        "Null": {
+          "aws:ResourceTag/GrafanaDataSource": "false"
+        }
+      }
+    },
+    {
+      "id": "allow_2617a6f1",
+      "Effect": "allow",
+      "Action": [
+        "athena:ListDataCatalogs",
+        "s3:PutBucketPublicAccessBlock"
+      ],
+      "Resource": "arn:aws:s3:::grafana-athena-query-results-data123",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "allow_81b1f1ba",
+      "Effect": "allow",
+      "Action": "glue:BatchGetPartition",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:ResourceTag/GrafanaDataSource": "false"
+        }
+      }
+    },
+    {
+      "id": "deny_7904da28",
+      "Effect": "deny",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "Null": {
+          "aws:ResourceTag/GrafanaDataSource": "false"
+        }
+      }
+    }
+  ]
+}

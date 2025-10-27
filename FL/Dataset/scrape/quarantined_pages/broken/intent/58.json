@@ -1,0 +1,21 @@
+Is it possible to have a single IAM role for OpenID Connect, which allows multiple repos, or even the entire GitHub org to assume it, yet have different permissions by repo?
+
+
+For example, I have a trust policy like this:
+
+
+
+
+
+And I'd like to grant the repo 
+org/foo
+ one set of permissions and 
+org/bar
+ another.
+
+
+The idea is to have a single "well-known" role, which we can also hard code, so that we wouldn't have to create separate roles for each repo.
+
+
+See: 
+https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services

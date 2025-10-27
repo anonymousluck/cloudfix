@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_58b8cf47",
+      "Effect": "deny",
+      "Action": "iam:ListAttachedUserPolicies",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_e2ae3f47",
+      "Effect": "allow",
+      "Action": [
+        "s3:AbortMultipartUpload",
+        "iam:ListAccessKeys"
+      ],
+      "Resource": "arn:aws:s3:::east1-vcc-test"
+    },
+    {
+      "id": "allow_2af2badd",
+      "Effect": "allow",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": [
+        "arn:aws:iam::*:user/Veeam-file1",
+        "arn:aws:iam::*:user/Veeam-document"
+      ]
+    },
+    {
+      "id": "deny_c8282556",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::east1-vcc-test/config.xml"
+    },
+    {
+      "id": "allow_1e73845a",
+      "Effect": "allow",
+      "Action": [
+        "iam:GetPolicyVersion",
+        "s3:ListMultipartUploadParts"
+      ],
+      "Resource": "arn:aws:s3:::east1-vcc-test"
+    }
+  ]
+}

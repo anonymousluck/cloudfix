@@ -1,0 +1,37 @@
+I'm trying to make changes to a Route 53 hosted zone in one account (Account A), from a different AWS account (yep – Account B). The two accounts are enrolled in the same Organisation. We use IAM Identity Center to sign in (so not vanilla IAM).
+
+
+I have edited the permission set for the Identity Center user, with an inline policy to allow access to the Route 53 hosted zone:
+
+
+
+
+
+However, I keep getting permission denied errors:
+
+
+% aws route53 get-hosted-zone --profile staging --id <zoneid>
+
+
+An error occurred (AccessDenied) when calling the GetHostedZone operation: User: arn:aws:sts::<account-b>:assumed-role/AWSReservedSSO_AdministratorAccess_<etc>/<identity-center-user> is not authorized to access this resource
+
+
+I've checked the user is correct with 
+aws sts get-caller-identity --profile staging
+.
+
+
+The same request from my Identity Center user signed in to Account A (
+aws route53 get-hosted-zone --profile develop --id <zoneid>
+) works as it normally would, with a description of the zone.
+
+
+As a sanity-check I also made a role in Account A to allow a trust relationship with the Identity Center user, and group, and account root, but still get the same error.
+
+
+… which makes me wonder if there are some Route 53 wrinkles that make x-account access a bit trickier. AWS 
+seems to think
+ it should be doable though!
+
+
+Will appreciate any guidance, thank you.

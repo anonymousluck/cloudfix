@@ -1,0 +1,84 @@
+Hello everyone, I've been trying to update my code from SES to SES v2 without success. I've done countless research and tried changing the code on my app, giving permissions to both myself and my email account but it's all useless, somehow my app still has the limit of 10MB per email. I'm using nodemailer and I have the latest SDK (^2.1644.0).
+
+
+These are the policies that I'm using:
+
+
+
+
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "stmt1718786276145",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::111222333444:root"
+            },
+            "Action": [
+                "ses:SendEmail",
+                "ses:BatchGetMetricData"
+            ],
+            "Resource": "arn:aws:ses:my-region-1:111222333444:identity/myemail@mail.com",
+            "Condition": {}
+        }
+    ]
+}
+
+
+
+And this is my code (NextJS + nodemailer):
+
+
+import { SESv2Client, SendEmailCommand, type SendEmailCommandInput } from '@aws-sdk/client-sesv2';
+import type Mail from 'nodemailer/lib/mailer';
+import MailComposer from 'nodemailer/lib/mail-composer/index';
+
+const ses = new SESv2Client({
+    apiVersion: '2019-09-27',
+    region: 'process.env.REGION',
+    credentials: {
+        secretAccessKey: process.env.SECRET_KEY,
+        accessKeyId: process.env.ACCESS_KEY
+    },
+    maxAttempts: 3
+});
+
+const mailOptions: Mail.Options = {
+    from: `${name} <mail@mail.com>`,
+    to: 'mail2@mail2.com',
+    subject: `${subject}`,
+    text: `${text}`,
+    html: `${htmlText}`,
+    attachDataUrls: false,
+    attachments: []
+};
+
+if (file !== undefined) {
+    mailOptions.attachments?.push(file as Attachment);    
+}
+
+const rawMailData = await new MailComposer(mailOptions).compile().build();
+
+try {
+    
+    const input: SendEmailCommandInput = {
+        Content: {
+            Raw: {
+                Data: rawMailData
+            }
+        }
+    };
+
+    const command = new SendEmailCommand(input);
+    const response = await ses.send(command);
+
+    console.log(response);
+    resNumber = (response.MessageId != null) ? 200 : 500;
+    return NextResponse.json({ data: response }, { status: resNumber });
+} catch (error: any) {
+    console.error(error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+}

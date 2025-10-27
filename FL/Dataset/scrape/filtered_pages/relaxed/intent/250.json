@@ -1,0 +1,14 @@
+After switching the alternate secrets backend to the Parameter store I was able to retrieve connections/variables from the SSM Parameter store, but the only issue was the task logs page in the Airflow webserver UI was stuck in a loading state. I can still view task logs from the Cloudwatch portal.
+
+
+
+
+Airflow config
+
+
+secrets.backend	airflow.providers.amazon.aws.secrets.systems_manager.SystemsManagerParameterStoreBackend
+secrets.backend_kwargs	{"connections_prefix" : "airflow/connections", "variables_prefix" : "airflow/variables"}
+
+
+
+SystemsManager policy attached to execution role

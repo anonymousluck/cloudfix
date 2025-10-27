@@ -1,0 +1,81 @@
+Hi everyone,
+
+
+Hoping someone here might have seen this before or have some insight, because I've hit a really strange wall with IAM policies and Amazon Polly.
+My goal is pretty straightforward: I want to use Polly's asynchronous StartSpeechSynthesisTask API to generate audio and have Polly save the output MP3 directly to an S3 bucket.
+
+
+The problem is, whenever I try to grant the Polly service (polly.amazonaws.com) the necessary permission (s3:PutObject), I get an 
+Invalid principal in policy error
+. This happens whether I try using an IAM Role's Trust Policy or an S3 Bucket Policy directly.
+The exact error is usually MalformedPolicyDocument: Invalid principal in policy: "SERVICE":"polly.amazonaws.com" – which is extra confusing because the error message mentions "SERVICE" (all caps), but I'm definitely using the correct "Service": "polly.amazonaws.com" (capital S) in my JSON policies.
+
+
+Here's what I've tried already:
+
+
+
+
+
+
+IAM Role Method: I created an IAM Role (PollyS3WriteRole) and tried to set its Trust Policy to allow polly.amazonaws.com to assume it (with conditions for my account and region). I used this policy JSON:
+// Role Trust Policy Attempt
+
+Result: Failed with the "Invalid principal" error both in the AWS Console and using the AWS CLI (aws iam update-assume-role-policy).
+I checked the file content with cat right before running the CLI, and it definitely had "Service":.
+
+
+
+
+
+
+S3 Bucket Policy Method: As an alternative, I tried adding a statement directly to my target S3 bucket's policy:
+// S3 Bucket Policy Statement Attempt
+{
+"Sid": "AllowPollyToWriteOutputToBucket",
+"Effect": "Allow",
+"Principal": {
+"Service": "polly.amazonaws.com"
+},
+"Action": "s3:PutObject",
+"Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/YOUR_PREFIX/
+",
+"Condition": {
+"StringEquals": {
+"aws:SourceAccount": "YOUR_ACCOUNT_ID"
+},
+"ArnLike": {
+"aws:SourceArn": "arn:aws:polly:REGION:YOUR_ACCOUNT_ID:speech-synthesis-task/
+"
+}
+}
+}
+Result: Failed with the same "Invalid principal" error when trying to save via the AWS Console.
+
+
+
+
+
+
+Further Troubleshooting:
+
+
+
+
+I've encountered this exact same error in both ca-central-1 and us-east-1.
+
+
+What's really throwing me off is that other principals work fine! I was able to successfully save:
+An S3 Bucket Policy using my root ARN ("Principal": { "AWS": "arn:aws:iam::YOUR_ACCOUNT_ID:root" }).
+An IAM Role Trust Policy using the Lambda service principal ("Principal": { "Service": "lambda.amazonaws.com" }).
+
+
+
+
+This makes it seem like the issue is specifically with using polly.amazonaws.com as a principal in these policy documents within my account context.
+I've triple-checked syntax, capitalization (Service vs SERVICE), tried the CLI to rule out console UI issues, and tested across regions. I'm running out of ideas!
+
+
+Since I'm on the Basic support plan, I can't open a direct technical case for this. Has anyone run into issues using polly.amazonaws.com as a principal in ca-central-1 or other regions? Is there some undocumented nuance or limitation I might be missing?
+Any help or pointers would be hugely appreciated!
+Thanks!

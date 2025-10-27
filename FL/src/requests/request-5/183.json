@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "allow_f97933e8",
+      "Effect": "allow",
+      "Action": "ssmmessages:OpenDataChannel",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_87c4da46",
+      "Effect": "allow",
+      "Action": [
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "deny_20d8c79a",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_0da04949",
+      "Effect": "allow",
+      "Action": [
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:OpenControlChannel"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_1dde7e28",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

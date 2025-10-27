@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_7a53bb1a",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::LOG_BUCKET_IN_ACCOUNT_B/document.txt",
+        "arn:aws:s3:::LOG_BUCKET_IN_ACCOUNT_B/data.json"
+      ]
+    },
+    {
+      "id": "deny_72ff2342",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:s3:::LOG_BUCKET_IN_ACCOUNT_B/data.json"
+    },
+    {
+      "id": "allow_68e38ff5",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::LOG_BUCKET_IN_ACCOUNT_B/data.json",
+        "arn:aws:s3:::LOG_BUCKET_IN_ACCOUNT_B/config.xml"
+      ]
+    },
+    {
+      "id": "allow_e89ff233",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::LOG_BUCKET_IN_ACCOUNT_B/config.xml",
+        "arn:aws:s3:::LOG_BUCKET_IN_ACCOUNT_B/document.txt"
+      ]
+    },
+    {
+      "id": "deny_170a4717",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    }
+  ]
+}

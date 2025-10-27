@@ -1,0 +1,38 @@
+I want to use one route in an rest api gateway to be available to any IAM access within a part of my organization.
+
+
+From my understanding an the documentations I've read it should work, but I'm unable to get it running.
+With the 
+aws:ResourceOrgPaths
+[1] I should be able to write the condition and it's available within the resource policy [2].
+
+
+With this policy I get "... is not authorized to perform: execute-api:Invoke on ..."
+
+
+
+
+
+
+Without the condition it just works fine obviously.
+
+
+With this condition it works fine as well:
+
+
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceOrgID": "o-orgid"
+        }
+      }
+
+
+
+Something I'm missing with the ResourceOrgPaths here. Can somebody help with some light in the dark? Thanks!
+
+
+[1] 
+https://aws.amazon.com/blogs/security/how-to-control-access-to-aws-resources-based-on-aws-account-ou-or-organization/
+
+[2] 
+https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-aws-condition-keys.html

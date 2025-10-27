@@ -1,0 +1,49 @@
+I'm working with the Alpakka AWS s3 (
+https://doc.akka.io/docs/alpakka/current/s3.html
+) connector and running into an issue with the way it validates the existence of a bucket. I've narrowed down the issue to the use of a condition in my IAM policy that I can't seem to find a workaround for. Hoping someone here might have a suggestion.
+
+
+A bit of background: I have an s3 bucket "my-bucket" with multiple sub-folders. I need to restrict access to a specific subfolder for a specific user. To accomplish this, I have created the following policy:
+
+
+
+
+
+
+With this policy I'm able to successfully use the AWS CLI s3 functions to confirm the desired access level to the 
+my-bucket/users/chris
+ sub-folder.
+
+
+$ aws s3 ls my-bucket
+                           PRE users/
+$ aws s3 ls my-bucket/users/chris/
+2023-02-27 16:21:43          0
+2023-02-27 16:22:25   11801099 1003.csv
+2023-02-27 16:22:32   11569175 1020.csv
+2023-02-27 16:22:45   12099242 1091.csv
+2023-02-27 16:23:02   11445674 1132.csv
+2023-02-27 16:23:35   11796654 1145.csv
+$ aws s3 cp s3://my-bucket/users/chris/1003.csv ./
+download: s3://my-bucket/users/chris/1003.csv to ./1003.csv
+
+
+
+The issue I'm running into is that the Alpakka AWS s3 bucket check (
+https://doc.akka.io/docs/alpakka/current/s3.html#check-if-bucket-exists
+) uses the HeadBucket endpoint (
+https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadBucket.html
+) to validate access to the bucket. This requires 
+s3:ListBucket
+ privilege on the bucket, but it seems that the condition in my AllowRootLevelListingOfBucket statement in the policy results in a 403 response from the HeadBucket endpoint:
+
+
+$ aws s3api head-bucket --bucket my-bucket
+An error occurred (403) when calling the HeadBucket operation: Forbidden
+
+
+
+The quick fix is to remove the StringEquals condition in the AllowRootLevelListingOfBucket statement, but this allows full listing of the bucket, which is not acceptable.
+
+
+Any ideas on how to maintain the bucket and sub-folder restrictions and get a successful response from the HeadBucket endpoint?

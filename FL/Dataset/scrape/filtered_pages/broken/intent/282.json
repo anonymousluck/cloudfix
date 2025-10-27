@@ -1,0 +1,145 @@
+I'm piloting a ReactJS (
+16.14.0
+) web site with CloudFront and S3 to store the ReactJS app resources.  For authentication I use Cognito and an external idP, which redirects back to the React App authentication callback.   I get a 403 during the redirect, which I assume is because the URL doesn't represent a physical resource in the bucket.
+How do I resolve this?
+In my research suggestions include S3 redirection rules for 403 & 404 with "ReplaceKeyPrefixWith": "#!/".
+
+
+Details:
+
+
+
+
+Access the web site at 
+https://
+xxxxx
+.cloudfront.net/
+
+
+Redirect to the login page:  
+https://
+xxxxx
+.cloudfront.net/login and click the login button
+
+
+Application issues a 
+GET https://
+xxxxx
+.us-east-1.amazoncognito.com/oauth2/authorize?response_type=code&client_id=
+xxxxxxxxx
+&state=
+xxxxx
+&scope=profile%20openid%20email%20aws.cognito.signin.user.admin&redirect_uri=https%3A%2F%
+xxxxx
+.cloudfront.net%2Fauthentication%2Fcallback&code_challenge=
+xxxxxxxxxxxxxx
+&code_challenge_method=S256
+
+
+Log in through the iDP and Cognito redirects to the authentication callback
+
+https://
+xxxxx
+.cloudfront.net/authentication/callback?code=xxxxxxx&state=xxxxxx
+
+
+Result is a 403 and the payload is XML with Code and Message "Access Denied"
+
+
+
+
+CloudFront configuration:
+
+
+
+
+General:  Price Class:NA & Europe, Default root object:  index.html
+
+
+Security:  Defaults.  WAF is disabled
+
+
+Origins: (S3)  xxxxxxxx.s3.us-east-1.amazonaws.com
+
+
+
+
+Origin access control settings, type: S3, sign requests, Origin Shield disabled
+
+
+
+
+
+
+Behaviors:  Redirect HTTP to HTTPS
+
+
+Error pages:  none
+
+
+Invalidations:  none
+
+
+
+
+S3 configuration
+
+
+
+
+Encryption SSE-S3
+
+
+Static website hosting:  Enabled
+
+
+
+
+Hosting type:  Host a static website
+
+
+Index document:  index.html, Error document:  index.html
+
+
+Redirection rules:
+
+
+
+
+
+
+
+
+[
+    {
+        "Condition": {
+            "HttpErrorCodeReturnedEquals": "403"
+        },
+        "Redirect": {
+            "HostName": "xxxxx.cloudfront.net",
+            "Protocol": "https",
+            "ReplaceKeyPrefixWith": "#!/"
+        }
+    },
+    {
+        "Condition": {
+            "HttpErrorCodeReturnedEquals": "404"
+        },
+        "Redirect": {
+            "HostName": "xxxxx.cloudfront.net",
+            "Protocol": "https",
+            "ReplaceKeyPrefixWith": "#!/"
+        }
+    }
+]
+
+
+
+
+
+Block 
+all
+ public access:  On
+
+
+Bucket policy:

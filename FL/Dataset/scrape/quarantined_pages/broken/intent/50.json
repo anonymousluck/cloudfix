@@ -1,0 +1,61 @@
+I am trying to create a Job via the Java SDK (v2)
+
+
+        S3ControlClient s3ControlClient = S3ControlClient.builder()
+                .credentialsProvider(staticCredentialsProvider)
+                .region(Region.EU_WEST_1)
+                .build();
+--- some code to build the operation ---
+
+        CreateJobRequest jobRequest = CreateJobRequest.builder()
+                .accountId(s3Properties.getId())
+                .description("Duplication job created by ...")
+                .manifest(jobManifest)
+                .operation(copyJobOperation)
+                .report(jobReport)
+                .roleArn(jobStagingARNRole)
+                .priority(10)
+                .clientRequestToken(UUID.randomUUID().toString())
+                .confirmationRequired(false)
+                .build();
+        s3ControlClient.createJob(jobRequest);
+
+
+
+Based on this link 
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/batch-ops-iam-role-policies.html
+
+
+The S3ControlClient (staging-user) has the following permissions:
+
+
+iam:PassRole
+sts:AssumeRole
+s3:CreateJob
+
+
+
+The jobStagingARNRole has the following permissions:
+
+
+s3:CreateJob
+sts:AssumeRole
+iam:PassRole
+s3: (PutObject, GetObject)
+
+
+
+For testing purposes all permissions with 
+"Resource": "*"
+
+
+and the following Trust relationship
+
+
+
+
+
+
+But I do still get an AccessDenied error.
+What am I missing?
+Thank you

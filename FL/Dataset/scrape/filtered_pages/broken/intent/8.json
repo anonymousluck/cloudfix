@@ -1,0 +1,43 @@
+I am using AWS Database Migration Service (DMS) to replicate Change Data Capture (CDC) data from Aurora PostgreSQL Serverless to Amazon Kinesis Data Streams. My Aurora PostgreSQL source endpoint works fine, but when I try to test my Kinesis target endpoint, it fails with the following error:
+
+
+"Test Endpoint failed: Application-Status: 1020912, Application-Message: Failed to connect to database."
+
+
+Troubleshooting Steps Taken So Far
+
+
+
+
+
+
+The IAM role dms-kinesis-role attached to DMS has the following permissions
+
+
+
+
+
+
+
+The role is trusted by DMS
+
+
+
+
+
+
+Verified Kinesis Stream Exists & is Active on the same region.
+
+
+
+
+
+
+Also, my public subnet has NAT gateway, and I enabled public access in the DMS as well.
+
+
+
+
+
+
+Are there any additional IAM permissions or settings required for Kinesis?

@@ -1,0 +1,25 @@
+Starting about 1 day ago (first error at Dec 11, 2024 1:03:35 AM UTC), I began to receive a 
+400 Bad Request
+ error response to all my requests to create MediaConvert jobs in us-west-2.
+
+
+This is strange because it was working perfectly before (last successful job at Dec 10, 2024 11:43:34 PM UTC), and nothing has changed in my application or AWS account during that time.
+
+
+The error message says (where ACCOUNT_ID is my actual account ID, redacted for posting here):
+
+
+The role 'arn:aws:iam::ACCOUNT_ID:role/services/mediaconvert/MediaConvertRole-assets-prod' is not a valid ARN.
+
+
+
+I have double checked and this 
+is
+ a valid ARN of a role which exists in the account and has the following Trust Relationship policy required for MediaConvert:
+
+
+
+
+
+
+Could I be doing something wrong, or is this a fault with AWS?

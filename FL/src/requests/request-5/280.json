@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_fed51bb6",
+      "Effect": "allow",
+      "Action": "Get:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "allow_ce9b9179",
+      "Effect": "allow",
+      "Action": "Get:GetObject",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_35434e4e",
+      "Effect": "allow",
+      "Action": "Get:GetObject",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized"
+    },
+    {
+      "id": "deny_eb316a6e",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "*"
+    },
+    {
+      "id": "deny_acabf716",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role"
+    }
+  ]
+}

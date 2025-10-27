@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "deny_92bb01bd",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:firehose:delivery-region:111122223333:deliverystream/delivery-stream-name"
+    },
+    {
+      "id": "allow_5427e858",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:firehose:delivery-region:111122223333:deliverystream/delivery-stream-name"
+    },
+    {
+      "id": "deny_247cae21",
+      "Effect": "deny",
+      "Action": "GetObject",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    }
+  ]
+}

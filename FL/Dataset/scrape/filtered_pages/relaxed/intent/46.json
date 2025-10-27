@@ -1,0 +1,4 @@
+Cloudfront automatically added these bucket policy rules, but now my IAM user + production IAM role can't access the bucket to perform head object operation. How do I modify this to allow for object access for my server?
+
+
+I also already tried using principle. It didn't work. The IAM user has full access to S3

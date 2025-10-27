@@ -1,0 +1,269 @@
+I am trying to create a minimal working example for working with AWS OpenSearch Serverless. With the help of 
+this
+ tutorial, this is the code:
+
+
+import
+ boto3
+
+from
+ opensearchpy 
+import
+ OpenSearch
+,
+ RequestsHttpConnection
+,
+ AWSV4SignerAuth
+
+
+
+host 
+=
+ 
+'onb565zzbfkjr3spn8v5.us-east-1.aoss.amazonaws.com'
+
+
+region 
+=
+ 
+'us-east-1'
+
+
+
+
+credentials 
+=
+ boto3
+.
+Session
+(
+)
+.
+get_credentials
+(
+)
+
+
+auth 
+=
+ AWSV4SignerAuth
+(
+credentials
+,
+ region
+)
+
+
+client 
+=
+ OpenSearch
+(
+
+
+    hosts 
+=
+ 
+[
+{
+
+
+        
+'host'
+:
+ host
+,
+
+
+        
+'port'
+:
+ 
+443
+
+
+    
+}
+]
+,
+
+
+    http_auth 
+=
+ auth
+,
+
+
+    use_ssl 
+=
+ 
+True
+,
+
+
+    verify_certs
+=
+True
+,
+
+
+    connection_class 
+=
+ RequestsHttpConnection
+
+)
+
+
+
+
+def
+ 
+create_index
+(
+index_name
+)
+:
+
+
+    index_body 
+=
+ 
+{
+
+
+      
+'settings'
+:
+ 
+{
+
+
+        
+'index'
+:
+ 
+{
+
+
+          
+'number_of_shards'
+:
+ 
+1
+
+
+        
+}
+
+
+      
+}
+
+
+    
+}
+
+
+    response 
+=
+ client
+.
+indices
+.
+create
+(
+index_name
+,
+ body
+=
+index_body
+)
+
+
+    
+print
+(
+'\nCreating index:'
+)
+
+
+    
+print
+(
+response
+)
+
+
+
+
+create_index
+(
+'myindex'
+)
+
+
+I have performed the following steps:
+
+
+
+
+Created an IAM user that has the policies 
+AmazonOpenSearchServiceFullAccess
+ and 
+AmazonESFullAccess
+ (just in case). I also added two inline policies:
+
+
+
+
+
+
+
+
+and
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "aoss:DashboardsAccessAll",
+            "Resource": "*"
+        }
+    ]
+}
+
+
+
+(for some reason, the latter two permissions are not shown when I create a collection)
+
+
+
+
+
+
+Executed 
+aws configure
+ to provide the keys and the region.
+
+
+
+
+
+
+Created a collection with the rule for 
+Public
+ access, the IAM user as the selected principal, and all accesses enabled.
+
+
+
+
+
+
+Despite all this, I get 403 (Access denied) when trying to create an index. What could I be missing?
+
+
+P.S. I had previously posted this question in 
+StackOverflow
+.

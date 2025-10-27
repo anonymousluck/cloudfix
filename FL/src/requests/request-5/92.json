@@ -1,0 +1,71 @@
+{
+  "Requests": [
+    {
+      "id": "deny_387426b3",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "secretsmanager:ResourceTag/ServerName": "ServerABC"
+        }
+      }
+    },
+    {
+      "id": "allow_c9e234ae",
+      "Effect": "allow",
+      "Action": "secretsmanager:GetResourcePolicy",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "secretsmanager:ResourceTag/ServerName": "ServerABC"
+        }
+      }
+    },
+    {
+      "id": "deny_797defb5",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:max-keys": "10"
+        }
+      }
+    },
+    {
+      "id": "allow_9e5c4a8c",
+      "Effect": "allow",
+      "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:DescribeSecret"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "secretsmanager:ResourceTag/ServerName": "ServerABC"
+        }
+      }
+    },
+    {
+      "id": "allow_98b52008",
+      "Effect": "allow",
+      "Action": [
+        "secretsmanager:ListSecretVersionIds",
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    }
+  ]
+}

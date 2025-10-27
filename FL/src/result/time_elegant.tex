@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\caption{Policy Repair Time Analysis: Baseline vs Fault Localization}
+\label{tab:time_analysis}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{Requirements} & \textbf{Method} & \textbf{Success} & \textbf{Iterations} & \textbf{Total} & \textbf{SMT} & \textbf{LLM} \\
+& & & & \textbf{(s)} & \textbf{(s)} & \textbf{(s)} \\
+\midrule
+\multirow{2}{*}{10} & Baseline & 136/282 & 3.1 & 370 & 3.0 & 367 \\
+ & FL & 237/282 & 1.8 & 136 & 0.3 & 136 \\
+\midrule
+\multirow{2}{*}{20} & Baseline & 149/282 & 2.9 & 667 & 8.6 & 659 \\
+ & FL & 170/282 & 2.8 & 456 & 0.4 & 456 \\
+\midrule
+\multirow{2}{*}{30} & Baseline & 63/282 & 4.1 & 827 & 11.0 & 816 \\
+ & FL & 153/282 & 3.1 & 547 & 1.1 & 546 \\
+\bottomrule
+\end{tabular}
+\end{table}

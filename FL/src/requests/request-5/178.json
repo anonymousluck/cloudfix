@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_93d58d38",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "deny_a8dc6085",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_d98ddc1d",
+      "Effect": "allow",
+      "Action": [
+        "logs:PutLogEvents",
+        "logs:CreateLogStream"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_8150d7e0",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_a2ae4321",
+      "Effect": "allow",
+      "Action": [
+        "logs:DescribeLogGroups",
+        "sns:Publish"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    }
+  ]
+}

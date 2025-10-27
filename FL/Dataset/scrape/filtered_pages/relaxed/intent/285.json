@@ -1,0 +1,14 @@
+Hi AWS, the IAM users in our AWS accounts are mostly having AWS managed policy 
+AWSAdministratorAccess
+ attached to it which allows it to access all the AWS services and performs most of the read/write action if not every. We need to restrict the users from decrypting the KMS key, so the easiest and fastest deployment I thought is to add a 
+Deny
+ section for KMS Decrypt API by modifying the 
+AWSAdministratorAccess
+ policy and attach a newly modified customer managed IAM policy. Here is the code:
+
+
+
+
+
+
+Please acknowledge and confirm if it is the right way of doing the things or is there a better way like using an SCP etcetera. Also confirm if I use this policy will it going to work or not?

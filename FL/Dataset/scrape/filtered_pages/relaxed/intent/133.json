@@ -1,0 +1,26 @@
+I have a codebuild project in the account "A" in region "A"
+I need to snyc files to another bucket in the account "B" on region "B"
+
+
+The s3 bucket has "Block all public access" ON and the following policy
+
+
+
+
+
+And the role codebuild-service-role-foo-bar has temporally admin rights permissions.
+
+
+The line that fails is:
+
+aws s3 sync . s3://mytestbucket --region B --delete
+
+
+
+
+fatal error: An error occurred (AccessDenied) when calling the ListObjectsV2 operation: Access Denied
+
+
+
+
+What is the root cause? the codebuild role has admin rights, aws cli is not using that permissions? I have something wrong in the s3 principal policy? I something related with the region?

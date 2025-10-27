@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "allow_4f8f2baa",
+      "Effect": "allow",
+      "Action": [
+        "ses:SendEmail",
+        "ses:SendTemplatedEmail"
+      ],
+      "Resource": [
+        "arn:aws:ses:${region}:${account_Y}:template/TEMPLATE",
+        "arn:aws:ses:${region}:${account_Y}:identity/${email_identity}"
+      ]
+    },
+    {
+      "id": "allow_07aebe24",
+      "Effect": "allow",
+      "Action": [
+        "ses:SendEmail",
+        "ses:SendTemplatedEmail"
+      ],
+      "Resource": "arn:aws:ses:${region}:${account_Y}:identity/${email_identity}"
+    },
+    {
+      "id": "deny_bc1006f7",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:ses:${region}:${account_Y}:identity/${email_identity}"
+    },
+    {
+      "id": "deny_c48508a7",
+      "Effect": "deny",
+      "Action": "ses:SendEmail",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_2a29523d",
+      "Effect": "allow",
+      "Action": "ses:SendTemplatedEmail",
+      "Resource": [
+        "arn:aws:ses:${region}:${account_Y}:identity/${email_identity}",
+        "arn:aws:ses:${region}:${account_Y}:template/TEMPLATE"
+      ]
+    }
+  ]
+}

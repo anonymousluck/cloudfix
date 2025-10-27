@@ -1,0 +1,99 @@
+Hello,
+
+
+We have a root AWS account and a child account for another application called prod.
+I want to give IAM users Full S3 Access to all the buckets in both the root account and the prod account.
+
+
+In order to achieve this,
+I have created a role in the prod account with the following policies:
+
+
+
+
+AmazonS3FullAccess (AWS Managed Policy)
+
+
+An Inline Policy:
+
+
+
+
+
+
+
+
+In the Trust Relationship for this role, I have the set the following trust relationship, so that users from the root account can access the buckets in the prod account.
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<root_account_id>:root"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {
+                "Bool": {
+                    "aws:MultiFactorAuthPresent": "true"
+                }
+            }
+        }
+    ]
+}
+
+
+
+Now, In the root account, I have attached the following policy to the user through a Group:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::<prod_account_id>:role/ProdS3FullAccessRole"
+            ]
+        }
+    ]
+}
+
+
+
+The group also has policies attached for MFA and IAM ChangePassword.
+
+
+When the user uses their Access Key and Secret Access Key to download files from a bucket in the root account, they get an Access Denied error. I can confirm that there is no Deny statement blocking any access to any bucket nor any bucket level policy.
+I am unable to find out what is wrong with the set up.
+
+
+I'd really appreciate some help.
+Thank you in advance.
+
+
+EDIT:
+
+
+As suggested in answers below, I have also tried setting up a bucket policy in the root account, to grant access to the bucket for the Prod access role that gets assumed by the user. The user still gets an Access Denied error on trying to use the access keys to perform operations on a root S3 bucket, generated for their IAM user.
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AddPerm",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<prod_account_id>:role/ProdS3FullAccessRole"
+            },
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::<bucket-name>"
+        }
+    ]
+}

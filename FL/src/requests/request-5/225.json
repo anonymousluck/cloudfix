@@ -1,0 +1,65 @@
+{
+  "Requests": [
+    {
+      "id": "deny_9a63abba",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "allow_84b2cd3b",
+      "Effect": "allow",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_faaa2620",
+      "Effect": "allow",
+      "Action": "ec2:DescribeInstances",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Condition": {
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2024-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "deny_ba03667c",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "192.168.1.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_eea8339b",
+      "Effect": "allow",
+      "Action": "ec2:DescribeInstances",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "ec2:ResourceTag/instance-id": "i-0123456789abcdef0"
+        }
+      }
+    }
+  ]
+}

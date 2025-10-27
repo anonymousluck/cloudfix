@@ -1,0 +1,34 @@
+{
+  "Requests": [
+    {
+      "id": "deny_7eaee50d",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_8aa7640b",
+      "Effect": "allow",
+      "Action": "ec2:DisableRegion",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_893de7d3",
+      "Effect": "allow",
+      "Action": "ec2:EnableRegion",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_5605672a",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_8dc14c1b",
+      "Effect": "allow",
+      "Action": "ec2:EnableRegion",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

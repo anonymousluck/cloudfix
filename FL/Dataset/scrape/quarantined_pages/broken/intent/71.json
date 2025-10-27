@@ -1,0 +1,281 @@
+I am trying to create private eks cluster which I will access via bastion host. for atleast 20 days I am struggling but its not working. i tried multiple version of this script, multiple accounts everything but dont know what I missed. even I followed this page.
+
+
+https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html?
+
+
+
+below is my script.
+
+
+#!/bin/bash
+set -e  # Exit immediately on error
+
+# New prefix and configuration
+PREFIX="prefixxyz"
+CLUSTER_NAME="${PREFIX}-eks-cluster"
+NODEGROUP_NAME="${PREFIX}-eks-nodegroup"
+REGION="us-east-1"
+VPC_CIDR="10.0.0.0/16"
+SUBNET_CIDR_1="10.0.1.0/24"
+SUBNET_CIDR_2="10.0.2.0/24"
+K8S_VERSION="1.29"
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text | tr -d '\n')
+
+echo "🚀 Starting full private EKS cluster setup in $REGION with prefix $PREFIX..."
+
+#############################
+# 1. Create or Select VPC
+#############################
+VPC_ID=$(aws ec2 describe-vpcs --filters Name=tag:Name,Values=${PREFIX}-vpc --query "Vpcs[0].VpcId" --output text)
+if [ "$VPC_ID" == "None" ]; then
+  VPC_ID=$(aws ec2 create-vpc --cidr-block $VPC_CIDR --region $REGION --query 'Vpc.VpcId' --output text)
+  aws ec2 create-tags --resources $VPC_ID --tags Key=Name,Value=${PREFIX}-vpc
+  echo "✅ Created VPC: $VPC_ID"
+  aws ec2 wait vpc-available --vpc-ids $VPC_ID
+else
+  echo "✅ Using existing VPC: $VPC_ID"
+fi
+
+# Enable DNS support and hostnames
+aws ec2 modify-vpc-attribute --vpc-id $VPC_ID --enable-dns-support
+aws ec2 modify-vpc-attribute --vpc-id $VPC_ID --enable-dns-hostnames
+
+#############################
+# 2. Create Private Subnets
+#############################
+SUBNET_ID_1=$(aws ec2 describe-subnets --filters Name=vpc-id,Values=$VPC_ID Name=tag:Name,Values=${PREFIX}-subnet-1 --query "Subnets[0].SubnetId" --output text)
+if [ "$SUBNET_ID_1" == "None" ]; then
+  SUBNET_ID_1=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block $SUBNET_CIDR_1 --availability-zone ${REGION}a --query 'Subnet.SubnetId' --output text)
+  aws ec2 create-tags --resources $SUBNET_ID_1 --tags Key=Name,Value=${PREFIX}-subnet-1
+fi
+
+SUBNET_ID_2=$(aws ec2 describe-subnets --filters Name=vpc-id,Values=$VPC_ID Name=tag:Name,Values=${PREFIX}-subnet-2 --query "Subnets[0].SubnetId" --output text)
+if [ "$SUBNET_ID_2" == "None" ]; then
+  SUBNET_ID_2=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block $SUBNET_CIDR_2 --availability-zone ${REGION}b --query 'Subnet.SubnetId' --output text)
+  aws ec2 create-tags --resources $SUBNET_ID_2 --tags Key=Name,Value=${PREFIX}-subnet-2
+fi
+
+echo "✅ Using Subnets: $SUBNET_ID_1, $SUBNET_ID_2"
+
+#############################
+# 3. Create Required VPC Endpoints
+#############################
+# Get the main route table for S3 gateway endpoint.
+# Note: We pass the filters without extra quotes to avoid list type errors.
+RTB_ID=$(aws ec2 describe-route-tables --filters Name=vpc-id,Values=$VPC_ID Name=association.main,Values=true --query "RouteTables[0].RouteTableId" --output text)
+
+# Create a gateway endpoint for S3.
+if ! aws ec2 describe-vpc-endpoints --filters Name=service-name,Values=com.amazonaws.$REGION.s3 Name=vpc-id,Values=$VPC_ID --query "VpcEndpoints[*].VpcEndpointId" --output text | grep -q "vpce-"; then
+  aws ec2 create-vpc-endpoint --vpc-id $VPC_ID --vpc-endpoint-type Gateway --service-name "com.amazonaws.$REGION.s3" --route-table-ids $RTB_ID || true
+  echo "✅ Created Gateway VPC Endpoint for S3"
+else
+  echo "✅ VPC Gateway Endpoint for S3 already exists"
+fi
+
+# List of services for interface endpoints
+INTERFACE_SERVICES=(
+  "com.amazonaws.$REGION.ecr.api"
+  "com.amazonaws.$REGION.ecr.dkr"
+  "com.amazonaws.$REGION.logs"
+  "com.amazonaws.$REGION.sts"
+  "com.amazonaws.$REGION.ec2"
+  "com.amazonaws.$REGION.eks"
+  "com.amazonaws.$REGION.eks-auth"
+)
+
+for SERVICE in "${INTERFACE_SERVICES[@]}"; do
+  if ! aws ec2 describe-vpc-endpoints --filters Name=service-name,Values=$SERVICE Name=vpc-id,Values=$VPC_ID --query "VpcEndpoints[*].VpcEndpointId" --output text | grep -q "vpce-"; then
+    aws ec2 create-vpc-endpoint --vpc-id $VPC_ID --vpc-endpoint-type Interface --service-name $SERVICE --subnet-ids $SUBNET_ID_1 $SUBNET_ID_2 --security-group-ids $SECURITY_GROUP_ID || true
+    echo "✅ Created Interface VPC Endpoint for $SERVICE"
+  else
+    echo "✅ VPC Endpoint for $SERVICE already exists"
+  fi
+done
+
+#############################
+# 4. Create Security Group
+#############################
+SECURITY_GROUP_ID=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$VPC_ID Name=tag:Name,Values=${PREFIX}-sg --query "SecurityGroups[0].GroupId" --output text)
+if [ "$SECURITY_GROUP_ID" == "None" ]; then
+  SECURITY_GROUP_ID=$(aws ec2 create-security-group --group-name "${PREFIX}-sg" --description "EKS Private SG" --vpc-id $VPC_ID --query 'GroupId' --output text)
+  aws ec2 create-tags --resources $SECURITY_GROUP_ID --tags Key=Name,Value=${PREFIX}-sg
+  aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol all --port 0-65535 --source-group $SECURITY_GROUP_ID
+fi
+echo "✅ Using Security Group: $SECURITY_GROUP_ID"
+
+#############################
+# 5. Create IAM Role for EKS Cluster
+#############################
+CLUSTER_ROLE_NAME="${PREFIX}-eks-cluster-role"
+if ! aws iam get-role --role-name "$CLUSTER_ROLE_NAME" >/dev/null 2>&1; then
+  cat <<EOF > trust-policy.json
+
+EOF
+  aws iam create-role --role-name "$CLUSTER_ROLE_NAME" --assume-role-policy-document file://trust-policy.json
+  aws iam attach-role-policy --role-name "$CLUSTER_ROLE_NAME" --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+fi
+echo "✅ Using IAM Role for cluster: $CLUSTER_ROLE_NAME"
+
+#############################
+# 6. Create EKS Cluster
+#############################
+if ! aws eks describe-cluster --name "$CLUSTER_NAME" --region "$REGION" >/dev/null 2>&1; then
+  aws eks create-cluster \
+    --name "$CLUSTER_NAME" \
+    --region "$REGION" \
+    --kubernetes-version "$K8S_VERSION" \
+    --role-arn "arn:aws:iam::$AWS_ACCOUNT_ID:role/$CLUSTER_ROLE_NAME" \
+    --resources-vpc-config subnetIds="$SUBNET_ID_1,$SUBNET_ID_2",endpointPrivateAccess=true,endpointPublicAccess=false
+  echo "⏳ Waiting for EKS Cluster to be active..."
+  aws eks wait cluster-active --name "$CLUSTER_NAME" --region "$REGION"
+fi
+echo "✅ EKS Cluster is ready: $CLUSTER_NAME"
+
+#############################
+# 7. Create IAM Role for Worker Nodes & Instance Profile
+#############################
+NODE_ROLE_NAME="${PREFIX}-eks-node-role"
+if ! aws iam get-role --role-name "$NODE_ROLE_NAME" >/dev/null 2>&1; then
+  cat <<EOF > node-trust-policy.json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "Service": "ec2.amazonaws.com" },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+  aws iam create-role --role-name "$NODE_ROLE_NAME" --assume-role-policy-document file://node-trust-policy.json
+  aws iam attach-role-policy --role-name "$NODE_ROLE_NAME" --policy-arn arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+  aws iam attach-role-policy --role-name "$NODE_ROLE_NAME" --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+  aws iam attach-role-policy --role-name "$NODE_ROLE_NAME" --policy-arn arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+fi
+echo "✅ Using IAM Role for worker nodes: $NODE_ROLE_NAME"
+
+# Create an Instance Profile for the node role
+INSTANCE_PROFILE_NAME="${NODE_ROLE_NAME}-instance-profile"
+if ! aws iam get-instance-profile --instance-profile-name "$INSTANCE_PROFILE_NAME" >/dev/null 2>&1; then
+  aws iam create-instance-profile --instance-profile-name "$INSTANCE_PROFILE_NAME"
+fi
+# Attach the node role to the instance profile if not already attached
+echo "Waiting for role $NODE_ROLE_NAME to attach to instance profile $INSTANCE_PROFILE_NAME..."
+for i in {1..10}; do
+  ATTACHED_ROLES=$(aws iam get-instance-profile --instance-profile-name "$INSTANCE_PROFILE_NAME" --query "InstanceProfile.Roles[*].RoleName" --output text)
+  if [[ "$ATTACHED_ROLES" == *"$NODE_ROLE_NAME"* ]]; then
+    break
+  fi
+  aws iam add-role-to-instance-profile --instance-profile-name "$INSTANCE_PROFILE_NAME" --role-name "$NODE_ROLE_NAME" || true
+  sleep 5
+done
+echo "✅ Instance Profile Ready: $INSTANCE_PROFILE_NAME"
+
+#############################
+# 8. Create Managed Node Group (Worker Nodes)
+#############################
+if ! aws eks describe-nodegroup --cluster-name "$CLUSTER_NAME" --nodegroup-name "$NODEGROUP_NAME" --region "$REGION" >/dev/null 2>&1; then
+  aws eks create-nodegroup \
+      --cluster-name "$CLUSTER_NAME" \
+      --nodegroup-name "$NODEGROUP_NAME" \
+      --subnets "$SUBNET_ID_1" "$SUBNET_ID_2" \
+      --node-role "arn:aws:iam::$AWS_ACCOUNT_ID:role/$NODE_ROLE_NAME" \
+      --scaling-config minSize=1,maxSize=3,desiredSize=2 \
+      --ami-type AL2_x86_64 \
+      --capacity-type ON_DEMAND \
+      --instance-types t3.medium
+  echo "⏳ Waiting for worker nodes to become active..."
+  aws eks wait nodegroup-active --cluster-name "$CLUSTER_NAME" --nodegroup-name "$NODEGROUP_NAME" --region "$REGION"
+fi
+echo "✅ Worker nodes are active: $NODEGROUP_NAME"
+
+#############################
+# 9. Verify Setup
+#############################
+echo "🔍 Updating kubeconfig and verifying worker nodes..."
+aws eks update-kubeconfig --region "$REGION" --name "$CLUSTER_NAME"
+kubectl get nodes
+
+echo "🎉 Private EKS Cluster with Worker Nodes is fully ready!"
+
+
+
+
+below is my log
+
+
+✅ EKS Cluster is ready: prefixxyz-eks-cluster
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "prefixxyz-eks-node-role",
+        "RoleId": "AROAR72PHKJKN7GNGNRJX",
+        "Arn": "arn:aws:iam::137068237396:role/prefixxyz-eks-node-role",
+        "CreateDate": "2025-02-28T08:24:15+00:00",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "ec2.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
+    }
+}
+✅ Using IAM Role for worker nodes: prefixxyz-eks-node-role
+{
+    "InstanceProfile": {
+        "Path": "/",
+        "InstanceProfileName": "prefixxyz-eks-node-role-instance-profile",
+        "InstanceProfileId": "AIPAR72PHKJKBVL346RGF",
+        "Arn": "arn:aws:iam::137068237396:instance-profile/prefixxyz-eks-node-role-instance-profile",
+        "CreateDate": "2025-02-28T08:24:25+00:00",
+        "Roles": []
+    }
+}
+Waiting for role prefixxyz-eks-node-role to attach to instance profile prefixxyz-eks-node-role-instance-profile...
+✅ Instance Profile Ready: prefixxyz-eks-node-role-instance-profile
+{
+    "nodegroup": {
+        "nodegroupName": "prefixxyz-eks-nodegroup",
+        "nodegroupArn": "arn:aws:eks:us-east-1:137068237396:nodegroup/prefixxyz-eks-cluster/prefixxyz-eks-nodegroup/d2caa5d4-2dd7-b023-c618-7aafcfe97f29",
+        "clusterName": "prefixxyz-eks-cluster",
+        "version": "1.29",
+        "releaseVersion": "1.29.13-20250224",
+        "createdAt": "2025-02-28T13:54:40.373000+05:30",
+        "modifiedAt": "2025-02-28T13:54:40.373000+05:30",
+        "status": "CREATING",
+        "capacityType": "ON_DEMAND",
+        "scalingConfig": {
+            "minSize": 1,
+            "maxSize": 3,
+            "desiredSize": 2
+        },
+        "instanceTypes": [
+            "t3.medium"
+        ],
+        "subnets": [
+            "subnet-04b39843e007f55e3",
+            "subnet-092e257bce8cf2e1c"
+        ],
+        "amiType": "AL2_x86_64",
+        "nodeRole": "arn:aws:iam::137068237396:role/prefixxyz-eks-node-role",
+        "diskSize": 20,
+        "health": {
+            "issues": []
+        },
+        "updateConfig": {
+⏳ Waiting for worker nodes to become active...
+
+
+Waiter NodegroupActive failed: Waiter encountered a terminal failure state: For expression "nodegroup.status" we matched expected path: "CREATE_FAILED"
+
+
+
+can anyone of you help me on that. I am like no light at end of tunnel.

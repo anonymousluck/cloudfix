@@ -1,0 +1,31 @@
+I have a phone number in account B.
+I am trying to use that phone number in account A.
+In account A, I was under the impression I need to create a pool, and could provide the ARN of phone number in account B, like so:
+
+
+aws pinpoint-sms-voice-v2 create-pool --origination-identity arn:aws:sms-voice:us-east-2:000011112222:phone-number/phone-abcdefabcdef --iso-country-code US --message-type TRANSACTIONAL
+
+
+
+Now when I run this command, i get error:
+
+
+An error occurred (ResourceNotFoundException) when calling the CreatePool operation: Resource Not Found - ResourceType="phone-number" ResourceId="phone-abcdefabcdef"
+
+
+
+I have triple checked the ARN provided is correct and verified i can see the phone number in account B from account A with command:
+
+
+aws pinpoint-sms-voice-v2 describe-phone-numbers --owner SHARED
+
+
+
+Here is my resource policy in account B
+
+
+,
+
+
+
+Any tips or tricks on how to use phone number from account B in account A would be much appreciated.

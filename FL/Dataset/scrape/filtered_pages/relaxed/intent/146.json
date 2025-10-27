@@ -1,0 +1,57 @@
+I have a usecase where Athena, Glue catalog and database and s3 all exist in AccountB . and have an application running in EKS cluster in AccountA. I have provided root level access to AccountA in s3 bucket, glue settings in AccountB.
+
+
+But i get this error
+
+
+failed to execute query: Insufficient permissions to execute the query. User: 
+arn:aws:sts::AccountA:assumed-role/compliance-live-temporal-server/1690459320335517 is 
+not authorized to perform: glue:GetDatabases 
+on resource: arn:aws:glue:eu-west-1:AccountA:catalog
+because no identity-based policy allows the glue:GetDatabases action.
+
+
+
+the IAM policy in AccountA looks like this
+
+
+
+
+and 
+{
+    "Statement": [
+        {
+            "Action": [
+                "s3:List*",
+                "s3:Get*"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:s3:::bucketB-a/*",
+                "arn:aws:s3:::bucketB-a"
+            ],
+            "Sid": "S3ReadOnly"
+        },
+        {
+            "Action": [
+                "s3:Put*",
+                "s3:List*",
+                "s3:Get*"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:s3:::bucketB/*",
+                "arn:aws:s3:::bucketB"
+            ],
+            "Sid": "S3Full"
+        }
+    ],
+    "Version": "2012-10-17"
+}
+
+
+with the trust policy to trust OIDC of EKS.
+
+
+
+please note that i don't want to set a new db/catalog in accountA . i simply want to make api calls to athena in AccountB .

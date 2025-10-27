@@ -1,0 +1,51 @@
+I used this CloudFormation template to create my ECS Cluster 
+https://tomgregory-cloudformation-examples.s3-eu-west-1.amazonaws.com/jenkins-for-ecs.yml
+
+
+I am using Amazon Elastic Container Service (ECS) / Fargate Jenkins plugin.
+
+
+I am trying to configure Configure Clouds but when I input the region 
+eu-central-1
+ where I created my cluster it spins and spins and cannot list my cluster (it times out with error 504 in the browser console). I am 100% sure my cluster is located in 
+eu-central-1
+ but when I select this region it doesn't find my cluster. What am I missing?
+
+
+UPDATE
+
+I looked at CloudWatch logs and I found that it's permissions related
+
+
+User: arn:aws:sts::{...}:assumed-role/jenkins-role/5d8e46aed4f642809856ffa57732588a is not authorized to perform: ecs:ListClusters on resource: * because no identity-based policy allows the ecs:ListClusters action (Service: AmazonECS; Status Code: 400; Error Code: AccessDeniedException)
+
+
+
+I added a policy to the role with this statement
+
+
+
+
+
+
+I've confirmed in Policy Simulator that the role does have permissions to list ECS clusters but it still doesn't work.
+
+
+This is the response from AWS IAM API
+
+
+{
+    "RoleName": "jenkins-role",
+    "PolicyName": "JenkinsECSListClusters",
+    "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": "ecs:ListClusters",
+                "Resource": "*"
+            }
+        ]
+    }
+}

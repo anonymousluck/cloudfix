@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_c7c0b155",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_e8c91ec3",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_1df350b3",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_07d331e4",
+      "Effect": "deny",
+      "Action": "GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_c6f3601f",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    }
+  ]
+}

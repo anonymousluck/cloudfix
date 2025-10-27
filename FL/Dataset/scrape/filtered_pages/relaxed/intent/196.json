@@ -1,0 +1,13 @@
+Hi,
+We want to setup individual users to connect to our RDS database (postgresql) and to use IAM for the authentication with the temporary credentials. Instead of having a single Postgresql role/user for all users to use, we want individual role/user in the database.
+I was expecting this IAM policy to work with the variable 
+${aws:username}
+ as the DB user but it does not create a valid password token:
+
+
+
+
+
+It seems the variable 
+${aws:username}
+ is not interpreted / extrapolated by the RDS connection service. Is it a limitation, or is there something not correctly setup as it should work with the username?

@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_2b5ea929",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketLifecycle",
+        "s3:PutBucketLogging"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_e2a806e7",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucketTagging"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_45d99b92",
+      "Effect": "deny",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "deny_cb1685e2",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_986e6a7b",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

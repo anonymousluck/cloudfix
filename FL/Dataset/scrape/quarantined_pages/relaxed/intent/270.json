@@ -1,0 +1,12 @@
+I'm following a tutorial on how to use Elastic Beanstalk for the Certified Cloud Practitioner Certification. I have set up a basic application using the default Node.JS platform and used the Sample Application provided by AWS. I created a new service role, and for the EC2 Instance Profile, I created a custom IAM role with the following permissions: AWSElasticBeanstalkWorkerTier, AWSElasticBeanstalkWebTier, and AWSElasticBeanstalkMulticontainerDocker.
+
+
+The JSON for the Trust policy is the default:
+
+
+
+After around 12 minutes for the environment to set up it will eventually fail and give me these errors:
+
+
+
+I am unsure what is going wrong, or if I am missing something as I am very new to Beanstalk. Any help would be greatly appreciated!

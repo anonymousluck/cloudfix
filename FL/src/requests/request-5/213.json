@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "allow_4507b0fc",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::shared-bucket/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    },
+    {
+      "id": "deny_f377836f",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "allow_625e02a7",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::shared-bucket/config.xml",
+        "arn:aws:s3:::shared-bucket/data.json"
+      ],
+      "Principal": "arn:aws:iam::555555555555:user/external"
+    },
+    {
+      "id": "deny_dcd978ae",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::555555555555:user/external"
+    },
+    {
+      "id": "allow_f1c5d03b",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::shared-bucket/document.txt",
+        "arn:aws:s3:::shared-bucket/config.xml"
+      ],
+      "Principal": "arn:aws:iam::555555555555:user/external"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "Requests": [
+    {
+      "id": "deny_adce42be",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "allow_1a2bea6b",
+      "Effect": "allow",
+      "Action": [
+        "guardduty:DeleteDetector",
+        "config:PutConfigRule"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringNotEquals": {
+          "aws:RequestedRegion": [
+            "us-east-1",
+            "us-east-2",
+            "us-west-1",
+            "us-west-2"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_4229efdf",
+      "Effect": "allow",
+      "Action": [
+        "config:DeleteConfigRule",
+        "guardduty:GetDetector"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Condition": {
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2024-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "deny_fcea4d08",
+      "Effect": "deny",
+      "Action": "config:DescribeConfigRules",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "StringNotEquals": {
+          "aws:RequestedRegion": [
+            "us-east-1",
+            "us-east-2",
+            "us-west-1",
+            "us-west-2"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_2f495393",
+      "Effect": "allow",
+      "Action": "guardduty:ListDetectors",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringNotEquals": {
+          "aws:RequestedRegion": [
+            "us-east-1",
+            "us-east-2",
+            "us-west-1",
+            "us-west-2"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+Am defining SNS public Action in Access policy in JSON format. While defining below json script am facing issue.
+When i define Condition with ARN of Source bucket. Am getting below error
+
+
+error code: invalidparameter - error message: an error occurred while setting the attribute access policy. invalid parameter: policy error: null

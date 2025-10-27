@@ -1,0 +1,14 @@
+have a use case from a bigger enterprise, they are currently adopting AWS SSO with AzureAD integration. In the setup, currently account users or roles can create permissionsets with administrator access without adding Permission boundary.
+
+
+The Permission Boundary policy is created for the AWS account. While manually adding the permission sets from the console and creating a new permission set, it works smoothly. Creating the permission sets without attaching permission boundary works as well. But, to be able to restrict creating the permissionsets does not seem to work by adding a Deny policy on the IAM role/user
+
+
+
+
+
+
+It seems the condition block is not getting evaluated for the above policy. Its either restricting the permission set overall or not restricting at all.
+
+
+Is there any way to restrict creating the permission sets without adding Permission boundary?

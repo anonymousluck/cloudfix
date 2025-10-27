@@ -1,0 +1,36 @@
+Hello
+
+
+We would like to constrain VPC Peering to stay within an OU.
+
+
+We created the following SCP:
+
+
+
+
+
+
+I know this SCP is effective, because it does DENY the VPC Peering connection if the Org Path is incorrect.
+
+
+However, this does NOT work when the Org Path is correct: it still allows cross-OU VPC Peering.
+I think the reason is the command is running in 
+this
+ OU even though its connecting to a VPC in another OU.
+
+
+CLI:
+
+
+aws ec2 create-vpc-peering-connection --vpc-id vpc-123456 --peer-vpc-id vpc-987654 --peer-owner-id 1234567890
+
+
+
+Note: the CLI command is not stopped since its only looking at the invocation of the CLI and not interpreting the arguments.
+
+
+Any suggestions on how to prevent cross-OU VPC Peering with Org SCPs?
+
+
+Thanks in advance!

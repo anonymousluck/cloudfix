@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_a4385369",
+      "Effect": "allow",
+      "Action": [
+        "sqs:SendMessage",
+        "sqs:ReceiveMessage"
+      ],
+      "Resource": "arn:aws:sqs:<rest-of-the-arn>.fifo"
+    },
+    {
+      "id": "deny_19146873",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:sqs:<rest-of-the-arn>.fifo"
+    },
+    {
+      "id": "allow_161d2e4b",
+      "Effect": "allow",
+      "Action": "sqs:GetQueueAttributes",
+      "Resource": "arn:aws:sqs:<rest-of-the-arn>.fifo"
+    },
+    {
+      "id": "deny_60a38593",
+      "Effect": "deny",
+      "Action": "sqs:ReceiveMessage",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_76fb4305",
+      "Effect": "allow",
+      "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:ReceiveMessage"
+      ],
+      "Resource": "arn:aws:sqs:<rest-of-the-arn>.fifo"
+    }
+  ]
+}

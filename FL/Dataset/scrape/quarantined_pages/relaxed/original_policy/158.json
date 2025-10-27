@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::012345678901:oidc-provider/example.eu.auth0.com/"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "ForAnyValue:StringEquals": {
+          "example.eu.auth0.com/:aud": "https://sts.amazonaws.com"
+        }
+      },
+      "Sid": "statement1"
+    }
+  ]
+}

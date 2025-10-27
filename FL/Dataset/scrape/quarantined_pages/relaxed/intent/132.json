@@ -1,0 +1,8 @@
+We have setup Q Business Application with IAM Identity Center and authenticating through Cognito User Pool & Identity Pool. When we create temporary credentials using username, password and identity pool and try and access Q Business Chat Method in JS SDK of client-qbusiness, it shows error as
+
+
+"An error was encountered in a non-retryable streaming request.
+AWS Q Business Error: AccessDeniedException: User is not authorized for this service call."
+
+
+We have mapped the role with permissions as Q Business Full Access & STS Cognito Policies along with trust policies as below, please help me what am missing to make it work. Thanks.

@@ -1,0 +1,87 @@
+Hi there,
+I have been struggling with this for some time and the docs are not particularly helpful..
+
+
+I have a simple .net web api that periodically calls S3. I have it all running fine locally but when I deploy it to App runner (container mode) I get
+
+
+Unable to get IAM security credentials from EC2 Instance Metadata Service.
+
+
+
+Whenever I try to access S3.
+
+
+In progam.cs I set up aws services as follows
+
+
+builder.Configuration.GetAWSOptions();
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddTransient<S3Service>();
+
+
+
+and I have a default profile set in appsettings.config
+
+
+"AWS": {
+    "Profile": "default",
+    "Region": "eu-west-1"
+  }
+
+
+
+As mentioned earlier this all runs fine on my local machine
+
+
+The apprunner has a role with the following attached
+
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+
+
+
+Trust Relationship
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
+                    "build.apprunner.amazonaws.com",
+                    "tasks.apprunner.amazonaws.com"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+I understand roles should be more locked down but atm I am trying everything to diagnose the issue
+
+
+I also have a vpc created with some subnets and endpoint
+
+
+Can someone point me in the right direction??
+
+
+Thanks

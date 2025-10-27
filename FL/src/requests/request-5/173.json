@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "allow_dece65e9",
+      "Effect": "allow",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:rds-db:us-east-1:1234567890:dbuser:cluster-ABCVDEFGHIJKLMNOPQRSTUVWXYZ/${aws:username}"
+    },
+    {
+      "id": "deny_72f8e58b",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:rds-db:us-east-1:1234567890:dbuser:cluster-ABCVDEFGHIJKLMNOPQRSTUVWXYZ/${aws:username}"
+    },
+    {
+      "id": "deny_651559df",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:rds-db:us-east-1:1234567890:dbuser:cluster-ABCVDEFGHIJKLMNOPQRSTUVWXYZ/${aws:username}"
+    }
+  ]
+}

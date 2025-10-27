@@ -1,0 +1,4 @@
+I want to publish messages to IoT Core through multiple sessions in ec2. But my cloudwatch log shows client_id_throtteld error. I had a DUPLICATE_CLIENTID error before that, so I uniquely changed the client ID this time. But I now have a client_id_throttled error. What should I do?
+
+
+For your information, my certificate policy is as follows.

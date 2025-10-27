@@ -1,0 +1,37 @@
+We are using hadoop-aws connector write to our S3 buckets, and one of the new feature that it has is the ability to do multipart upload. We know that 
+ListBucketMultipartUploads
+ is one of the 
+required permissions
+ for this to work. From my understanding, this permission has to be granted at the bucket level, and there is no way to filter it down to specific directories within the bucket since 
+s3:prefix
+ is not one of the 
+supported condition keys
+. I was under the impression that 
+ListBucket
+ with a 
+s3:prefix
+ condition would supersede the bucket-level permission for 
+ListBucketMultipartUploads
+ but it doesn't seem to be the case. Which means, we have to update our S3 policy to be of following:
+
+
+,
+{
+    "Action": [
+        "s3:ListBucket"
+    ],
+    "Condition": {
+        "StringLike": {
+            "s3:prefix": "<restricted_prefix>*"
+        }
+    },
+    "Effect": "Allow",
+    "Resource": "arn:aws:s3:::<bucket_name>",
+    "Sid": ""
+}
+
+
+
+The above policy allows the us to perform multipart-upload writes to the S3 bucket under the 
+restricted_prefix
+ but a user with this policy can still list all multipart uploads that are NOT under the prefix, thus would violate our security policy. Is there a workaround for this?

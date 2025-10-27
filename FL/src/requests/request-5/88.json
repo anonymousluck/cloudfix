@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "allow_14647d70",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::prod-region-starport-layer-bucket/document.txt",
+      "Principal": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_09da327b",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::prod-region-starport-layer-bucket/config.xml",
+        "arn:aws:s3:::prod-region-starport-layer-bucket/data.json"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "allow_48055193",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::prod-region-starport-layer-bucket/document.txt",
+        "arn:aws:s3:::prod-region-starport-layer-bucket/config.xml"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "deny_386d8ef9",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "*"
+    },
+    {
+      "id": "deny_5602cab1",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::prod-region-starport-layer-bucket/config.xml",
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    }
+  ]
+}

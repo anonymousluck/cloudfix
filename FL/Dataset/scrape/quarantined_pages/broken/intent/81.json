@@ -1,0 +1,43 @@
+Greetings,
+
+
+I'm currently utilizing version 5.0.0 of the GameLift SDK alongside an Unreal Engine server on Linux, with instances ranging from c5.large to c4.xlarge in the eu-central-1 region. The instances are operational, allowing me to connect and engage in gameplay seamlessly.
+
+
+However, I've encountered a challenge with remote connectivity to these instances. Despite ensuring the singular instance is running and configuring my fleets correctly, I'm unable to establish a remote connection. Here's a snippet of my role trust relationships:
+
+
+This is my role trust relationships
+
+
+
+Additionally, I've meticulously configured policies for KMS, SSM, AmazonSSMManagedInstanceCore and S3. These configurations have been validated through successful tests in the policy simulator. The same applies to my IAM user account, where all tests for KMS, SSM, and S3 have passed.
+
+
+However, upon attempting to connect to the GameLift server instance remotely, I consistently encounter the following error:
+
+
+Fetching data key failed: Unable to retrieve data key, Error when decrypting data key AccessDeniedException: User: arn:aws:sts::825289633156:assumed-role/DevAppStack-89ac5076-f8cf-43a5-a0a4-AppInstanceRole-cGjUsmttT01R/i-0e92ee535329af63b is not authorized to perform: kms:Decrypt on the resource associated with this ciphertext because the resource does not exist in this Region, no resource-based policies allow access, or a resource-based policy explicitly denies access
+status code: 400, request id: a96b7c2d-8d02-4a4c-abc7-b6af7f186611
+
+
+This obstacle has currently halted progress, as I'm unable to utilize session manager or resort to traditional SSH access methods.
+
+
+Could you kindly assist in resolving this issue and offer guidance on troubleshooting?
+
+
+Second issue I'm experiencing is downloading the game session logs.
+I set in my game server
+LogFilePath = /local/game/mygame/Saved/Logs/
+LogFileName = gamelift_log.txt
+
+
+And added all the logging logic in c++, but when I try to get_game_session_log_url, and upon getting the link, when unzip it I only get:
+ReadMe.txt file saying
+Game Server Logs
+Error: Missing file/directory /local/game/mygame/Saved/Logs/gamelift_log.txt
+
+
+Best regards,
+Dino

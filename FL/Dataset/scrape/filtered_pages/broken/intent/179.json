@@ -1,0 +1,10 @@
+Hello!
+I created policy
+
+
+
+
+
+
+Attached it to my IAM user with several other policies, that grant all needed permissions, for S3, I have attached AmazonS3FullAccess. And figured out, that I have protected most part of my resources, such as EC2 instances, ALB, TargetGroup, IAM Roles, and CloudFront Distributions. With these resources, all works fine, but I still can remove objects and S3 Buckets tagged by env: prod. I have looked in the documentation and just google this issue, but can't find a solution or explanation of how to resolve this.
+Could someone help with this issue?

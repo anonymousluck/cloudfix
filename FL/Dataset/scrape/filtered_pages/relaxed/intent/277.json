@@ -1,0 +1,8 @@
+I've got an S3 bucket that I want to use to save ALB access logs to in order to diagnose an issue on my EC2 authentication. When trying to save the S3 bucket location in the Monitoring tab of the ALB I get "Access Denied check permissions". Tried all sorts of policy scripts but none work. The S3 bucket called myfirstbucket is in the same region as my EC2 stuff. I can manually load files to the S3 bucket no problem. I can browse to it from the ALB Monitoriing page fine. The block all policy is OFF. The bucket policy script (there is only one) is as below. I've taken it from AWS documentation here 
+https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#enable-access-logs
+
+
+The 652711504416 is for eu-west-2 and the number shown here as 1111111111 is actually just in place of my AWS account ID.
+
+
+What am I doing wrong? Thanks

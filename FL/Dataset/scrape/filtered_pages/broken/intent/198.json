@@ -1,0 +1,54 @@
+Hi all,
+
+
+We are using 
+AWS Control Tower
+ to manage 
+AWS Accounts
+ in our 
+Landing Zone
+,
+Unfortunately one of our principal regions (
+eu-south-1
+) isn't governed by 
+Control Tower
+, so in this case we need to setup/create resoures manually or using Terraform.
+
+
+What we are trying to achieve is to setup a 
+Terraform Pipeline
+ which will enable ** AWS Config** and Create some 
+Config Rules
+ we are using usually in the regions 
+Not-Governed
+ by 
+Control Tower
+.
+
+
+But the main issue right now is the following statement of an 
+SCP
+ created by 
+Control Tower
+ to prevent any modifications to 
+AWS Config
+ within the AWS Organization :
+
+
+    
+
+
+
+We tried to disable the 
+Deny Regions
+ feature in out Landing Zone but no success, the SCP is still there !!
+
+
+Does anyone have idea how to overcome this issue  ?
+any help would be greatly appreciated
+
+
+Thanks
+
+
+Peter

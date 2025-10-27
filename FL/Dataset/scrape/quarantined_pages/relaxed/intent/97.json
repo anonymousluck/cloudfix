@@ -1,0 +1,28 @@
+Let say i have an aws account A of Organisation A from where the 
+Identity Center users
+ login and can assume roles using the policies (trust relationship estableshed from these target account) to other aws accounts into another organisation B.
+
+
+crossAccountPolicy in account A of organisation A
+ -> 
+assume roles in accounts of organisation B
+
+
+I know using the permission set with type customer-managed policy, but how do we establish the trust relationship in the accounts of organisation B?
+
+
+What i tried:
+in the target accounts of organization B, i specified in the trust relationship policy of the assumed role
+
+
+
+
+
+
+Source: 
+https://docs.aws.amazon.com/singlesignon/latest/userguide/referencingpermissionsets.html
+
+
+I tried the one from below also, but unable to switch role from the permission set [crossAccountPolicy  - assigned with this policy]
+
+https://repost.aws/questions/QUjRg7Qi9kTVO-IaYeUUTW3Q/allow-assumerole-from-an-assumed-sso-generated-role-solved

@@ -1,0 +1,132 @@
+Hi,
+I have an account called "Dev" and an Account called "Stage1".  Dev hosts my codecommit repos and each repo has a branch corresponding to the deployment environment (e.g. development, stage1, prod, etc.)
+
+
+Dev has a role called deployer and an associated IAM Role Policy with the following rules.
+
+
+Role
+
+
+Associated Policy
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "ec2:*",
+                "s3:*",
+                "codecommit:*",
+                "codedeploy:*",
+                "codepipeline:*",
+                "secretsmanger:*",
+                "rds:*",
+                "cloudformation:*",
+                "appsync:*",
+                "sts:AssumeRole"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:iam::<stage-account-number>:role/stage-adminportal-dev_codepipeline_role"
+        }
+    ]
+}
+
+
+
+Stage has a CodePipeline project with a source stage like so:
+
+
+       stage {
+          name = "Source"
+
+          action {
+              category         = "Source"
+              configuration    = {
+                  "BranchName"     = "stage1"
+                  "RepositoryName" = "Dev-AdminPortal"
+                }
+              name             = "Source"
+              output_artifacts = [
+                  "source_output",
+                ]
+              owner            = "AWS"
+              provider         = "CodeCommit"
+              region           = "us-east-1"
+              role_arn         = "arn:aws:iam::<dev-account-number>:role/it-deployer-role"
+              run_order        = (known after apply)
+              version          = "1"
+            }
+        }
+
+
+
+
+Stage has a role policy like so that is attached to the codepipeline role
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
+                    "codecommit.amazonaws.com",
+                    "codepipeline.amazonaws.com"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:GetBucketVersioning",
+                "s3:PutObject",
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:DescribeKey",
+                "sts:AssumeRole"
+            ],
+            "Resource": [
+                "arn:aws:s3:::stage-adminportal-dev-codepipeline-bucket",
+                "arn:aws:s3:::stage-adminportal-dev-codepipeline-bucket/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "codebuild:*",
+                "codecommit:*",
+                "codepipeline:*",
+                "sts:AssumeRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::<dev-account-number>:role/fl-stage-adminportal-dev_codepipeline_role",
+                "arn:aws:iam::<dev-account-number>:role/fl-it-deployer-role",
+                "arn:aws:kms::<dev-account-number>",
+                "arn:aws:codecommit::<dev-account-number>"
+            ]
+        }
+    ]
+}
+
+
+
+No matter where I add permissions for stage codepipeline to access dev code commit, I get the following error
+
+
+Error: Error creating CodePipeline: InvalidStructureException: arn:aws:iam::<stage-account-number>:role/stage-adminportal-dev_codepipeline_role is not authorized to perform AssumeRole on role arn:aws:iam::<dev-account-number>:role/it-deployer-role
+
+
+
+I'm obviously missing something, but not seeing it at the moment. Please advise if you can. Thanks.

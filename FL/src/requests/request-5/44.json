@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "deny_5e152887",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:airflow:us-west-2:{account-redacted}:environment/{airflow-env-redacted}/Admin"
+    },
+    {
+      "id": "allow_5158ecc5",
+      "Effect": "allow",
+      "Action": "airflow:InvokeRestApi",
+      "Resource": "arn:aws:airflow:us-west-2:{account-redacted}:environment/{airflow-env-redacted}/Admin"
+    },
+    {
+      "id": "deny_1d24d3b8",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:airflow:us-west-2:{account-redacted}:environment/{airflow-env-redacted}/Admin"
+    }
+  ]
+}

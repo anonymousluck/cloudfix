@@ -1,0 +1,49 @@
+{
+  "Requests": [
+    {
+      "id": "deny_05a00e92",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_1157bd27",
+      "Effect": "deny",
+      "Action": "athena:GetQueryResults",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_cc7f302a",
+      "Effect": "allow",
+      "Action": [
+        "athena:StartQueryExecution",
+        "athena:GetQueryExecution"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_7d3d7d5d",
+      "Effect": "allow",
+      "Action": [
+        "athena:GetQueryExecution",
+        "athena:StartQueryExecution"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_2ee1f27a",
+      "Effect": "allow",
+      "Action": [
+        "athena:GetQueryExecution",
+        "glue:GetTable"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    }
+  ]
+}

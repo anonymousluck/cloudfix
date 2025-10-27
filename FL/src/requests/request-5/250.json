@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_290dd4e1",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:iot:[region]:[account]:thing/data.json"
+    },
+    {
+      "id": "deny_d94be058",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:iot:[region]:[account]:thing/data.json"
+    },
+    {
+      "id": "allow_02b78d24",
+      "Effect": "allow",
+      "Action": "iot:GetThingShadow",
+      "Resource": [
+        "arn:aws:iot:[region]:[account]:thing/config.xml",
+        "arn:aws:iot:[region]:[account]:thing/data.json"
+      ]
+    },
+    {
+      "id": "allow_c70046b7",
+      "Effect": "allow",
+      "Action": [
+        "iot:ListNamedShadowsForThing",
+        "iot:GetThingShadow"
+      ],
+      "Resource": "arn:aws:iot:[region]:[account]:thing/config.xml"
+    },
+    {
+      "id": "allow_35e58ac3",
+      "Effect": "allow",
+      "Action": [
+        "iot:GetThingShadow",
+        "iot:UpdateThingShadow"
+      ],
+      "Resource": "arn:aws:iot:[region]:[account]:thing/data.json"
+    }
+  ]
+}

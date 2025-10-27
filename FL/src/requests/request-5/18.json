@@ -1,0 +1,77 @@
+{
+  "Requests": [
+    {
+      "id": "allow_a4e7f988",
+      "Effect": "allow",
+      "Action": "iotsitewise:BatchPutAssetPropertyValue",
+      "Resource": [
+        "arn:aws:iotsitewise:eu-west-1:907963324750:time-series/data.json",
+        "arn:aws:iotsitewise:eu-west-1:907963324750:asset/_"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iotsitewise:propertyAlias": [
+            "/lorawan/${topic(3)}/snr",
+            "/lorawan/${topic(3)}/frequency",
+            "/lorawan/${topic(3)}/rssi"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_9e75e6d2",
+      "Effect": "allow",
+      "Action": "iotsitewise:BatchPutAssetPropertyValue",
+      "Resource": [
+        "arn:aws:iotsitewise:eu-west-1:907963324750:time-series/document.txt",
+        "arn:aws:iotsitewise:eu-west-1:907963324750:time-series/config.xml"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "deny_59304b8e",
+      "Effect": "deny",
+      "Action": "iotsitewise:BatchPutAssetPropertyValue",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    },
+    {
+      "id": "allow_16831ed6",
+      "Effect": "allow",
+      "Action": "iotsitewise:BatchPutAssetPropertyValue",
+      "Resource": "arn:aws:iotsitewise:eu-west-1:907963324750:time-series/config.xml",
+      "Condition": {
+        "StringLike": {
+          "iotsitewise:propertyAlias": [
+            "/lorawan/${topic(3)}/snr",
+            "/lorawan/${topic(3)}/frequency",
+            "/lorawan/${topic(3)}/rssi"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_bf2c2514",
+      "Effect": "deny",
+      "Action": "iotsitewise:BatchPutAssetPropertyValue",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "StringLike": {
+          "iotsitewise:propertyAlias": [
+            "/lorawan/${topic(3)}/snr",
+            "/lorawan/${topic(3)}/frequency",
+            "/lorawan/${topic(3)}/rssi"
+          ]
+        }
+      }
+    }
+  ]
+}

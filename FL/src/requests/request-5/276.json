@@ -1,0 +1,51 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e5fec584",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": "arn:aws:s3:::[bucket-name]",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "deny_95695210",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::[bucket-name]/config.xml",
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    },
+    {
+      "id": "allow_96263eff",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::[bucket-name]",
+        "arn:aws:s3:::[bucket-name]/document.txt"
+      ],
+      "Principal": "arn:aws:iam::[my-account-id]:root"
+    },
+    {
+      "id": "allow_1ef0a963",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::[bucket-name]/data.json",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "deny_efd2225a",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::[bucket-name]/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    }
+  ]
+}

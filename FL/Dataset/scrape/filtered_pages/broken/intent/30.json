@@ -1,0 +1,31 @@
+Hi,
+
+
+I have an IAM role - <role_name>, for AWS lambda function.
+This IAM role has an policy attached to it:
+
+
+
+
+
+
+In the lambda function code, i try to get the secret value using python like:
+
+
+import aws_lambda_powertools
+from aws_lambda_powertools.utilities import parameters
+json.loads(parameters.get_secret(<secret_name>))
+
+
+
+And in the output im getting error:
+
+
+[ERROR] GetParameterError: An error occurred (AccessDeniedException) when calling the GetSecretValue operation: User: arn:aws:sts::<account_id>:assumed-role/<role_name>/<role_name> is not authorized to perform: secretsmanager:GetSecretValue on resource: <secret_name> because no identity-based policy allows the secretsmanager:GetSecretValue action
+
+
+
+What could be an issue? The role has a policy that allows this role to "GetSecretValue" out of <secret_arn>, but the assumed role IAM identity cannot access it (if to believe the error message, and it is not misleading).
+
+
+Thanks.

@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_289e6255",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::bucket-name/prefix/AWSLogs/your-aws-account-id/config.xml",
+      "Principal": "arn:aws:iam::048591011584:root"
+    },
+    {
+      "id": "allow_a063b527",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::bucket-name/prefix/AWSLogs/your-aws-account-id/document.txt",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    },
+    {
+      "id": "deny_029c4bac",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    },
+    {
+      "id": "deny_054b0837",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    },
+    {
+      "id": "allow_91b2ea10",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::bucket-name/prefix/AWSLogs/your-aws-account-id/document.txt",
+        "arn:aws:s3:::bucket-name/prefix/AWSLogs/your-aws-account-id/config.xml"
+      ],
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    }
+  ]
+}

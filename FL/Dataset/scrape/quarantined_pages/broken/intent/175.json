@@ -1,0 +1,123 @@
+Hello, I am migrating an IAM role's trust policy to limit access using the ScheduleGroup ARN instead of Schedule ARN in accordance with 
+https://docs.aws.amazon.com/scheduler/latest/UserGuide/cross-service-confused-deputy-prevention.html
+
+
+I only want to allow schedules in the default schedule group to assume the role, so my trust policy is:
+
+
+
+
+
+
+However, when I attempt to create a schedule in the default schedule group through the AWS web console, I get the error 
+"The execution role you provide must allow AWS EventBridge Scheduler to assume the role."
+
+
+Even using StringLike and 
+arn:aws:scheduler:*:<ACCOUNT_ID>:schedule-group/*
+ for aws:SourceArn results in the same error. Reverting back to using the Schedule ARN still works.
+
+
+What am I missing? Do I need to somehow tell EventBridge Scheduler to present a ScheduleGroup ARN instead of a Schedule ARN?
+
+
+
+
+Edit to add CloudTrail logs:
+
+
+UpdateAssumeRolePolicy:
+
+
+{
+    "eventVersion": "1.08",
+    "userIdentity": {
+        "type": "Root",
+        "principalId": "XXXXXXXXXX",
+        "arn": "arn:aws:iam::XXXXXXXXXX:root",
+        "accountId": "XXXXXXXXXX",
+        "accessKeyId": "XXXXXXXXXX",
+        "sessionContext": {
+            "sessionIssuer": {},
+            "webIdFederationData": {},
+            "attributes": {
+                "creationDate": "2023-10-25T12:52:40Z",
+                "mfaAuthenticated": "true"
+            }
+        }
+    },
+    "eventTime": "2023-10-25T13:56:38Z",
+    "eventSource": "iam.amazonaws.com",
+    "eventName": "UpdateAssumeRolePolicy",
+    "awsRegion": "us-east-1",
+    "sourceIPAddress": "XXXXXXXXXX",
+    "userAgent": "AWS Internal",
+    "requestParameters": {
+        "policyDocument": "{\n\t\"Version\": \"2012-10-17\",\n\t\"Statement\": [\n\t\t{\n\t\t\t\"Effect\": \"Allow\",\n\t\t\t\"Principal\": {\n\t\t\t\t\"Service\": \"scheduler.amazonaws.com\"\n\t\t\t},\n\t\t\t\"Action\": \"sts:AssumeRole\",\n\t\t\t\"Condition\": {\n\t\t\t\t\"StringLike\": {\n\t\t\t\t\t\"aws:SourceAccount\": \"XXXXXXXXXX\",\n\t\t\t\t\t\"aws:SourceArn\": \"arn:aws:scheduler:*:XXXXXXXXXX:schedule-group/*\"\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t]\n}",
+        "roleName": "XXXXXXXXXX"
+    },
+    "responseElements": null,
+    "requestID": "50709fc9-386a-4f95-be16-44cf9591e9f7",
+    "eventID": "c80a532c-2295-4f00-84e4-36234e5c4389",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "managementEvent": true,
+    "recipientAccountId": "XXXXXXXXXX",
+    "eventCategory": "Management",
+    "sessionCredentialFromConsole": "true"
+}
+
+
+
+Subsequent CreateSchedule:
+
+
+{
+    "eventVersion": "1.08",
+    "userIdentity": {
+        "type": "Root",
+        "principalId": "XXXXXXXXXX",
+        "arn": "arn:aws:iam::XXXXXXXXXX:root",
+        "accountId": "XXXXXXXXXX",
+        "accessKeyId": "XXXXXXXXXX",
+        "sessionContext": {
+            "sessionIssuer": {},
+            "webIdFederationData": {},
+            "attributes": {
+                "creationDate": "2023-10-25T12:52:40Z",
+                "mfaAuthenticated": "true"
+            }
+        }
+    },
+    "eventTime": "2023-10-25T14:02:57Z",
+    "eventSource": "scheduler.amazonaws.com",
+    "eventName": "CreateSchedule",
+    "awsRegion": "us-east-1",
+    "sourceIPAddress": "XXXXXXXXXX",
+    "userAgent": "XXXXXXXXXX",
+    "errorCode": "ValidationException",
+    "errorMessage": "The execution role you provide must allow AWS EventBridge Scheduler to assume the role.",
+    "requestParameters": {
+        "name": "create_schedule_test",
+        "scheduleExpression": "at(2023-10-26T11:11:00)",
+        "description": "",
+        "scheduleExpressionTimezone": "America/New_York",
+        "state": "ENABLED",
+        "flexibleTimeWindow": {
+            "mode": "OFF"
+        },
+        "clientToken": "XXXXXXXXXX"
+    },
+    "responseElements": null,
+    "requestID": "4edc45a0-e62b-478a-93ee-63ddadfcd8a8",
+    "eventID": "03773412-bf04-492d-b9e4-ed0e61b342ec",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "managementEvent": true,
+    "recipientAccountId": "XXXXXXXXXX",
+    "eventCategory": "Management",
+    "tlsDetails": {
+        "clientProvidedHostHeader": "scheduler.us-east-1.amazonaws.com"
+    },
+    "sessionCredentialFromConsole": "true"
+}

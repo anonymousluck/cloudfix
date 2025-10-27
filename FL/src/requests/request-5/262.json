@@ -1,0 +1,62 @@
+{
+  "Requests": [
+    {
+      "id": "allow_8d56fe1a",
+      "Effect": "allow",
+      "Action": "ssmmessages:CreateDataChannel",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "ssm:resourceTag/host": "our-rds.yyyyyyyyyyyy.ap-southeast-1.rds.amazonaws.com"
+        }
+      }
+    },
+    {
+      "id": "deny_3ab6eb8f",
+      "Effect": "deny",
+      "Action": "ssmmessages:OpenDataChannel",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "StringEquals": {
+          "ssm:resourceTag/host": "our-rds.yyyyyyyyyyyy.ap-southeast-1.rds.amazonaws.com"
+        }
+      }
+    },
+    {
+      "id": "allow_d56a6998",
+      "Effect": "allow",
+      "Action": "ssm:StartSession",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    },
+    {
+      "id": "deny_7fbfe505",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:ec2:ap-southeast-1:111111111111:instance/i-yyyyyyyyyyyyyyyyy",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    },
+    {
+      "id": "allow_75623263",
+      "Effect": "allow",
+      "Action": [
+        "ssm:TerminateSession",
+        "sts:GetCallerIdentity"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "ssm:resourceTag/host": "our-rds.yyyyyyyyyyyy.ap-southeast-1.rds.amazonaws.com"
+        }
+      }
+    }
+  ]
+}

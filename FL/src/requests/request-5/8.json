@@ -1,0 +1,51 @@
+{
+  "Requests": [
+    {
+      "id": "deny_de4322cd",
+      "Effect": "deny",
+      "Action": "s3:GetBucketAcl",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    },
+    {
+      "id": "allow_c1053e62",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:PutBucketLifecycle"
+      ],
+      "Resource": [
+        "arn:aws:s3:::backet",
+        "arn:aws:s3:::backet/config.xml"
+      ],
+      "Principal": "arn:aws:iam::...:user/superadmin"
+    },
+    {
+      "id": "deny_60d713d3",
+      "Effect": "deny",
+      "Action": "s3:GetBucketVersioning",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::...:user/superadmin"
+    },
+    {
+      "id": "allow_42d8d2b3",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObjectVersion",
+        "s3:DeleteBucketPolicy"
+      ],
+      "Resource": "arn:aws:s3:::backet",
+      "Principal": "arn:aws:iam::...:user/superadmin"
+    },
+    {
+      "id": "allow_46c78cdd",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketTagging",
+        "s3:PutBucketLifecycle"
+      ],
+      "Resource": "arn:aws:s3:::backet",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+I'm struggling a bit to understand the correct use of IoT Core Policies correctly.
+
+
+Here's what I found out and what works for my use case:
+I registered a "Thing" called 'MyDevice'. I also created a certificate for it and attached this policy:
+
+
+
+
+
+
+This allows the device to connect using the certificate. The connection is successful if (and only if) the client id matches the Thing name, in my case 'MyDevice'.
+With the policy above, the device can publish on 
+MyDevice/temperature
+ and can receive commands on 
+MyDevice/command
+.
+
+
+What I don't understand:
+
+
+1)
+
+If I change the connect policy above to
+
+
+{
+   "Effect": "Allow",
+   "Action": "iot:Connect",
+   "Resource": [
+      "arn:aws:iot:eu-west-1:123456789012:client/*"
+   ]
+}
+
+
+
+I can connect using any client ID, like 'MyDevice2'. However, I can't subscribe neither to MyDevice2/command nor to MyDevice/command.
+Why is that? And how would I define that a Thing can connect using any device ID, but can only subscribe to a topic that contains its exact Thing name?
+
+
+2)
+
+What is the exact use case for the following condition?
+
+
+"Condition": {
+   "Bool": {
+      "iot:Connection.Thing.IsAttached": ["true"]
+   }
+}
+
+
+
+In my case, I did the same thing with the policy that the client ID must match the Thing's name.

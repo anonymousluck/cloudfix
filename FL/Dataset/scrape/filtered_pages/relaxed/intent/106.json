@@ -1,0 +1,27 @@
+Hello there,
+
+
+We are using SSO for Azure (EntraID) and we have some permission sets attached to some of the users we label them as "PowerDevelopers" and they have the PowerUserAccess Managed AWS Policy attached.
+
+
+When navigating to EKS > Cluster Name > Resources - we are presented with the following error:
+
+
+Error loading resources
+pods is forbidden: User "arn:aws:iam::accountnumberhere:role/AWSReservedSSO_PowerDeveloper_randomnumbershere" cannot list resource "pods" in API group "" at the cluster scope
+
+
+It seems to work fine as Administrator but I'd expect that as everything is allowed, I've tried adding an inline policy or creating a customer managed policy with the following:
+
+
+
+
+
+
+But this doesn't seem to change anything, does anyone have any guidance on permissions, I've been through a few articles online but none of which seem to help me so far.
+
+
+Thanks in advance for any help,
+
+
+Zack

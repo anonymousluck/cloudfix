@@ -1,0 +1,25 @@
+I have deployed a WordPress website on AWS Elastic Beanstalk, with image storage handled by an S3 bucket. However, I am encountering a persistent problem where images appear blank. I checked in the browser console and there is no error - all returning "200" status code. I have the bucket policy as shown below:
+
+
+
+
+
+
+In the debug.log file of WordPress, I have the following error:
+
+
+[07-Oct-2023 05:06:32 UTC] PHP Notice:  getimagesize(): Error reading from s3://elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/S3-Uploads-Media/uploads/2023/10/guest-details.png! in /var/app/current/wp-includes/media.php on line 5307
+[07-Oct-2023 05:06:33 UTC] PHP Notice:  exif_imagetype(): Error reading from s3://elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/S3-Uploads-Media/uploads/2023/10/guest-details.png! in /var/app/current/wp-includes/functions.php on line 3268
+[07-Oct-2023 05:06:33 UTC] PHP Notice:  getimagesize(): Error reading from s3://elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/S3-Uploads-Media/uploads/2023/10/guest-details.png! in /var/app/current/wp-includes/media.php on line 5305
+[07-Oct-2023 05:06:33 UTC] PHP Notice:  exif_imagetype(): Error reading from s3://elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/S3-Uploads-Media/uploads/2023/10/guest-details.png! in /var/app/current/wp-includes/functions.php on line 3268
+[07-Oct-2023 05:06:33 UTC] PHP Notice:  getimagesize(): Error reading from /tmp/guest-details-qaQ4O2.tmp! in /var/app/current/wp-includes/media.php on line 5307
+[07-Oct-2023 05:06:33 UTC] PHP Notice:  exif_imagetype(): Error reading from /tmp/guest-details-qaQ4O2.tmp! in /var/app/current/wp-includes/functions.php on line 3268
+[07-Oct-2023 05:06:33 UTC] PHP Notice:  getimagesize(): Error reading from /tmp/guest-details-qaQ4O2.tmp! in /var/app/current/wp-includes/media.php on line 5305
+[07-Oct-2023 05:06:33 UTC] PHP Notice:  exif_imagetype(): Error reading from /tmp/guest-details-qaQ4O2.tmp! in /var/app/current/wp-includes/functions.php on line 3268
+[07-Oct-2023 05:06:33 UTC] PHP Notice:  getimagesize(): Error reading from s3://elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/S3-Uploads-Media/uploads/2023/10/guest-details.png! in /var/app/current/wp-includes/media.php on line 5307
+[07-Oct-2023 05:06:33 UTC] PHP Notice:  exif_imagetype(): Error reading from s3://elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/S3-Uploads-Media/uploads/2023/10/guest-details.png! in /var/app/current/wp-includes/functions.php on line 3268
+
+
+
+
+The IAM user role has full S3 access. I could not trace where the issue is coming from S3 because I have the permissions. Please help and thank you.

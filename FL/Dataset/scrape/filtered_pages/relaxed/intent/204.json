@@ -1,0 +1,79 @@
+Hi there!
+
+
+I'm trying to use RDS Authentication to allow users to connect to our databases via DBeaver or PgAdmin for example using SSO, but I'm getting the "PAM authentication failed for your user" error in all my attempts.
+
+
+Here are the details:
+
+
+
+
+Database is Postgres, feature is already enabled.
+
+
+I'm using SSO with external identity provider (Azure AD), SAML 2.0 auth method, SCIM provisioning method.
+
+
+I've added the policy below to the Organization, with all the accounts under/including the root as target:
+
+
+
+
+
+
+
+
+
+
+Created the IAM policy below and attached to the SSO group permission set as a customer managed policy. The usernames in SSO are the user's email and I included only one in the policy for initial testing. I couldn't use a dummy email so I went with emailgoeshere in order to be able to post here.
+
+
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowRDSConnect",
+            "Effect": "Allow",
+            "Action": "rds-db:connect",
+            "Resource": [
+                "arn:aws:rds-db:us-east-1:44444444444:dbuser:db-BUNCHOFLETTERS/emailgoeshere"
+            ]
+        }
+    ]
+}
+
+
+
+
+
+I have also tried enabling dynamic permissions and tweaking the policy following the top answer to 
+this 
+post. = replaced "emailgoeshere" with "${aws:username}". My attributes for access control section looks like this:
+
+
+
+
+ Key: username
+ Value: ${path:userName}
+
+
+
+
+
+Created the user following the doc:
+
+
+
+
+CREATE USER "emailgoeshere" WITH LOGIN; 
+GRANT rds_iam TO "emailgoeshere";
+
+
+
+Today I created an IAM user, attached the same policy to an IAM group and managed to successfully connect to the database, but no luck with SSO.
+
+
+Does anyone have any pointers on this issue or managed to use the feature in a similar scenario?

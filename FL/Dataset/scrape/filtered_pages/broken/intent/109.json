@@ -1,0 +1,65 @@
+I have an EC2 instance with (OS) Debian 11 installed and I'm having problems connecting using the EC2 Instance Connect endpoint where it shows the error
+
+
+Failed to connect to your instance
+Error establishing SSH connection to your instance. Try again later.
+
+
+I made all the necessary settings like:
+
+
+
+
+IAM (user)
+
+
+Permissions ( user )
+
+
+Endpoints
+
+
+instance region
+
+
+Choice of AMI id
+
+
+Instance type ( t2.micro )
+
+
+Key Pair
+
+
+VPC id
+
+
+sub net id
+
+
+Security Group Id
+
+
+
+
+Below is the configuration of permissions to establish connection with the instance, in Json format, and also follows the rules defined for SSH connection:
+
+
+Custom Permission
+
+
+
+
+
+
+Rules ( Security Group )
+
+
+... IPv6	HTTP	TCP	80	Custom   ::/0	–
+... IPv4	HTTPS	TCP	443	Custom   0.0.0.0/0
+... IPv6	HTTPS	TCP	443	Custom   ::/0
+... IPv4	SSH	TCP	22	Custom   177.16.108.18/32
+... IPv4	HTTP	TCP	80	Custom   0.0.0.0/0
+
+
+0v0 ( I don't know if OS Debian 11 is compatible with the EC2 Instance Connect endpoint, maybe that's why the error is happening, thanks to anyone who can help me ).

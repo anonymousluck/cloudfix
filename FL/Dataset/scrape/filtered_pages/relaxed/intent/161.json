@@ -1,0 +1,314 @@
+I'm experiencing an authorization error when publishing to IoT Core from MQTT on a Greengrass device.
+The greengrass device is running a Mosquitto broker with a bridging configuration to AWS IoT Core as shown here -
+
+
+listener 1883 0.0.0.0
+allow_anonymous true
+log_dest stdout
+
+connection aws-iot-core
+address ${MQTT_CLOUD_BROKER_ADDRESS}:8883
+remote_clientid ${MQTT_THING_PREFIX}
+bridge_protocol_version mqttv311
+bridge_insecure false
+cleansession true
+start_type automatic
+notifications false
+try_private false
+bridge_cafile /mosquitto/certs/awsRootCA.pem
+bridge_certfile /mosquitto/certs/deviceCertAndCACert.crt
+bridge_keyfile /mosquitto/certs/deviceCert.key
+
+topic # out 0 grid-cloud/ ${MQTT_THING_PREFIX}/
+
+
+
+This same certificate when used with mosquitto_pub or MQTT Explorer is successful.
+
+
+In the 
+success
+ scenario this publication is successful.
+
+
+mosquitto_pub --cafile /mosquitto/certs/awsRootCA.pem \
+--cert /mosquitto/certs/deviceCertAndCACert.crt \
+--key /mosquitto/certs/deviceCert.key \
+-h aws-redacted.iot.us-east-2.amazonaws.com \
+-p 8883 \
+-t DeviceGrid_SO1/test/ \
+-m '{"value": "test" }' \
+-i DeviceGrid_SO1 \
+-V mqttv311 \
+-d
+
+
+
+with this cloudwatch logging the successful publication -
+
+
+[
+    {
+        "@timestamp": "2025-02-04 18:04:04.588",
+        "@message": {
+            "timestamp": "2025-02-04 18:04:04.588",
+            "logLevel": "INFO",
+            "traceId": "912e662c-1157-c612-8838-8be8b7d175ad",
+            "accountId": "my-accountId",
+            "status": "Success",
+            "eventType": "Connect",
+            "protocol": "MQTT",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 60546
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 18:04:04.620",
+        "@message": {
+            "timestamp": "2025-02-04 18:04:04.620",
+            "logLevel": "INFO",
+            "traceId": "8bf1f5f9-5e53-6bab-d20a-c6d0deb4ccc1",
+            "accountId": "my-accountId",
+            "status": "Success",
+            "eventType": "Publish-In",
+            "protocol": "MQTT",
+            "topicName": "DeviceGrid_SO1/test/",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 60546
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 18:04:04.622",
+        "@message": {
+            "timestamp": "2025-02-04 18:04:04.622",
+            "logLevel": "INFO",
+            "traceId": "8bf1f5f9-5e53-6bab-d20a-c6d0deb4ccc1",
+            "accountId": "my-accountId",
+            "status": "Success",
+            "eventType": "RuleMatch",
+            "clientId": "DeviceGrid_SO1",
+            "topicName": "DeviceGrid_SO1/test/",
+            "ruleName": "LNDEV_forward_to_kinesis",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba"
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 18:04:04.622",
+        "@message": {
+            "timestamp": "2025-02-04 18:04:04.622",
+            "logLevel": "DEBUG",
+            "traceId": "8bf1f5f9-5e53-6bab-d20a-c6d0deb4ccc1",
+            "accountId": "my-accountId",
+            "status": "Success",
+            "eventType": "StartingRuleExecution",
+            "clientId": "DeviceGrid_SO1",
+            "topicName": "DeviceGrid_SO1/test/",
+            "ruleName": "LNDEV_forward_to_kinesis",
+            "ruleAction": "KinesisAction",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba"
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 18:04:04.635",
+        "@message": {
+            "timestamp": "2025-02-04 18:04:04.635",
+            "logLevel": "INFO",
+            "traceId": "ce98e815-5c42-4b87-0579-e20e914b835e",
+            "accountId": "my-accountId",
+            "status": "Success",
+            "eventType": "Disconnect",
+            "protocol": "MQTT",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 60546,
+            "disconnectReason": "CLIENT_INITIATED_DISCONNECT"
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 18:04:04.655",
+        "@message": {
+            "timestamp": "2025-02-04 18:04:04.655",
+            "logLevel": "INFO",
+            "traceId": "8bf1f5f9-5e53-6bab-d20a-c6d0deb4ccc1",
+            "accountId": "my-accountId",
+            "status": "Success",
+            "eventType": "RuleExecution",
+            "clientId": "DeviceGrid_SO1",
+            "topicName": "DeviceGrid_SO1/test/",
+            "ruleName": "LNDEV_forward_to_kinesis",
+            "ruleAction": "KinesisAction",
+            "resources": {
+                "StreamName": "LNDEV_telegraf-input-stream",
+                "PartitionKey": "DeviceGrid_SO1/test/",
+                "ShardId": "shardId-000000000000",
+                "SequenceNumber": "49659725967821851025920655818127633624539141380218290178"
+            },
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba"
+        }
+    }
+]
+
+
+
+In the 
+failure
+ scenario publishing with a Mosquitto broker and a bridge configuration, The Cloudwatch log are is as shown here -
+
+
+[
+    {
+        "@timestamp": "2025-02-04 17:14:58.247",
+        "@message": {
+            "timestamp": "2025-02-04 17:14:58.247",
+            "logLevel": "INFO",
+            "traceId": "d21f4fb9-08e7-aef5-cb19-8634a9eef7ef",
+            "accountId": "my-accountId",
+            "status": "Success",
+            "eventType": "Connect",
+            "protocol": "MQTT",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 37426
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 17:14:58.293",
+        "@message": {
+            "timestamp": "2025-02-04 17:14:58.293",
+            "logLevel": "INFO",
+            "traceId": "61fcd645-87fc-d345-42e7-a98bdd12a6e2",
+            "accountId": "my-accountId",
+            "status": "Success",
+            "eventType": "Unsubscribe",
+            "protocol": "MQTT",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 37426
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 17:14:58.293",
+        "@message": {
+            "timestamp": "2025-02-04 17:14:58.293",
+            "logLevel": "ERROR",
+            "traceId": "3d2ffdbb-8b3e-81d9-f469-263eadabc6a8",
+            "accountId": "my-accountId",
+            "status": "Failure",
+            "eventType": "Publish-In",
+            "protocol": "MQTT",
+            "topicName": "DeviceGrid_SO1/system-heartbeat",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 37426,
+            "reason": "AUTHORIZATION_FAILURE",
+            "details": "Authorization Failure"
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 17:14:58.293",
+        "@message": {
+            "timestamp": "2025-02-04 17:14:58.293",
+            "logLevel": "ERROR",
+            "traceId": "98b128a9-40ed-c488-6446-b9404dfea64d",
+            "accountId": "my-accountId",
+            "status": "Failure",
+            "eventType": "Publish-In",
+            "protocol": "MQTT",
+            "topicName": "DeviceGrid_SO1/system-info/system-time-utc",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 37426,
+            "reason": "AUTHORIZATION_FAILURE",
+            "details": "Authorization Failure"
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 17:14:58.293",
+        "@message": {
+            "timestamp": "2025-02-04 17:14:58.293",
+            "logLevel": "ERROR",
+            "traceId": "eb01b42e-45cf-7255-ef15-6280a7913418",
+            "accountId": "my-accountId",
+            "status": "Failure",
+            "eventType": "Publish-In",
+            "protocol": "MQTT",
+            "topicName": "DeviceGrid_SO1/system-info/bsp-version",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 37426,
+            "reason": "AUTHORIZATION_FAILURE",
+            "details": "Authorization Failure"
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 17:14:58.293",
+        "@message": {
+            "timestamp": "2025-02-04 17:14:58.293",
+            "logLevel": "ERROR",
+            "traceId": "7b1d36b4-1faa-0909-a05e-8bda99a021e5",
+            "accountId": "my-accountId",
+            "status": "Failure",
+            "eventType": "Publish-In",
+            "protocol": "MQTT",
+            "topicName": "DeviceGrid_SO1/system-info/cpu-temperature-degrees-celsius",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 37426,
+            "reason": "AUTHORIZATION_FAILURE",
+            "details": "Authorization Failure"
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 17:14:58.293",
+        "@message": {
+            "timestamp": "2025-02-04 17:14:58.293",
+            "logLevel": "ERROR",
+            "traceId": "4fc9e6d1-b73d-a4b3-8377-2a4dbfe803f6",
+            "accountId": "my-accountId",
+            "status": "Failure",
+            "eventType": "Publish-In",
+            "protocol": "MQTT",
+            "topicName": "DeviceGrid_SO1/system-info/uptime-seconds",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 37426,
+            "reason": "AUTHORIZATION_FAILURE",
+            "details": "Authorization Failure"
+        }
+    },
+    {
+        "@timestamp": "2025-02-04 17:14:58.316",
+        "@message": {
+            "timestamp": "2025-02-04 17:14:58.316",
+            "logLevel": "INFO",
+            "traceId": "1de83b1a-ee39-0dfb-e525-b1253c4dd054",
+            "accountId": "my-accountId",
+            "status": "Success",
+            "eventType": "Disconnect",
+            "protocol": "MQTT",
+            "clientId": "DeviceGrid_SO1",
+            "principalId": "11de9f15fd7bccc905d9838e9120280a7f039a81c13eea5be5217117ae7067ba",
+            "sourceIp": "50.232.1.166",
+            "sourcePort": 37426,
+            "disconnectReason": "CLIENT_ERROR"
+        }
+    }
+]
+
+
+
+The policy, verified by 
+aws iot get-effective-policies --thing-name DeviceGrid_SO1 --principal $PRINCIPAL_ID
+ is as follows

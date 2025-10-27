@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_23ca5310",
+      "Effect": "allow",
+      "Action": "execute-api:Invoke",
+      "Resource": "arn:aws:execute-api:region:account-id:appsync-api-id/config.xml",
+      "Principal": "arn:aws:iam::account-id:role/your-irsa-role"
+    },
+    {
+      "id": "allow_e7601288",
+      "Effect": "allow",
+      "Action": "execute-api:Invoke",
+      "Resource": "arn:aws:execute-api:region:account-id:appsync-api-id/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user"
+    },
+    {
+      "id": "deny_0c505493",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:execute-api:region:account-id:appsync-api-id/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    },
+    {
+      "id": "allow_ab8dcbd3",
+      "Effect": "allow",
+      "Action": "execute-api:Invoke",
+      "Resource": [
+        "arn:aws:execute-api:region:account-id:appsync-api-id/data.json",
+        "arn:aws:execute-api:region:account-id:appsync-api-id/config.xml"
+      ],
+      "Principal": "arn:aws:iam::444555666777:user/external-user"
+    },
+    {
+      "id": "deny_4138045b",
+      "Effect": "deny",
+      "Action": "execute-api:Invoke",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    }
+  ]
+}

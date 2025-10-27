@@ -1,0 +1,536 @@
+1. In the CDK code, I created a 
+custom KMSKey
+, and then configured the Image Recipe of EC2 Image Builder to use the KMSKey as the encryption key of EBS, after successfully creating the AMI, I used the AMI to launch the instance, and the consistent message failed to start, the error is as follows:
+
+ Client.InvalidKMSKey.InvalidState: The KMS key provided is in an incorrect state
+.
+
+
+KMSKey's state is 
+enabled
+, otherwise the AMI would not be successfully generated, so I don't understand why the state Incorrect is still prompted.
+
+
+I looked up the answer on the Internet and saw a post saying that it was a permission issue, and then I associated a role with an EC2 instance with an inline policy like this::
+
+
+
+
+
+But the startup failed with the same error.
+
+
+Does anyone know why?
+
+2. I want to limit S3 operation of a certain S3 bucket only through the VPC endpoints, so I changed the S3 bucket policy to the way like
+
+
+While after submitting this policy, I found myself not able to manage the S3 bucket attribute via AWS Management Console.  Every time I click on the bucket, the console just displays errors of "Insufficient permissions to ..." , even if I have enough IAM previlege to perform that operation.  Well, it makes perfect sense, but what if I still want to manage the bucket via AWS Management Console, how should the bucket policy to be set?
+3. Hi Team,
+
+
+As part of security, I'm trying to implement SNS encryption, but after enabling it, the email is not being triggered. Without encryption, it works fine.
+
+
+Below are the policies set for the SNS and KMS key.
+
+**
+SNS  Policy**
+
+
+
+  ]
+}
+
+
+
+KMS key Policy
+
+
+{
+    "Version": "2012-10-17",
+    "Id": "key-consolepolicy-3",
+    "Statement": [
+        {
+            "Sid": "Enable IAM User Permissions",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::1234444444444:root"
+            },
+            "Action": "kms:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "AllowSNSAccess",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "sns.amazonaws.com"
+            },
+            "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:GenerateDataKey*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+
+
+So kindly assist me to resolve this issue .Also is there any way to view the error that is occurring while publishing the SNS message
+4. I'm trying to start a port forwarding session to our RDS through a bastion host.  I have it working for an administrator, now i'm trying to implement least permissions.
+
+
+aws ssm start-session --region ap-southeast-1 --target i-55555555555555555 --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters host="our-rds.yyyyyyyyyyy.ap-southeast-1.rds.amazonaws.com",portNumber="3306",localPortNumber="3306"
+
+
+
+
+
+I get an error, but already have the StartSession in the policy.
+
+
+
+
+An error occurred (AccessDeniedException) when calling the StartSession operation: User: arn:aws:iam::yyyyyyyyyyy:user/testuser is not authorized to perform: ssm:StartSession on resource: arn:aws:ssm:ap-southeast-1::document/AWS-StartPortForwardingSessionToRemoteHost because no identity-based policy allows the ssm:StartSession action
+
+
+
+
+I am successful with a simple start-session command: aws ssm start-session --target i-55555555555555555
+
+
+
+
+I have two RDS instances, and would like to limit it to just one RDS host, and don't know what policy to add
+
+
+
+5. I'm attempting to create s3 folders (prefixes) within a bucket that is only accessible to specific EC2 instances via IAM Role policies based on their name. The idea would be something like s3://mybucket/i-1234567890/* would only be accessible to EC2 instance i-1234567890 and s3://mybucket/i-987654321/* would only be accessible to EC2 instance i-987654321. Rather then create a custom IAM Role for each instance (they are pets), I thought I might be able to use policy variables to limit access to the prefix.
+It looks like the only variable this may work with is aws:username, which with IAM Role is set to be 
+role-id:ec2-instance-id
+ according to 
+https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_variables.html#policy-vars-infotouse
+ . So I created a folder named "AROAxxxxxxxxxxxx:i-1234567890/" in that s3 bucket and attached this policy to the IAM Role:
+
+
+
+
+
+
+I got the Role ID by running this powershell command: 
+(Get-IAMRole <RoleName>).RoleId
+
+
+I'm unable to get this working. If I hardcode "AROAxxxxxxxxxxxxxx:i-xxxxxxxxxxxxxx" in place of ${aws:username} it works as expected. It is as if ${aws:username} is not returning what I expect it to be. I'm unable to determine what is returning instead though.
+
+
+I setup CloudTrail Trail on the s3 bucket and did a 
+aws s3 cp
+ download attempt. The log shows the correct RoleId:InstanceId as the PrincipalId but I get access denied.
+ 6. I get error "Failed to get the secret value" when pressing 'Retrieve Secret Value'
+
+
+
+
+I am not an IAM user with a role, but logged in as an IAM-identity-center user.
+
+
+My group has a permission-set containing the AWS-managed policy 
+SecretsManagerReadWrite
+.
+
+
+The resource policy of the secret is set to deny all requests not coming from a specified VPCE (e.g. 
+vpce-myvpce
+) as follows:
+
+
+
+
+
+
+How should I modify this policy in order to allow myself access to my secrets via the AWS Console, i.e. view and edit the key/value pairs?
+7. I have a S3 bucket with the following permission added to the bucket permission:
+
+
+
+
+
+
+Together with an VPC endpoint to S3, I successfully restricted access to my bucket objects only to my AWS resources in the specified VPC.
+
+
+I then would like to create a AWS backup plan to perform AWS backup on the S3 bucket. For testing, I tried to create an on-demand backup with a user role for AWS backup with AmazonS3FullAccess and AWSBackupServiceRolePolicyForS3Backup managed policies, but I am still with insufficient permission to perform the backup. I was able to perform the backup if I remove the above S3 bucket permission.
+
+
+My question is: Is it possible to perform AWS backup on my S3 bucket if I want to keep the above S3 bucket permission to restrict access to my VPC? If it is possible, how should I specify the permissions of user role used for running the AWS backup?
+8. In most regions the following KMS key policy
+
+
+
+
+
+
+allows the account to use IAM policies to allow access to the KMS key, in addition to the key policy
+.
+
+
+However, 
+in the Beijing and Ningxia Regions, there is no concept of the "root user" or "account user" credentials
+. Creating KMS key with such policy (replacing 
+arn:aws:
+ with 
+arn:aws-cn:
+) fails. Is it possible to enable IAM policies for KMS keys in Chinese regions? If so, how?
+9. Hi, I'm encountering an issue despite configuring all permissions correctly. When attempting to trigger an action via a CloudWatch alarm in AWS Lambda, I receive the following error message:
+
+
+Error: Failed to execute action arn:aws:lambda:[region]:[account_id]:function:[function_name]. Received error: "CloudWatch Alarms is not authorized to perform: lambda:InvokeFunction on the resource because no resource-based policy allows the lambda:InvokeFunction action."
+
+
+The CloudWatch alarms are being programmatically created and dynamically configured within a Lambda function, specifically to monitor CPU utilization and trigger at <10%. Everything seems to work fine: the alarms are created successfully, and the logic is functioning as expected, with the Lambda function set as the action trigger. However, when the alarm reaches the action state, the error appears in CloudWatch logs, and the Lambda function is not triggered.
+
+
+I have already ensured that all permissions are set correctly. My Lambda function has a resource-based policy issued through the CLI with the appropriate lambda:InvokeFunction permissions.
+
+
+Has anyone encountered this issue or found a solution? I've come across similar cases but haven't found a clear fix.
+
+Does anyone have suggestions for resolving this issue?
+10. Hello, I started a project that aims to prevent the creation of certain resources if they do not have certain Tags. Following this documentation "
+https://aws.amazon.com/pt/blogs/mt/implement-aws-resource-tagging-strategy-using-aws-tag-policies-and-service-control-policies-scps
+" I successfully replicated the "ec2:runinstance" action using only one Tag, but when I added a second Tag to the policy, the "ec2:runinstance" action happens with the presence of only one of the two Tags I defined.
+
+
+With a few more tests you can prevent the action by creating two SCP policies, one policy for each Tag, so only when the two Tags I defined are present the resource is created, the big problem now is that the maximum number of SCP policies that I can apply to the Organization is 5 per account, and in the project there would be a total of 6 Tags.
+
+What I need is to concatenate these two JSON policies into one that works, but all the SCP "Conditions" I've tried either block everything or release the action with the presence of just one Tag.
+
+Is there a condition that validates all Tags present and then denies the action, or is what I'm trying impossible at the moment?
+
+I tried with these other conditions, but without success, I didn't find where I could be going wrong.
+
+ForAllValues:StringEquals
+StringEqualsIfExists
+
+StringNotEqualsIfExists
+
+
+StringNotEquals
+
+11. Hi All ,
+I want to restrict access to a particular s3 bucket for all the user who login through sso by assuming a particular iam role .But this restricts access for user who login through other roles also. What am i doing wrong here?
+12. I encountered a frustrating issue with AWS CodePipeline where I kept getting the error:
+
+InvalidStructureException: CodePipeline is not authorized to perform AssumeRole on role arn:aws:iam::[your account number]:role/CodePipelineServiceRole
+This made it seem like there was an issue with the IAM trust policy or the attached permissions. However, after hours of debugging, I found out that the real culprit was a missing CloudWatch Logs permission in my pipeline's IAM role.
+
+The policy needed to include:
+
+Edit
+
+Solution:
+Ensure your CodePipeline IAM Role has permissions for CloudWatch Logs if you're using custom logging.
+If you encounter InvalidStructureException or not authorized to assume role, check if missing logging permissions are the root cause.
+Hope this helps others avoid wasting time debugging misleading IAM errors!
+13. I have a bucket which restricts access to it only through access policy. I see that it is not working as expected. Here is the bucket policy -
+
+
+
+The access point has the following policy -
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam:: xxxxxxxxxxxx:user/admin"
+            },
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:us-east-1: xxxxxxxxxxxx:accesspoint/admin-only-accesspoint"
+        }
+    ]
+}
+
+
+
+My intent is to restrict the bucket only to the admin user.  When I list the objects in the bucket 'admin-only-accesspoint', it is working fine.
+
+aws s3api list-objects --bucket arn:aws:s3:us-east-1: xxxxxxxxxxxx:accesspoint/admin-only-accesspoint --profile admin 
+
+But I am also able to do list objects with another user 'staff'.
+
+aws s3api list-objects --bucket arn:aws:s3:us-east-1: xxxxxxxxxxxx:accesspoint/admin-only-accesspoint --profile staff 
+
+Just wondering why the access is not restricted to admin user.
+14. Hi there,
+I followed the 
+guide
+ to create a Custom Policy to allow only 
+AWS-StartPortForwardingSessionToRemoteHost
+ action to a bastion host.
+
+
+This is the Policy I created and getting 
+AccessDeniedExcepton
+
+However, if I set 
+Resource
+ to 
+*
+ for 
+ssm:StartSession
+ action I am able to start a session with 
+StartPortForwardingSessionToRemoteHost
+. Can you please guide me about what I am missing? I literally followed the simple examples from the guide. Thanks
+15.Config of Redshift Cluster:
+
+
+
+
+Enhanced VPC routing has enabled
+
+
+Redshift subnet in the same subnet as S3 vpc endpoint
+
+
+
+
+Config of S3
+
+
+
+
+VPC endpoints created for S3
+
+
+Routing has configured to route traffic to the S3 vpc endpoints
+
+
+
+
+My S3 policy:
+
+
+    
+
+
+
+With this configuration Redshift Specturum cant accesss external tables
+
+
+So my goal here. To restrict access to the S3 from outside but also give access to Redshift Spectrum to work with S3.
+
+
+From the documentation I see that:
+
+Redshift Spectrum on provisioned clusters can't access data stored in Amazon S3 buckets that use a bucket policy that restricts access to only specified VPC endpoints.
+
+Any ideas how I can achieve this ?
+16. Dear Team - Can anyone help me on best way to implement SCP to block the S3 public read access. It should not impact the existing one and only deny when someone trying to create the new bucket and add Policy/ACL for public access. I tried below but still users are able to create new bucket and can apply s3 policy for public read access.
+17. Hi,
+
+
+I have an EC2 instance running to which currently no IAM Instance Profile role is attached to it. I got one instance role created to which I'm trying to attach it to my existing EC2 instance. I can list and select that role in the dropdown option however when I submit the button for '
+Update IAM role
+' then I get this error as shown in the screenshot:-
+
+Failed to attach instance profile
+You are not authorized to perform this operation. Encoded authorization failure message: 0v498g_npaKBtWgAS6pJbH.....................
+
+
+Inline policy attached to the user performing this action:-
+18. Hi,
+
+
+We are trying to setup a 
+SCP
+  which will deny some 
+DynamoDB
+ actions based on the **IP Ranes ** of our Network, the way that IAM Users for example can't Scan or Query a DynamoDB table outside of our Network.
+
+
+In this SCP we need to add a
+n exception
+ to some AWS Services (Like: 
+EC2
+ or 
+Lambda
+) which can freely Query/Scan a DynamoDB table if they have the necessary permissions.
+
+We tried with the following SCP and it worked fine for the first case "IAM Users" but failed for the Lambda case as we still recieving an AccessDenied Error trying to Query a DynamoDB table from a Lambda Function :
+
+Do you know how we can manage to add this exception for all AWS Services which need to perform any DynamoDB action without the need to use the ARN of specific IAM Role used by these service ?
+19. I am hosting a static website on s3 and using CloudFront (CDN) distribution domain name to access me website but have been receiving 'denied access' xml page instead. To save everyone time i have provided context and troubleshooting approaches i have already tried. Looking forward to everyone's solution and advice!
+
+
+Context:
+
+
+
+
+S3 settings
+ :
+
+
+Encryption
+ - SSE-S3 (server-side encryption)
+
+
+Static website hosting
+ - disabled
+
+
+Permission
+ Block public access (ALL ON)
+
+
+Bucket Policy (copied over from Cloudfront OAC policy)
+ :
+
+
+Cloudfront/Origin Settings
+
+Origin Domain
+: selected s3 bucket housing the website (example: cloud-website.s3.ap-southeast-2amazon.com)
+
+OAC selected
+
+HTTP redirect to HTTPS protocol policy selected
+
+My troubleshooting so far:
+
+
+Confirm i can access index.html url in s3 when block public access is OFF.
+
+Turned off Block public access on s3 but still getting denied access via CDN domain.
+20. Currently, on the latest CloudFormation documentaion, we do not have support for VPC Origin creation, we are relying on using Lambda backed custom resource to create this.
+We are getting the following error message without any futher information stating what issue it might be (role/SCP or otherwise). We have tried the following mechanism:
+
+
+
+
+Providing cloudfront:* permission to the lambda IAM role (Same Access Denied Error)
+
+
+Providing ec2:* and cloudfront:* permissions to the lambda IAM role as we saw the aws-service-linked role creating ENIs and SGs (Same Access Denied Error)
+
+
+Providing 
+:
+ (Administrator privilege) persmissions to lambda IAM role (works but we really don't want to do this)
+
+
+
+
+Is there a better way to provide the minimum IAM policy access for this?
+
+
+Baseline policy used as per the boto3 API called:
+21. Morning, I am looking to give a user access to the metrics tab of an S3 bucket.  He has the following policy;
+
+Now he can get to the S3 bucket with the URL in the console, but when the metrics tab is clicked, it does nothing.  The user wants to get the size and number of directories inside each of the top level folders.  I can probably do a custom metric, but just curious on why the metrics tab doesn't work and am I on the right track for those values.
+22. Hi re:Post,
+I am trying to export CloudWatch log group to my S3 bucket.
+
+"Could not create export task.
+GetBucketAcl call on the given bucket failed. Please check if CloudWatch Logs has been granted permission to perform this operation."
+
+So I went over to my S3 bucket and tried to add a bucket policy to let CloudWatch Logs access the bucket.  I made the policy via the AWS Policy Generator.
+
+I suspect there is something off with "logs.us-east-2.amazonaws.com" that's causing the "Invalid principal in policy" error when I try to save the policy.
+Any advice or help would be greatly appreciated !
+
+23. I'm trying to create a policy that will allow an EC2 instance access to a s3 bucket and prefix controlled via the Name tag on the EC2 instance. It feels like I should be able to create a policy similar to the below, but it isn't working. I get a 'PutObject operation: Access Denied' when I try and create an object.
+
+My EC2 instance has a non-blank Name tag. If the ${aws:RequestTag/Name} portion from the Resource list, the EC2 instance can put files, but with the variable, the action fails. I'm trying to limit the s3 object prefix to include the value of the EC2 instance tag name
+
+The policy I'm trying to use is:
+
+From my ec2 instance I've executing the following, where the instance has Name=inst_name defined in the AWS control panel:
+
+aws s3 cp my_file s3://my-backups-sn/inst_name/my_file.txt
+
+Any guidance is gratefully accepted
+24. We're using IoT as a communication channel for a web app. The clients are not registered things, but rather we authorize using tokens and custom lambda authorizer. Our clients that use the app only receive messages by subscribing to topics of interest.
+
+
+I have the lambda authorizer setup and everything works when I return the following policy:
+
+
+
+
+
+
+An example topic that the client would subscribe to would be 
+/resource/RESOURCE_ID/event
+.
+
+
+The moment I try to restrict the policy more than having just 
+*
+, it just stops working. For example even if I just add the 
+resource/*
+ to the end of the topic & topicfilter like this:
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "iot:Connect",
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Action": "iot:Subscribe",
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:iot:eu-west-1:ACCOUNT_ID:topicfilter/resource/*"
+      ]
+    },
+    {
+      "Action": [
+        "iot:Receive"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:iot:eu-west-1:ACCOUNT_ID:topic/resource/*"
+      ]
+    }
+  ]
+}
+
+
+
+Now the client no longer receives any messages.
+
+
+I've logged the policies, the topics we publish to and subscribe to, and they're 100% correct and identical everywhere. I enabled IoT logging and I found this stuff from logs (removed the non-relevant properties):
+
+
+{
+  "status": "Success",
+  "eventType": "Subscribe",
+  "topicName": "/resource/RESOURCE_ID/event",
+  "subscriptions": [
+    {
+      "topicName": "/resource/RESOURCE_ID/event",
+      "reasonCode": 135
+    }
+  ]
+}
+
+
+
+Looking at AWS IoT docs, reason code 135 means "Not authorized". Changing the 
+/resource/*
+ to just 
+/*
+ makes it work.

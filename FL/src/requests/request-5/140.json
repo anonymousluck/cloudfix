@@ -1,0 +1,65 @@
+{
+  "Requests": [
+    {
+      "id": "allow_a6620c39",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:ec2:*:*:instance/data.json",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/tkey": "tval"
+        }
+      }
+    },
+    {
+      "id": "deny_3716624a",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:ec2:*:*:subnet/config.xml",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:max-keys": "10"
+        }
+      }
+    },
+    {
+      "id": "deny_49441939",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/tkey": "tval"
+        }
+      }
+    },
+    {
+      "id": "allow_610479ef",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": [
+        "arn:aws:ec2:*:*:key-pair/data.json",
+        "arn:aws:ec2:*:*:network-interface/data.json"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_0b585860",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": [
+        "arn:aws:ec2:*:*:network-interface/data.json",
+        "arn:aws:ec2:*:*:volume/data.json"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/tkey": "tval"
+        }
+      }
+    }
+  ]
+}

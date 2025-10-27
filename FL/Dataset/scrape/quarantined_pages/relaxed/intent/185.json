@@ -1,0 +1,52 @@
+Hi Guys,
+
+
+I have an AWS organization with multiple accounts: dev, staging, and prod. My application code is in GitHub, and I use GitHub Actions for deployment. I created a GitHub IdP in one account and set up a role with the following trust relationship:
+
+
+
+
+
+
+In each account, I created a role with a trust relationship with the above-created role:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::xxxxx:role/github"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {}
+        }
+    ]
+}
+
+
+
+However, when I run my GitHub Action, I get the following error:
+Error: Could not assume role with OIDC: Not authorized to perform sts:AssumeRoleWithWebIdentity
+Here is my GitHub Action configuration:
+
+
+name: Build Image
+runs-on: ubuntu-latest
+permissions:
+  id-token: write
+  contents: read
+steps:
+  - name: Check out code
+    uses: actions/checkout@v3
+
+  - name: Configure AWS credentials
+    uses: aws-actions/configure-aws-credentials@v3
+    with:
+      aws-region: ${{ secrets.AWS_REGION }}
+      role-to-assume: ${{ secrets.AWS_ROLE }}
+
+
+
+Can anyone help me understand what might be wrong and how to fix this issue?

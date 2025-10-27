@@ -1,0 +1,5 @@
+Hello all, I'm trying to enable the logs on a ALB (AWS GovCloud US-West), but when I tried to add the policy to the S3 bucket, it doesn't work, I was trying to use the policy suggested on the documentation, and using 048591011584 as elb-account-id, as per documentation, but when I tried to add the policy to the S3 bucket, I got "Invalid principal in policy"
+
+
+
+what am I doing wrong?

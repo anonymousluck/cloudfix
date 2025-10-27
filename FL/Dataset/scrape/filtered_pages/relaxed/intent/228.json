@@ -1,0 +1,53 @@
+Followed step based on : 
+https://repost.aws/knowledge-center/s3-private-connection-no-authentication
+
+
+
+
+
+
+I created bucket where I store my Great Expectations documentation and I want to make it accessible over my company's VPN. My bucket has: 
+Block all public access: On
+:
+
+
+
+
+
+
+
+Created 
+s3 gateway
+ endpoint with attached routing table associated with private subnets and which has routes to NAT and Peering Connection to our VPN:
+
+
+
+
+
+
+
+Added bucket policy that allows traffic from my endpoint:
+
+
+
+
+
+
+
+
+
+
+After all theese steps I am getting error:
+
+
+403 Forbidden
+Code: AccessDenied
+Message: Access Denied
+RequestId: DN74M08H99PNGYE5
+HostId: NmWdSKz5qg7UU0Il/8OoovRo9XoMA1giGLsAC2nHq5cIJy7yqX/09NOkFNt5w5agMOfU7FwUBMc=
+
+
+
+If I switch to: 
+Block all public access: Off
+ then I can access my website.

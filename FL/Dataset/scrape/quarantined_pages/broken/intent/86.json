@@ -1,0 +1,128 @@
+I am trying to set up cross-account access with a role from Account A (one with role to assume) to Account B (one with S3 bucket and access point). I can access both the bucket and the access point cross-account with a user. I can access the bucket cross-account with a role, but I cannot access the S3 access point cross-account with a role. I have reconfirmed the policies many times and even tried to explicitly grant the role access instead of delegating access to Account A to provide that access (which works for the S3 Bucket, but not for the S3 Access Point. I think this is a bug.
+
+
+Here is the AssumeRole trust policy which I know works cause I can assume it and access the bucket with it:
+
+
+
+
+
+
+Here is the Access Point policy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "arn:aws:iam::***AccountA***:role/TestRole",
+                    "arn:aws:iam::***AccountA***:root",
+                    "arn:aws:sts::***AccountA***:assumed-role/TestRole/session-testrole"
+                ]
+            },
+            "Action": "s3:GetObject",
+            "Resource": [
+                "arn:aws:s3:us-west-2:***AccountB***:accesspoint/monitoring/object/error-reports/*",
+                "arn:aws:s3:us-west-2:***AccountB***:accesspoint/monitoring/object/health-checks/*"
+            ]
+        }
+    ]
+}
+
+
+
+For the bucket, I only need the Principal of 
+"arn:aws:iam::***AccountA***:root"
+ but I am showing it with the additional principals cause it still doesn't work.
+
+
+Here is the bucket policy which again works fine if accessing cross-account with a user instead of a role (I would not have such an open policy normally, but opened it up more for testing):
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowAccess",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::testaccesspoint***/*",
+            "Condition": {
+                "StringEquals": {
+                    "s3:DataAccessPointAccount": "***AccountB***"
+                }
+            }
+        }
+    ]
+}
+
+
+
+Here is the Access Denied message in CloudTrail (bucket access succeeds to a similarly configured bucket, it is only the access point that fails and only for cross-account roles and not for users):
+
+
+{
+  "eventVersion": "1.09",
+  "userIdentity": {
+    "type": "AWSAccount",
+    "principalId": "AROA*****34RK2I:session-testrole",
+    "accountId": "***AccountA***"
+  },
+  "eventTime": "2023-10-27T08:40:40Z",
+  "eventSource": "s3.amazonaws.com",
+  "eventName": "GetObject",
+  "awsRegion": "us-west-2",
+  "sourceIPAddress": "##.##.##.##",
+  "userAgent": "[aws-cli/1.29.62 md/Botocore#1.31.62 ua/2.0 os/linux#5.15.90.1-microsoft-standard-WSL2 md/arch#x86_64 lang/python#3.8.10 md/pyimpl#CPython cfg/retry-mode#legacy botocore/1.31.62]",
+  "errorCode": "AccessDenied",
+  "errorMessage": "Access Denied",
+  "requestParameters": {
+    "bucketName": "testaccesspoint***",
+    "Host": "monitoring-x74pp1mjp***m3gusw2a-s3alias.s3.us-west-2.amazonaws.com",
+    "key": "health-checks/1_1643823007.json"
+  },
+  "responseElements": null,
+  "additionalEventData": {
+    "SignatureVersion": "SigV4",
+    "CipherSuite": "ECDHE-RSA-AES128-GCM-SHA256",
+    "bytesTransferredIn": 0,
+    "AuthenticationMethod": "AuthHeader",
+    "x-amz-id-2": "8/C7m9qpsbR+v0iomUgIK/Mq4DrfIJHqwRPzYCiAxYvwjIM1kXSJelGJ7gMiDkTEYAEWXYmYKCI=",
+    "bytesTransferredOut": 243
+  },
+  "requestID": "NA6BK48D5197GEXT",
+  "eventID": "98e32249-2c11-483b-ba5a-77372d3dea82",
+  "readOnly": true,
+  "resources": [
+    {
+      "type": "AWS::S3::Object",
+      "ARN": "arn:aws:s3:::testaccesspoint***/health-checks/1_1643823007.json"
+    },
+    {
+      "accountId": "***AccountB***",
+      "type": "AWS::S3::Bucket",
+      "ARN": "arn:aws:s3:::testaccesspoint***"
+    },
+    {
+      "accountId": "***AccountB***",
+      "type": "AWS::S3::AccessPoint",
+      "ARN": "arn:aws:s3:us-west-2:***AccountB***:accesspoint/monitoring"
+    }
+  ],
+  "eventType": "AwsApiCall",
+  "managementEvent": false,
+  "recipientAccountId": "***AccountB***",
+  "sharedEventID": "bf1c2541-ec66-4fb7-9b0d-4ed03006f3e8",
+  "eventCategory": "Data",
+  "tlsDetails": {
+    "tlsVersion": "TLSv1.2",
+    "cipherSuite": "ECDHE-RSA-AES128-GCM-SHA256",
+    "clientProvidedHostHeader": "monitoring-x74pp1mjp********m3gusw2a-s3alias.s3.us-west-2.amazonaws.com"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "allow_07486c0b",
+      "Effect": "allow",
+      "Action": [
+        "kinesisvideo:DescribeStream",
+        "kinesisvideo:GetDataEndPoint"
+      ],
+      "Resource": [
+        "arn:aws:kinesisvideo:*:*:stream/$credential-name/data.json",
+        "arn:aws:kinesisvideo:*:*:stream/$credential-name/config.xml"
+      ]
+    },
+    {
+      "id": "deny_2930cba5",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:kinesisvideo:*:*:stream/$credential-name/config.xml"
+    },
+    {
+      "id": "deny_e17360ef",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:kinesisvideo:*:*:stream/$credential-name/document.txt"
+    },
+    {
+      "id": "allow_4a318e36",
+      "Effect": "allow",
+      "Action": "kinesisvideo:TagStream",
+      "Resource": "arn:aws:kinesisvideo:*:*:stream/$credential-name/config.xml"
+    },
+    {
+      "id": "allow_1290ccf8",
+      "Effect": "allow",
+      "Action": [
+        "kinesisvideo:TagStream",
+        "kinesisvideo:DescribeStream"
+      ],
+      "Resource": [
+        "arn:aws:kinesisvideo:*:*:stream/$credential-name/config.xml",
+        "arn:aws:kinesisvideo:*:*:stream/$credential-name/document.txt"
+      ]
+    }
+  ]
+}

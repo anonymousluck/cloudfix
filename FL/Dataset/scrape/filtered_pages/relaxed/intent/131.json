@@ -1,0 +1,114 @@
+I am getting an error when trying to access a secret stored in Secrets Manager from my NextJS 14 app hosted on Amplify Gen 2.  Could someone please advise on what is wrong or missing with my setup?
+
+
+I did the following:
+
+
+
+
+Deploy a NextJS 14 app on Amplify, currently running, with a NodeJS server action that accesses Simple Email Service via an 
+access key-secret access key
+ pair.  I am using the 
+Javascript aws/sdk v3
+.
+
+
+Added the access key and secret access key to Secrets Manager.  I have 
+two
+ key-value pairs under the one secret.
+
+
+Added the policy below to the service role for the Amplify app instance, via the Amplify Gen 2 console.  I have replaced the actual region, account ID, and secret name in the snippet below.
+
+
+Added the below sample code provided by Secrets Manager to the server action code.
+
+
+Ran the NextJS application locally and triggered the server action, which produced the following error:
+
+
+
+
+CredentialsProviderError: Could not load credentials from any providers
+.....
+.....
+CredentialsProviderError: Could not load credentials from any providers
+    at async getSecretValue (./src/app/actions.tsx:68:24)
+    at async sendContactUsEmail (./src/app/actions.tsx:80:5)
+digest: "3336735301"
+
+
+
+
+
+AWS Dependencies Installed
+
+"@aws-sdk/client-secrets-manager": "^3.609.0",
+"@aws-sdk/client-ses": "^3.606.0",
+"@aws-sdk/credential-provider-ini": "^3.616.0",
+
+
+Policy Added to Amplify App Service Role
+
+
+
+
+
+
+Also Added the Following Resource Permissions for the Secret defined in Secrets Manager
+
+
+{
+  "Version" : "2012-10-17",
+  "Statement" : [ {
+    "Effect" : "Allow",
+    "Principal" : {
+      "Service" : "amplify.amazonaws.com"
+    },
+    "Action" : "secretsmanager:GetSecretValue",
+    "Resource" : "arn:aws:secretsmanager:region:account-id:secret:my-secret-name"
+  } ]
+}
+
+
+
+Sample Code Provided by Secrets Manager, Added to the Server Action
+
+
+Also shown here:  
+https://docs.aws.amazon.com/code-library/latest/ug/javascript_3_secrets-manager_code_examples.html
+
+
+// Use this code snippet in your app.
+// If you need more information about configurations or implementing the sample code, visit the AWS docs:
+// https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started.html
+
+import {
+  SecretsManagerClient,
+  GetSecretValueCommand,
+} from "@aws-sdk/client-secrets-manager";
+
+const secret_name = "MY-SECRET-NAMEl";
+
+const client = new SecretsManagerClient({
+  region: "REGION",
+});
+
+let response;
+
+try {
+  response = await client.send(
+    new GetSecretValueCommand({
+      SecretId: secret_name,
+      VersionStage: "AWSCURRENT", // VersionStage defaults to AWSCURRENT if unspecified
+    })
+  );
+} catch (error) {
+  // For a list of exceptions thrown, see
+  // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+  throw error;
+}
+
+const secret = response.SecretString;
+
+// Your code goes here

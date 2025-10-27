@@ -1,0 +1,7 @@
+I have provided the user with IAMReadOnlyAccess. When this user logs in to the console and accesses IAM Dashboard an error comes up with the message that the user does not have access to iam:GetAccountSummary. I had to create a separate policy to provide this access as following
+
+
+
+
+
+Why this permission is required separately even though a user has been assigned the built-in policy IAMReadOnlyAccess?

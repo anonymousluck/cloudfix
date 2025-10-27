@@ -1,0 +1,145 @@
+Hi All,
+
+
+I'd like to setup multi-VPC private connectivity so that MSK in AWS account A can be securely accessed from AWS account B with IAM role in the EC2 instance.
+
+
+I followed the blog 
+https://aws.amazon.com/blogs/big-data/connect-kafka-client-applications-securely-to-your-amazon-msk-cluster-from-different-vpcs-and-aws-accounts/
+ to turn on multi-VPC on the MSK cluster, created a VPC connection in account B, but I just failed to list topics from account B.
+
+
+For this demo/test, I am just using the default vpc in the account B, with the default security group, which allows all inbound/outbound connections. The subnet mappings are also correct. I have questions for step 8 in the blog "The next step is to update the outbound rules for the VPC endpoint security group to allow communication to the port range 14001:14100." If the "VPC endpoint security group" refers to the security group I choose when creating the VPC connection/endpoint, it's the default security group.
+
+
+I also followed the doc at 
+https://docs.aws.amazon.com/msk/latest/developerguide/mvpc-cross-account-user-action.html
+
+
+In my case, I created a IAM policy in account B, then create a IAM role for EC2 instance and bind the IAM role to the EC2 instance. I am not sure what is the correct IAM policy, how to set the MSK ARN in that policy, should I set the ARN for MSK in account A, or the ARN for VPC connection in account B. I tried both and didn't work. My current IAM policy in account B is
+
+
+
+
+
+I tested it with Redpanad Console.  With a config.yaml
+
+
+kafka
+:
+
+
+  
+brokers
+:
+
+
+    
+-
+ b
+-
+1.iam.democluster1.someid.c6.kafka.us
+-
+west
+-
+2.amazonaws.com
+:
+14001
+
+
+  
+sasl
+:
+
+
+    
+enabled
+:
+ 
+true
+
+
+    
+mechanism
+:
+ AWS_MSK_IAM
+
+    
+awsMskIam
+:
+
+
+      
+region
+:
+ us
+-
+west
+-
+2
+
+
+  
+tls
+:
+
+
+    
+enabled
+:
+ 
+true
+
+
+analytics
+:
+
+
+  
+enabled
+:
+ 
+false
+
+
+server
+:
+
+
+  
+listenAddress
+:
+ 0.0.0.0
+
+  
+listenPort
+:
+ 
+8080
+
+
+./redpanda-console --config.filepath rpconsole.yml
+{"level":"info","ts":"2025-01-13T02:56:03.465Z","msg":"started Redpanda Console","version":"2.8.2","built_at":"1736522726"}
+{"level":"info","ts":"2025-01-13T02:56:03.467Z","msg":"connecting to Kafka seed brokers, trying to fetch cluster metadata"}
+{"level":"error","ts":"2025-01-13T02:56:03.882Z","logger":"kafka_client","msg":"unable to initialize sasl","broker":"seed_0","err":"[e1ac7b3c-969c-4161-8691-a18fa83f2937]: Access denied: SASL_AUTHENTICATION_FAILED: SASL Authentication failed."}
+{"level":"warn","ts":"2025-01-13T02:56:03.882Z","msg":"Failed to test Kafka connection, going to retry in 1s","remaining_retries":5}
+
+
+I even turned on the CloudWatch Logs for the MSK cluster to see any error. It seems that the accountB EC2 instance can reach out to the demo cluster in account A, but fail to pass SASL-based IAM
+
+
+The log I got in CloudWatchLogs is
+[2025-01-13 02:03:42,151] INFO TCP CONNECTION INFO:
+{
+"clientIpAddress":"INTERNAL_IP",
+"tcpConnectionId":"INTERNAL_IP-INTERNAL_IP-1726",
+"clientVpcEndpointId":"vpce-..",
+"clientVpcId":"vpc-.."
+}
+(org.apache.kafka.common.security.authenticator.SaslServerAuthenticator)
+
+
+[2025-01-13 02:03:42,245] INFO [SocketServer listenerType=ZK_BROKER, nodeId=1] Failed authentication with /INTERNAL_IP (channelId=INTERNAL_IP-INTERNAL_IP-1726) ([5edfda02-c8a1-4645-8a35-0c626b462006]: Access denied) (org.apache.kafka.common.network.Selector)
+
+
+Thanks for looking into this.

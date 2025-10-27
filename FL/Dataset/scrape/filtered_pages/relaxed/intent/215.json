@@ -1,0 +1,13 @@
+Hi,
+
+
+I am having an issue (AccessDenied) restricting the access to only the AWS/Bedrock using the condition below. Is this condition valid for GetMetricStatistics, ListDashboards and ListMetrics? or is it only valid for PutMetricData as shown in 
+https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/iam-cw-condition-keys-namespace.html
+ ?
+
+
+
+
+
+
+Could you help me clarify this point?

@@ -1,0 +1,67 @@
+{
+  "Requests": [
+    {
+      "id": "allow_41a6dd94",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::bucket-account-a/document.txt",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalOrgID": "o-xxxxxxxxxx"
+        }
+      }
+    },
+    {
+      "id": "deny_3329e6cf",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    },
+    {
+      "id": "allow_d0cae2b9",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::bucket-account-a/document.txt",
+        "arn:aws:s3:::bucket-account-a/data.json"
+      ],
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalOrgID": "o-xxxxxxxxxx"
+        }
+      }
+    },
+    {
+      "id": "deny_606d3bad",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::bucket-account-a/data.json",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalOrgID": "o-xxxxxxxxxx"
+        }
+      }
+    },
+    {
+      "id": "allow_6fecd08d",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::bucket-account-a/config.xml",
+      "Principal": "arn:aws:iam::987654321098:user/charlie",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    }
+  ]
+}

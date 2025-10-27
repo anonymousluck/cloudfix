@@ -1,0 +1,64 @@
+Hi Folks, This is driving me crazy.
+
+
+I am trying to set up AWS session policy that is bound to logged user. I followed this:
+
+
+https://docs.aws.amazon.com/transfer/latest/userguide/requirements-roles.html#iam-policy-procedure
+
+
+Policy is identical to the post:
+
+
+
+
+
+
+I am able to login but listing folders fail with access denied message in the log:
+
+
+{
+    "activity-type": "ERROR",
+    "resource-arn": "arn:aws:transfer:us-east-1:123456789:server/s-4c2e20c02c9b434f8",
+    "message": "Access denied",
+    "session-id": "00239b9a2b32141f2edb"
+}
+
+
+
+If I attach second policy (below) to user role which allows access without any restriction then It works, but user has access to entire bucket, not to his own folder (as if 1st narrowed down policy is non existent):
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowListingOfUserFolder",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:s3:::prod-sfpt-data"
+            ]
+        },
+        {
+            "Sid": "HomeDirObjectAccess",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+            ],
+            "Resource": "arn:aws:s3:::prod-sfpt-data/*"
+        }
+    ]
+}
+
+
+
+People suggested setting up two policies worked fine for them. Any help is appreciated.
+
+
+Thanks.

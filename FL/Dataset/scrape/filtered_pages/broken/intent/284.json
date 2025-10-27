@@ -1,0 +1,10 @@
+Good evening, Dear!
+
+
+I have a question regarding IAM user policies. I need a user who, when entering EC2 in the instance part, cannot see all instances, but only some specific instances that I define in the policy. I used the following JSON template below to restrict the user, but unfortunately without success. can you help me? If this is not possible, what other alternatives do I have?
+
+
+
+
+
+The instance ID shown in Json does not exist, it is just for example. I'm waiting the answer.

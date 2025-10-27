@@ -1,0 +1,95 @@
+Hi fellas!! I followed the instructions from:
+
+
+[
+https://docs.aws.amazon.com/transfer/latest/userguide/custom-identity-provider-users.html#custom-lambda-idp
+]
+ (Working with custom identity providers)
+
+
+[
+https://docs.aws.amazon.com/transfer/latest/userguide/custom-identity-provider-users.html#authentication-lambda-examples
+]
+ (Default Lambda Functions)
+
+
+but the lambda function fails:
+I used a template through Cloudformation:
+
+
+
+
+aws-transfer-custom-idp-secrets-manager-lambda.template.yml
+
+
+
+
+The error I get when a ftps client try to LOG IN is:
+
+
+Error Talking to SecretsManager: ResourceNotFoundException, Message: An error occurred (ResourceNotFoundException) when calling the GetSecretValue operation: Secrets Manager can't find the specified secret.
+
+
+The lambda function has a related Rol with the Permissions Policies:
+IAMFullAccess
+AWSLambdaBasicExecutionRole
+SecretsManagerReadWrite
+and a Customer inline:
+
+
+
+
+
+
+The parameter SecretId that the errored function receives (client.get_secret_value(SecretId=id)) is by concatenating "aws/transfer/" + input_serverId + "/" + input_username
+
+
+The input IAM user (input_username) has the Policies:
+
+
+AmazonS3FullAccess
+AmazonS3ObjectLambdaExecutionRolePolicy
+AWSLambda_FullAccess
+AWSLambdaBasicExecutionRole
+AWSLambdaExecute
+AWSTransferFullAccess
+AWSTransferLoggingAccess
+and a Customer inline:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ReadWriteS3",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:s3:::#S3_BUCKET_ID#"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:GetObjectTagging",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:GetObjectVersion",
+                "s3:GetObjectVersionTagging",
+                "s3:GetObjectACL",
+                "s3:PutObjectACL"
+            ],
+            "Resource": [
+                "arn:aws:s3:::#S3_BUCKET_ID#/*"
+            ]
+        }
+    ]
+}
+
+
+
+Which could be the problem?

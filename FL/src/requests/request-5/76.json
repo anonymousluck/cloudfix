@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "deny_04359792",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:iot:ap-northeast-1:ACCOUNT:client/${iot:ClientId}"
+    },
+    {
+      "id": "allow_22ad329e",
+      "Effect": "allow",
+      "Action": [
+        "iot:Connect",
+        "iot:ListRetainedMessages"
+      ],
+      "Resource": "arn:aws:iot:ap-northeast-1:ACCOUNT:client/${iot:ClientId}"
+    },
+    {
+      "id": "allow_8e6dfac0",
+      "Effect": "allow",
+      "Action": "iot:ListRetainedMessages",
+      "Resource": "arn:aws:iot:ap-northeast-1:ACCOUNT:client/${iot:ClientId}"
+    },
+    {
+      "id": "deny_1ee1f36a",
+      "Effect": "deny",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_6b97169a",
+      "Effect": "allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:iot:ap-northeast-1:ACCOUNT:client/${iot:ClientId}"
+    }
+  ]
+}

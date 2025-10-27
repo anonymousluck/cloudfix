@@ -1,0 +1,76 @@
+{
+  "Requests": [
+    {
+      "id": "deny_a6023d68",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Principal": "sns.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "111222333"
+        }
+      }
+    },
+    {
+      "id": "allow_48abe2e8",
+      "Effect": "allow",
+      "Action": [
+        "kms:DisableKey",
+        "kms:ListAliases"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "arn:aws:iam::111222333:root",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": [
+            "111222333",
+            "444555666"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_8c7363a9",
+      "Effect": "allow",
+      "Action": "kms:CancelKeyDeletion",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Principal": "arn:aws:iam::111222333:root",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "111222333"
+        }
+      }
+    },
+    {
+      "id": "deny_4e9b1ed6",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "arn:aws:iam::444555666:root",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "111222333"
+        }
+      }
+    },
+    {
+      "id": "allow_687c05ed",
+      "Effect": "allow",
+      "Action": [
+        "kms:Encrypt",
+        "kms:CancelKeyDeletion"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "sns.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": [
+            "111222333",
+            "444555666"
+          ]
+        }
+      }
+    }
+  ]
+}

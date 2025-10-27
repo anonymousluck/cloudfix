@@ -1,0 +1,72 @@
+Hi, I am having an issue with a CodePipeline. I receive this error:
+
+
+
+
+This error occurs before the deploy is actually triggered in CodeDeploy, so now deploy is created. I've read various things online about this error message, but most describe issues inside the CodeDeploy configuration, as opposed to my instance that happens before the CodeDeploy is triggered. Also, this specific error message does not seem to appear anywhere on the internet.
+
+
+Here is the policy for the KMS key:
+
+
+
+
+
+
+Here is the policy for the bucket:
+
+
+{
+  "Version": "2012-10-17",
+  "Id": "SSEAndSSLPolicy",
+  "Statement": [
+    {
+      "Sid": "DenyUnEncryptedObjectUploads",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::bucketName/*",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms"
+        }
+      }
+    },
+    {
+      "Sid": "DenyInsecureConnections",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::bucketName/*",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "Sid": "allow-secondary-account-access",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::YYY:root",
+          "arn:aws:iam::YYY:role/appName-deployer-role"
+        ]
+      },
+      "Action": [
+        "s3:Get*",
+        "s3:Put*"
+      ],
+      "Resource": "arn:aws:s3:::bucketName/*"
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::YYY:root"
+      },
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::bucketName"
+    }
+  ]
+}

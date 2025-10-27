@@ -1,0 +1,134 @@
+Hello, Following is a gist of how to perform a cross-region and cross-account redshift copy from a DynamoDB table.
+
+
+Note: Couple of considerations,
+
+
+
+
+Similar to any other AWS service, you need to consider cross region data transfer charges. For DynamoDB data transfer charges, refer 
+https://aws.amazon.com/dynamodb/pricing/
+
+
+Redshift cluster is publicly accessible.
+
+
+
+
+Now, Consider the following scenario where we need to COPY DynamoDB table from eu-west-1 region in Account A to RedShift cluster in us-east-1 region in Account B.
+
+
+DDB table(eu-west-1/Account A) → Redshift(us-east-1/Account B)
+
+
+
+
+
+Let's start by creating IAM roles needed. For RedShift Cluster, In addition to 
+Required Redshift Permissions
+, add the following inline policy and TrustPolicy
+
+
+
+
+Permissions to assume cross account IAM role which will be further used to Access DynamoDB table.
+
+
+
+
+
+
+Trust Policy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "redshift.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+Finally 
+arn:aws:iam::<RedShift_account_id>:role/<Rolename>
+ is created which will be later assigned to use it with redshift cluster as well.
+
+
+
+
+Let's create IAM role which will be used to access DynamoDB table, In addition to 
+AmazonDynamoDBReadOnlyAccess
+ permissions, Add a trust policy to allow redshift account to access the table.
+
+
+
+
+Trust Policy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<RedShift_account_id>:root"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {}
+        }
+    ]
+}
+
+
+
+arn:aws:iam::<DDB_account_id>:role/<Role used to access DDB>
+  is now created.
+
+
+
+
+Create a sample DDB table in Account A with following attributes.
+
+
+
+
+
+
+
+
+Create a RedShift cluster in Account B and using the query editor create a DDB equivalent RedShift table similar to following
+
+
+
+
+CREATE TABLE iad_music 
+(
+  Artist        VARCHAR(30) NOT NULL,
+  SongTitle        VARCHAR(30) NOT NULL,
+  AlbumTitle        VARCHAR(30) NOT NULL,
+  Awards        INTEGER NOT NULL
+);
+
+
+
+Now, run the COPY command,
+
+
+copy <RedShift table name> from 'dynamodb://<DynamoDB table name>'
+iam_role 'arn:aws:iam::<RedShift_account_id>:role/<Rolename assigned to cluster>,arn:aws:iam::<DDB_account_id>:role/<Role used to access DDB>'
+region 'eu-west-1'
+readratio 50;
+
+
+
+You should see 
+Load into table '<RedShift table name>' completed, 4 record(s) loaded successfully.
+ Query to make sure you have loaded the data successfully.

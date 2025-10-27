@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "allow_98f61bd5",
+      "Effect": "allow",
+      "Action": "batch:SubmitJob",
+      "Resource": "arn:aws:batch:[account ID]:job-queue/low-priority"
+    },
+    {
+      "id": "deny_e0ec181a",
+      "Effect": "deny",
+      "Action": "batch:SubmitJob",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "deny_43135d32",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:batch:[account ID]:job-queue/low-priority"
+    }
+  ]
+}

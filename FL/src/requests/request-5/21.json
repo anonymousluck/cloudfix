@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "allow_4b118b87",
+      "Effect": "allow",
+      "Action": "ec2:GetSerialConsoleAccessStatus",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "deny_434331c7",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_a165101c",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_286768bc",
+      "Effect": "allow",
+      "Action": [
+        "ec2:DisableSerialConsoleAccess",
+        "ec2:EnableSerialConsoleAccess"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_1ef412d9",
+      "Effect": "allow",
+      "Action": [
+        "ec2:GetSerialConsoleAccessStatus",
+        "ec2:EnableSerialConsoleAccess"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "polly.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "YOUR_ACCOUNT_ID"
+        },
+        "ArnLike": {
+          "aws:SourceArn": "arn:aws:polly:REGION:YOUR_ACCOUNT_ID:speech-synthesis-task/*"
+        }
+      },
+      "Sid": "statement1"
+    }
+  ]
+}

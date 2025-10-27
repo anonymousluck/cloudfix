@@ -1,0 +1,22 @@
+Good morning all, I am starting to lock down more of our account for obvious reasons, and as the subject states, security hub is showing a bunch of S3 buckets as Critical.   The Title is "PCI.S3.2 S3 buckets should prohibit public read access"  and "Updated at" an hour ago (all the security changes and such were done last week on Wednesday).
+
+
+From the S3 console I see;
+Block all public access
+On
+
+
+The Bucket Policy looks like this (only allowing CloudFront)
+
+
+    "Version": "2008-10-17",
+    "Id": "PolicyForCloudFrontPrivateContent",
+    "Statement": [
+        
+    ]
+}
+
+
+
+
+I have this on all the buckets that were changed and updated last week, so not sure what step(s) to take next to have these removed.

@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_0042f0db",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    },
+    {
+      "id": "allow_f38e8c22",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "*"
+    },
+    {
+      "id": "deny_4e85c2b1",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "deny_ff4a8c8a",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    },
+    {
+      "id": "allow_ceaccd31",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ],
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    }
+  ]
+}

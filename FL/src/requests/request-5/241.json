@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "deny_cfc44c8f",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:s3:::myfirstbucket/prefix/AWSLogs/1111111111/document.txt",
+      "Principal": "arn:aws:iam::123456789012:user/bob"
+    },
+    {
+      "id": "allow_855dc3b5",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::myfirstbucket/prefix/AWSLogs/1111111111/config.xml",
+        "arn:aws:s3:::myfirstbucket/prefix/AWSLogs/1111111111/document.txt"
+      ],
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user"
+    },
+    {
+      "id": "allow_633c5958",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::myfirstbucket/prefix/AWSLogs/1111111111/data.json",
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    },
+    {
+      "id": "allow_e760d50f",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::myfirstbucket/prefix/AWSLogs/1111111111/config.xml",
+      "Principal": "arn:aws:iam::652711504416:root"
+    },
+    {
+      "id": "deny_bdeaae4d",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::myfirstbucket/prefix/AWSLogs/1111111111/config.xml",
+      "Principal": "arn:aws:iam::444555666777:user/external-user"
+    }
+  ]
+}

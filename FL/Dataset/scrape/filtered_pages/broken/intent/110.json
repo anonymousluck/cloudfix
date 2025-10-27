@@ -1,0 +1,20 @@
+Hello,
+I'm using Prisma Cloud App service intergratino feature to send messages to an SQS I created in AWS. However, the app is not able to call the SQS que. I would like to confirm everything is right on AWS Side.
+
+
+I have created a rule with the necessary permissions and actions to perform on the SQS que for the account to assume using the root principal. I'm wondering if there's some sort of access I must explicitly also allow on the SQS que?
+
+
+Note this is cross account access. The third party app is in another account.The permissions on the SQS is default. The permissions for the assume role is listed below.
+
+
+
+
+
+And the trust policy
+
+
+{     "Version": "2012-10-17",     "Statement": [         {             "Effect": "Allow",             "Principal": {                 "AWS": "arn:aws:iam::<account_id>:root"             },             "Action": "sts:AssumeRole",             "Condition": {                 "StringEquals": {                     "sts:ExternalId": "<external_id>"                 }             }         }     ] }
+
+
+Is there anything I'm missing?

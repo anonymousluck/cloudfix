@@ -1,0 +1,248 @@
+Created a new EKS cluster v 1.29 and everything started failing. The last one week, i'm trying to make this work but things were failing one by one.. Finally made the app running but none of the apps able to connect with other AWS services. Gone through all the documentation and tutorials but still no luck. The App primarily uses the below AWS services, S3, SQS, SNS, SES and Redis (through ElastiCache). I believe, i'm missing something for a big time but unable to figure it out. Below are my configuration..
+
+
+
+
+Creating Cluster
+
+
+
+
+eksctl create cluster --name=eks-cluster-1 --region=us-east-2 --version=1.29 --nodegroup-name=ng-101 --nodes=1 --nodes-max=1 --nodes-min=1 --instance-types=t2.large --asg-access --external-dns-access --full-ecr-access --alb-ingress-access --with-oidc --node-private-networking
+
+
+
+
+
+Edit the configmap to add the current root user
+
+
+
+
+kubectl edit configmap aws-auth -n kube-system
+
+mapUsers: |
+  - userarn: arn:aws:iam::xxxxxxxx:root
+    groups:
+    - system:masXXs
+
+
+
+
+
+Create a namespace 
+kubectl create namespace dev
+
+
+Create ServiceAccount
+
+
+
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eks-admin-dev
+  namespace: dev
+
+
+
+
+
+Create RoleBinding
+
+
+
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eks-admin-dev
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin-dev
+subjects:
+- kind: ServiceAccount
+  name: eks-admin-dev
+  namespace: dev
+
+
+
+
+
+Created an IAM policy to attach with the ServiceAccount
+
+
+
+
+
+
+
+
+
+
+Executed the below statement to avoid the app unable to read from configMap.
+
+
+
+
+kubectl create rolebinding default-edit --clusterrole=edit --serviceaccount=dev:default --namespace=dev
+
+
+
+
+
+Add the Policy to the ServiceAccount Role
+
+
+
+
+eksctl create iamserviceaccount --name eks-admin-dev --namespace dev --cluster eks-cluster-1 --role-name eksServiceAccountForDevNamespace \
+    --attach-policy-arn arn:aws:iam::XXXXXX:policy/IamPolicyForEksServiceAccount-EksAdmin --override-existing-serviceaccounts --approve
+
+
+
+
+
+Created the IAM identify Mapping for the Service Account
+
+
+
+
+eksctl create iamidentitymapping --cluster eks-cluster-1 --region=us-east-2 --arn arn:aws:iam::XXXXX:role/eksServiceAccountForDevNamespace --group system:masXXs --username iwowdowd
+
+
+
+
+
+Annotate the created IAM role to the ServiceAccount
+
+
+
+
+kubectl annotate serviceaccount -n dev eks-admin-dev eks.amazonaws.com/role-arn=arn:aws:iam::XXXXXXXX:role/eksServiceAccountForDevNamespace
+
+
+
+
+
+When i tried to see whether the service account has the Role execute this:  
+kubectl describe sa eks-admin-dev
+
+
+
+
+Name:                eks-admin-dev
+Namespace:           dev
+Labels:              <none>
+Annotations:         eks.amazonaws.com/role-arn: arn:aws:iam::XXXXXXX:role/eksServiceAccountForDevNamespace
+Image pull secrets:  <none>
+Mountable secrets:   <none>
+Tokens:              <none>
+Events:              <none>
+
+
+
+
+
+At this point i have validated the OIDC and looked good to me.
+
+
+
+
+oidc.eks.us-east-2.amazonaws.com/id/XXXXXXX
+
+
+
+
+
+Then started deploying my app. The app service file
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-service
+  labels:
+    app.kubernetes.io/name: demo-service
+    app.kubernetes.io/instance: demo
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: http
+    name: http
+  selector:
+    app.kubernetes.io/name: demo-service
+    app.kubernetes.io/instance: demo
+
+
+
+
+
+App Deployment Config
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-service
+  labels:
+    app.kubernetes.io/name: demo-service
+    app.kubernetes.io/instance: demo
+    app.kubernetes.io/managed-by: helm
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: demo-service
+      app.kubernetes.io/instance: demo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: demo-service
+        app.kubernetes.io/instance: demo
+    spec:
+      serviceAccountName: eks-admin-dev
+      containers:
+      - name: demo-service
+        image: ecr.XXXXXX
+        imagePullPolicy: "Always"
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev,kubernetes
+        - name: APP_ENVIRONMENT
+          value: dev
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        livenessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          failureThreshold: 6
+          httpGet:
+            path: /info
+            port: http
+        readinessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          failureThreshold: 12
+          httpGet:
+            path: /info
+            port: http
+
+
+
+Any help will be appreciated! TIA

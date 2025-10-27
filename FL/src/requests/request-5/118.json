@@ -1,0 +1,51 @@
+{
+  "Requests": [
+    {
+      "id": "allow_f0bc2881",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObjectTagging",
+        "s3:DeleteBucketCors"
+      ],
+      "Resource": [
+        "arn:aws:s3:::mytestbucket/document.txt",
+        "arn:aws:s3:::mytestbucket/data.json"
+      ],
+      "Principal": "arn:aws:iam::[account A]:role/service-role/codebuild-service-role-foo-bar"
+    },
+    {
+      "id": "allow_2715b2fb",
+      "Effect": "allow",
+      "Action": "s3:ListObjectVersions",
+      "Resource": [
+        "arn:aws:s3:::mytestbucket/config.xml",
+        "arn:aws:s3:::mytestbucket/document.txt"
+      ],
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    },
+    {
+      "id": "deny_f326936c",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::mytestbucket/data.json",
+      "Principal": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_7dd3d7d0",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteBucketTagging",
+        "s3:PutBucketCors"
+      ],
+      "Resource": "arn:aws:s3:::mytestbucket",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    },
+    {
+      "id": "deny_77033d21",
+      "Effect": "deny",
+      "Action": "s3:GetBucketWebsite",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    }
+  ]
+}

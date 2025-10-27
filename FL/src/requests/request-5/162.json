@@ -1,0 +1,48 @@
+{
+  "Requests": [
+    {
+      "id": "allow_52cd3862",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:DeleteBucketLifecycle"
+      ],
+      "Resource": "arn:aws:s3:::pics-repository/document.txt",
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    },
+    {
+      "id": "deny_2764dba6",
+      "Effect": "deny",
+      "Action": "s3:GetBucketTagging",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    },
+    {
+      "id": "allow_ff041053",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObjectAcl",
+        "s3:ListObjectVersions"
+      ],
+      "Resource": "arn:aws:s3:::pics-repository/config.xml",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    },
+    {
+      "id": "deny_b9e43643",
+      "Effect": "deny",
+      "Action": "s3:GetBucketLocation",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "allow_1dff9d7b",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::pics-repository/data.json",
+        "arn:aws:s3:::pics-repository/document.txt"
+      ],
+      "Principal": "athena.amazonaws.com"
+    }
+  ]
+}

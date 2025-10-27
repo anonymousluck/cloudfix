@@ -1,0 +1,62 @@
+I'm trying to add a timestream DB from account A to a quicksight in account B.
+
+
+I created a role in account A for account B to assume, with a Custom trust policy
+
+
+
+
+
+
+and a policy
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "timestream:DescribeEndpoints",
+        "timestream:SelectValues",
+        "timestream:Select",
+        "timestream:ListTables",
+        "timestream:ListDatabases"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+
+
+
+I also tried with
+"timestream:*"
+
+
+But I am unable to get to the data.
+
+
+I searched in the quicksight configuration for an option to add but didn't find anything. Also added manually a custom policy in the quicksight role to assume the role in account A.
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::<ID_ACCOUNT_A>:role/QuickSightCrossAccountAccessRole"
+    }
+  ]
+}
+
+
+
+Supposedly in Manage QuickSight > Security & permissions, should be an option to manage cross account options, but I find none.
+
+
+Is this posible? I miss something?
+
+
+Thanks.

@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_204d8453",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:iot:eu-west-2:000000000000:topicfilter/$aws/things/${iot:Connection.Thing.ThingName}/jobs/document.txt"
+    },
+    {
+      "id": "allow_d633f962",
+      "Effect": "allow",
+      "Action": "iot:Subscribe",
+      "Resource": [
+        "arn:aws:iot:eu-west-2:000000000000:topicfilter/*/${iot:Connection.Thing.ThingName}/data.json",
+        "arn:aws:iot:eu-west-2:000000000000:topicfilter/$aws/things/${iot:Connection.Thing.ThingName}/jobs/data.json"
+      ]
+    },
+    {
+      "id": "allow_73a2b86e",
+      "Effect": "allow",
+      "Action": "iot:Subscribe",
+      "Resource": [
+        "arn:aws:iot:eu-west-2:000000000000:topicfilter/*/${iot:Connection.Thing.ThingName}/config.xml",
+        "arn:aws:iot:eu-west-2:000000000000:topicfilter/$aws/things/${iot:Connection.Thing.ThingName}/jobs/document.txt"
+      ]
+    },
+    {
+      "id": "allow_906b104b",
+      "Effect": "allow",
+      "Action": "iot:Subscribe",
+      "Resource": [
+        "arn:aws:iot:eu-west-2:000000000000:topicfilter/$aws/things/${iot:Connection.Thing.ThingName}/jobs/config.xml",
+        "arn:aws:iot:eu-west-2:000000000000:topicfilter/*/${iot:Connection.Thing.ThingName}/data.json"
+      ]
+    },
+    {
+      "id": "deny_ff87a6e8",
+      "Effect": "deny",
+      "Action": "iot:Subscribe",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    }
+  ]
+}

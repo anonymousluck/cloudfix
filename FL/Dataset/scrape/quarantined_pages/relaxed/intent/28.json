@@ -1,0 +1,11 @@
+Error: OpenIDConnect provider's HTTPS certificate doesn't match configured thumbprint
+
+
+
+
+
+
+type: OpenID Connect
+provider: https://token.actions.githubusercontent.com/
+thumbprint : 6938fd4d98bab03faadb97b34396831e3780aea1
+Audience: sts.amazonaws.com

@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "allow_276f22fd",
+      "Effect": "allow",
+      "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:iam::account:role/AWSGlueServiceRole-RedshiftCrawlerAccess"
+    },
+    {
+      "id": "deny_fa74a8ad",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:secretsmanager:eu-west-1:account:secret:redshift-pre-datacentric-1B3jpc"
+    },
+    {
+      "id": "allow_baa12730",
+      "Effect": "allow",
+      "Action": [
+        "secretsmanager:ListSecretVersionIds",
+        "secretsmanager:GetResourcePolicy"
+      ],
+      "Resource": "arn:aws:secretsmanager:eu-west-1:account:secret:redshift-pre-datacentric-1B3jpc"
+    },
+    {
+      "id": "allow_3b211d0e",
+      "Effect": "allow",
+      "Action": [
+        "secretsmanager:ListSecretVersionIds",
+        "iam:PassRole"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:eu-west-1:account:secret:redshift-pre-datacentric-1B3jpc",
+        "arn:aws:iam::account:role/AWSGlueServiceRole-RedshiftCrawlerAccess"
+      ]
+    },
+    {
+      "id": "deny_077695f8",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:secretsmanager:eu-west-1:account:secret:redshift-pre-datacentric-1B3jpc"
+    }
+  ]
+}

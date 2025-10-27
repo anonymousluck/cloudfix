@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_197baf30",
+      "Effect": "deny",
+      "Action": "SNS:Publish",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::444555666777:user/external-user",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    },
+    {
+      "id": "allow_b139c79e",
+      "Effect": "allow",
+      "Action": "SNS:Publish",
+      "Resource": "arn:aws:sns:us-east-2:444455556666:MyTopic",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    },
+    {
+      "id": "deny_8dd0394b",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:sns:us-east-2:444455556666:MyTopic",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    }
+  ]
+}

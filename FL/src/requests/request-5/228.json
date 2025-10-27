@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_d1c181f7",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "deny_a7ff6d16",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::bucket-1-name/document.txt"
+    },
+    {
+      "id": "allow_0c17fb95",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:ListMultipartUploadParts"
+      ],
+      "Resource": "arn:aws:s3:::bucket-2-name/document.txt"
+    },
+    {
+      "id": "allow_672b6a25",
+      "Effect": "allow",
+      "Action": [
+        "s3:AbortMultipartUpload",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::bucket-1-name/data.json",
+        "arn:aws:s3:::bucket-1-name/config.xml"
+      ]
+    },
+    {
+      "id": "allow_a69dde35",
+      "Effect": "allow",
+      "Action": [
+        "s3:AbortMultipartUpload",
+        "s3:ListMultipartUploadParts"
+      ],
+      "Resource": "arn:aws:s3:::bucket-1-name/document.txt"
+    }
+  ]
+}

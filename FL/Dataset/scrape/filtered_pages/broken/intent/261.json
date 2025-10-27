@@ -1,0 +1,14 @@
+Hi there,
+
+
+I used the following statement to allow IAM users to terminate their own ssm sessions.
+
+
+
+
+
+
+How can I achieve the same result for IAM Identity Center users? The problem is for these users, I can't find the correct policy variable to use in Resource element.
+
+
+Thank you.

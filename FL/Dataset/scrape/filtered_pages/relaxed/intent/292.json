@@ -1,0 +1,22 @@
+Hello AWS Community,
+
+
+I hope this message finds you well. I am currently encountering challenges with IAM role permissions related to AWS Secrets Manager. Despite implementing a policy to limit access to specific secrets, the IAM role is still experiencing broader access.
+
+
+Details:
+
+
+Policy Information:
+
+
+I have attached a policy similar to the one below to the IAM role:
+json
+Copy code
+
+Error Message:
+
+
+An error is occurring when attempting to perform the ListSecrets operation:
+less
+An error occurred (AccessDeniedException) when calling the ListSecrets operation: User: arn:aws:sts::xxxxxx:assumed-role/ec2-xxxx-dev-s3-role/xxxxx is not authorized to perform: secretsmanager:ListSecrets

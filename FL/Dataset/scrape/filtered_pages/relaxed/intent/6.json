@@ -1,0 +1,43 @@
+The error is too generic which why I don't know the full reason behind it
+I'm trying to create amazon bedrock knowledge bases with web scrapper
+
+
+just following this tutorial -> 
+https://www.youtube.com/watch?v=oSnFZhHuIgg
+
+
+on the last step after hitting "create knowledge base" button, the error message occurs which is "Failed to create the Amazon Opensearch Serverless collection."
+
+
+Set ups below:
+Data source -> web crawler.
+
+
+Content chunking and parsing -> default.
+
+
+Embeddings model - > Embed English v3.
+
+
+Vector database -> Quick create a new vectore store - Recommended.
+
+
+Policies attached to my user:
+AmazonBedrockFullAccess
+AmazonOpenSearchServiceFullAccess
+AWSQuicksightOpenSearchPolicy
+
+
+and custom policies:
+
+
+
+
+
+and the other one is:
+
+
+{     "Version": "2012-10-17",     "Statement": [         {             "Effect": "Allow",             "Action": [                 "aoss:CreateAccessPolicy",                 "aoss:CreateSecurityPolicy",                 "aoss:CreateCollection"             ],             "Resource": "*"         }     ] }
+
+
+region: ap-southeast-2 or ap-southeast-1

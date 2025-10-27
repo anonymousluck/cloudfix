@@ -1,0 +1,49 @@
+{
+  "Requests": [
+    {
+      "id": "deny_ecb11aff",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:cloudformation:ap-south-1:<AccountID>:stack/aws-sam-cli-managed-default/config.xml"
+    },
+    {
+      "id": "deny_2ba58bd5",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:cloudformation:ap-south-1:aws:transform/Serverless-2016-10-31"
+    },
+    {
+      "id": "allow_116a716f",
+      "Effect": "allow",
+      "Action": [
+        "cloudformation:CreateChangeSet",
+        "cloudformation:ExecuteChangeSet"
+      ],
+      "Resource": [
+        "arn:aws:cloudformation:ap-south-1:<AccountID>:stack/aws-sam-cli-managed-default/config.xml",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_06df6f2e",
+      "Effect": "allow",
+      "Action": [
+        "GetObject",
+        "cloudformation:DescribeChangeSet"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:cloudformation:ap-south-1:<AccountID>:stack/aws-sam-cli-managed-default/config.xml"
+      ]
+    },
+    {
+      "id": "allow_cfa06cac",
+      "Effect": "allow",
+      "Action": "cloudformation:DescribeChangeSet",
+      "Resource": [
+        "arn:aws:cloudformation:ap-south-1:<AccountID>:stack/aws-sam-cli-managed-default/config.xml",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    }
+  ]
+}

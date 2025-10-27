@@ -1,0 +1,77 @@
+{
+  "Requests": [
+    {
+      "id": "deny_5bdea035",
+      "Effect": "deny",
+      "Action": "aoss:CreateAccessPolicy",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": [
+            "76.76.21.0/24",
+            "85.224.0.0/13"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_6c889972",
+      "Effect": "allow",
+      "Action": [
+        "aoss:CreateAccessPolicy",
+        "aoss:CreateSecurityPolicy"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": [
+            "76.76.21.0/24",
+            "85.224.0.0/13"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_9f4fa1a8",
+      "Effect": "allow",
+      "Action": [
+        "aoss:DashboardsAccessAll",
+        "aoss:DeleteCollection"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:max-keys": "10"
+        }
+      }
+    },
+    {
+      "id": "deny_84df52df",
+      "Effect": "deny",
+      "Action": "aoss:BatchGetCollection",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2024-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "allow_b06194f4",
+      "Effect": "allow",
+      "Action": [
+        "aoss:CreateSecurityPolicy",
+        "aoss:BatchGetCollection"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": [
+            "76.76.21.0/24",
+            "85.224.0.0/13"
+          ]
+        }
+      }
+    }
+  ]
+}

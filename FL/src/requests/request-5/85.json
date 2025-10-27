@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_a9b0bdf2",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_7cfac309",
+      "Effect": "allow",
+      "Action": "ec2:CreateNetworkInterface",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_643aaea9",
+      "Effect": "allow",
+      "Action": [
+        "iam:CreateServiceLinkedRole",
+        "ec2-instance-connect:SendSerialConsoleSSHPublicKey"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "deny_92b59e98",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_69e22af9",
+      "Effect": "allow",
+      "Action": [
+        "ec2-instance-connect:OpenTunnel",
+        "iam:CreateServiceLinkedRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    }
+  ]
+}

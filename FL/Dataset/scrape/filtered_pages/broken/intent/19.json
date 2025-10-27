@@ -1,0 +1,35 @@
+Hello AWS Support,
+I am encountering an authorization issue while trying to use the Cluster Autoscaler in my EC2 environment using a VPC endpoint (I’ve taken out the account id for security purposes and just labeled it 
+<account-id>
+). The specific error message I received is as follows:
+
+
+F0505 04:27:23.493504 1 aws_cloud_provider.go:455] Failed to create AWS Manager: unable to retrieve instance requirements from mixed instance policy, err: UnauthorizedOperation: You are not authorized to perform this operation. User: arn:aws:sts::<account-id>:assumed-role/cluster-autoscaler/1714883243188836556 is not authorized to perform: ec2:DescribeLaunchTemplateVersions because no VPC endpoint policy allows the ec2:DescribeLaunchTemplateVersions action.
+
+
+
+Here are the details of the environment and configuration:
+
+
+
+
+Role ARN: arn:aws:sts::
+<account-id>
+:assumed-role/cluster-autoscaler/1714883243188836556
+
+
+Current VPC Endpoint Policy:json
+
+
+
+
+   
+  This policy is intended to allow all actions on all resources within the 
+<account-id>
+ account.
+
+
+Could you please help me understand why this error is occurring even though the policies should allow the action? Also, could you advise on what changes need to be made either to the IAM role or the VPC endpoint policy to resolve this issue?
+
+
+Thank you for your assistance.

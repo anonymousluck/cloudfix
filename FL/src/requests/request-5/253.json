@@ -1,0 +1,61 @@
+{
+  "Requests": [
+    {
+      "id": "deny_b0f0cc4b",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "iot:LastWillTopic": "arn:aws:iot:region:account-id:topic/my/lastwill/topicName"
+        }
+      }
+    },
+    {
+      "id": "allow_ab1034eb",
+      "Effect": "allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "iot:LastWillTopic": "arn:aws:iot:region:account-id:topic/my/lastwill/topicName"
+        }
+      }
+    },
+    {
+      "id": "allow_ce661bc0",
+      "Effect": "allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:iot:us-east-1:123456789012:client/client1",
+      "Condition": {
+        "StringEquals": {
+          "iot:ConnectAttributes": [
+            "PersistentConnect"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_214f4167",
+      "Effect": "allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "deny_6cc51c97",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    }
+  ]
+}

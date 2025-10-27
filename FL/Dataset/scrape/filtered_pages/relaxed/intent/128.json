@@ -1,0 +1,34 @@
+Hi, I was trying to implement a system on AWS. The system has one account A (not root) in an organization.
+
+
+Problem
+: Account A has an S3 bucket and I need to create a Glue Crawler to read S3 data.
+
+
+Encountered error:
+ Glue Crawler refused to be created due to the error "Account *** denied access" on Account B.
+
+
+Attemp
+: I have already disabled SCP for the organization. Glue's role was attached with these policies: "AWSGlueConsoleFullAccess", "AWSGlueServiceRole" and this custom one:
+
+
+
+
+
+
+Glue's role has already allow trust relation with glue to assumerole as well:
+
+
+{
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "glue.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+
+
+
+If anyone has been through this scenario or has encountered the same issue, please help me with this.
+Thanks for the help.

@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "deny_cdcc60a2",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:secretsmanager:sa-east-1:111111111:secret:mysecret"
+    },
+    {
+      "id": "allow_4b906257",
+      "Effect": "allow",
+      "Action": [
+        "kms:Decrypt",
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:kms:sa-east-1:111111111:key/random-uuid"
+    },
+    {
+      "id": "allow_39ee5033",
+      "Effect": "allow",
+      "Action": "kms:Decrypt",
+      "Resource": "arn:aws:secretsmanager:sa-east-1:111111111:secret:mysecret"
+    },
+    {
+      "id": "allow_0d2731fa",
+      "Effect": "allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:sa-east-1:111111111:secret:mysecret"
+    },
+    {
+      "id": "deny_5b05a36f",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:kms:sa-east-1:111111111:key/random-uuid"
+    }
+  ]
+}

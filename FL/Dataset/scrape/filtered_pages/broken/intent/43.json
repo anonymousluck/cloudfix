@@ -1,0 +1,74 @@
+Hi,
+
+
+I am trying to debug a domain level access policy for OpenSearch (OS) that, if I've read the documentation correctly, should be working but it is not and is failing with errors that I don't understand.
+
+
+Specifically, I am trying to lock down a single OS domain with multiple indices, where each index has different access controls depending on the principals accessing it. In this case the problem involves code running on an EC2 instance.
+
+
+The policy in question is:
+
+
+    
+
+
+
+There are no other explicit 
+Deny
+ policies involving 
+EC2_ROLE_4
+ or the specific resources in question. Which is to say that there are 
+Deny
+ policies in domain access policy but they are scoped to other principals and resources.
+
+
+There are two applications that I have been testing,  both written in Go using the 
+opensearch-project/opensearch-go
+ package to talk to OS. They also uses the 
+aaronland/go-aws-auth
+ helper package to create an AWS config instance for an IAM user (the EC2 role) used to configure the opensearch-go "signer":
+
+
+// This just returns github.com/aws/aws-sdk-go-v2/config.LoadDefaultConfig
+
+https://github.com/aaronland/go-aws-auth/blob/main/config.go#L108-L111
+
+
+(My understanding of the 
+aws-sdk-go-v2
+ package is that it handles retrieving and configuring instance profiles for EC2 instances under the hood so I don't think this is the root cause but... maybe?)
+
+
+The first application issues HTTP 
+PUT
+ requests and is successful. The second application issues HTTP 
+POST
+ requests and fails with the following error:
+
+
+status: 403, error: {"Message":"User: arn:aws:iam::ACCOUNTID:user/EMAIL_ADDRESS is not authorized to perform: es:ESHttpPost because no identity-based policy allows the es:ESHttpPost action"}
+
+
+
+Which I understand in principle except that:
+
+
+
+
+The policy above should allow HTTP 
+POST
+ requests (and as mentioned 
+PUT
+ requests are successful).
+
+
+I don't understand why the error message is specifying a user account rather than an EC2 IAM role.
+
+
+
+
+To my knowledge, there are no other system-wide limits like disallowing "POST" requests. Or rather, if there are I am not sure where to look. Assuming I haven't missed something I feel like this should work but it's not.
+
+
+Any pointers or suggestions would be welcome.

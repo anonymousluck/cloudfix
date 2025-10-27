@@ -1,0 +1,132 @@
+Hi all,
+Let me explain my context, I have a custom board build with an nRF9151. I want to use mqtt, so I use nRF AWS library 
+explain here
+.
+
+
+In AWS iot console I have create a thing with name CLIENT_ID. I have a certifacte with a policy attached. In my project I want to be able to
+
+
+
+
+Publish to topics like CLIENT_ID/*, example CLIENT_ID/data
+
+
+Receive from topics like CLIENT_ID/*, example CLIENT_ID/update
+
+
+
+
+In my prj.conf here is my AWS iot conf:
+
+
+CONFIG_AWS_IOT=y
+CONFIG_AWS_IOT_CLIENT_ID_STATIC="CLIENT_ID"
+CONFIG_AWS_IOT_BROKER_HOST_NAME="MY_END_POINT"
+CONFIG_AWS_IOT_AUTO_DEVICE_SHADOW_REQUEST=n
+
+
+
+And here is my policy (I added shadow because if CONFIG_AWS_IOT_AUTO_DEVICE_SHADOW_REQUEST=y nRF subscride to shadow automatically, but for the moment I disabled it):
+
+
+
+
+
+
+With this policy I got an AUTHORIZATION_FAILURE in log :
+
+
+{
+    "timestamp": "2025-05-13 06:59:55.354",
+    "logLevel": "ERROR",
+    "traceId": "removed,
+    "accountId": "ACCOUNT_ID",
+    "status": "Failure",
+    "eventType": "Connect",
+    "protocol": "MQTT",
+    "clientId": "CLIENT_ID",
+    "principalId": "removed",
+    "sourceIp": "removed",
+    "sourcePort": 56875,
+    "reason": "AUTHORIZATION_FAILURE",
+    "details": "Authorization Failure"
+}
+
+
+
+The strange thing is, if I replace
+
+
+    {
+      "Effect": "Allow",
+      "Action": "iot:Publish",
+      "Resource": [
+        "arn:aws:iot:eu-west-3:ACCOUNT_ID:topic/CLIENT_ID/*",
+        "arn:aws:iot:eu-west-3:ACCOUNT_ID:topic/$aws/things/CLIENT_ID/shadow/*"
+      ]
+    },
+
+
+
+by
+
+
+    {
+      "Effect": "Allow",
+      "Action": "iot:Publish",
+      "Resource":  "arn:aws:iot:eu-west-3:ACCOUNT_ID:topic/*"
+    },
+
+
+
+Everything works, I can connect, publish, receive and subscride. Example of logs when everything works:
+
+
+{
+    "timestamp": "2025-05-13 07:16:32.495",
+    "logLevel": "INFO",
+    "traceId": "removed",
+    "accountId": "ACCOUNT_ID",
+    "status": "Success",
+    "eventType": "Connect",
+    "protocol": "MQTT",
+    "clientId": "CLIENT_ID",
+    "principalId": "removed",
+    "sourceIp": "removed",
+    "sourcePort": 53267
+}
+
+{
+    "timestamp": "2025-05-13 07:16:32.635",
+    "logLevel": "INFO",
+    "traceId": "removed",
+    "accountId": "ACCOUNT_ID",
+    "status": "Success",
+    "eventType": "Subscribe",
+    "protocol": "MQTT",
+    "topicName": "CLIENT_ID/example,CLIENT_ID/example_2",
+    "clientId": "CLIENT_ID",
+    "principalId": "removed",
+    "sourceIp": "removed",
+    "sourcePort": 53267
+}
+
+{
+    "timestamp": "2025-05-13 07:16:32.768",
+    "logLevel": "INFO",
+    "traceId": "removed",
+    "accountId": "ACCOUNT_ID",
+    "status": "Success",
+    "eventType": "Publish-In",
+    "protocol": "MQTT",
+    "topicName": "CLIENT_ID/send",
+    "clientId": "CLIENT_ID",
+    "principalId": "removed",
+    "sourceIp": "removed",
+    "sourcePort": 53267
+}
+
+
+
+Thanks for your help

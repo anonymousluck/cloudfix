@@ -1,0 +1,4 @@
+Hello,
+
+
+What policy can we add in vpc endpoint to control access to private appsync. I need to add policy for EKS IRSA role in VPC endpoint. Does this kind of VPC endpoint policy work. I am unable to find any document on google for this.

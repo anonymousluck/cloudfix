@@ -1,0 +1,18 @@
+Hi Community,
+Reaching out for an issue I ran into when I tried to S3 from Athena using S3 access point. I have an S3 gateway endpoint created in my VPC and it allows all access. Then I created an S3 access point within the bucket that saves the data. This access point does not have any policy attached to it. I have the S3 bucket policy below:
+
+
+
+
+
+
+Then I created a table in Athena using the query below:
+
+
+CREAT TABLE EXAMPLE_TABLE ...... ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' WITH SERDEPROPERTIES ('field.delim' = ',', "escapeChar" = "\'") STORED AS INPUTFORMAT 'org.apache.hadoop.mapred.TextInputFormat' OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat' LOCATION 's3://S3_ACCESS_POINT_alias/data-inventory/' TBLPROPERTIES ('classification' = 'csv', "skip.header.line.count"="1")
+
+
+
+This query turned out okay as it did not actually visit the data in S3. Then I used the query 
+select * from EXAMPLE_TABLE
+, I got a error message in Athena suggesting that** access was denied**. It is really weird that this happened as I did not have any policy that's denying anything. Below is the screenshot. What could have gone wrong? You help is much appreciated.

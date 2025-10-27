@@ -1,0 +1,70 @@
+Hi all,
+I build a system with nrf sdk and nRF9151 chip. I created a thing in aws iot core, create certs and attach policy, for my first test I use a very permissive policy
+
+
+
+
+
+
+So to be cut I've followed 
+this tutorial from nordic
+, everything work, I'm able to connect, subscride, publish etc.
+
+
+But for now I'd like to create no permissive policy, but despite all my attempts I cannot get my system to work.
+What I want to do:
+
+
+
+
+be able to subscribe to topics like /TOP/359404230604599/*
+
+
+be able to receive to topics like /TOP/359404230604599/*
+
+
+be able to connect with clientID 359404230604599 (same as my thing name)
+
+
+
+
+here is what I've tried
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Publish",
+      "Resource": "arn:aws:iot:eu-west-3:removed:topic/TOP/359404230604599/"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Subscribe",
+      "Resource": "arn:aws:iot:eu-west-3:removed:topicfilter/TOP/359404230604599/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Receive",
+      "Resource": "arn:aws:iot:eu-west-3:removed:topic/TOP/359404230604599/*"
+    }
+  ]
+}
+
+
+
+It's doesn't work, it's look like as soon as I add something behind topic/ or topicfilter other than 
+*
+I'm blocked...
+
+
+What I miss ?
+
+
+Thanks

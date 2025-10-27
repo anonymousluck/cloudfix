@@ -1,0 +1,56 @@
+I am trying to reach the AWS IoT API using the device certificate, but got a 
+ResourceNotFoundError
+.
+It stated in the 
+documentation
+, that such flow should work.
+
+
+
+
+Devices can use X.509 certificates to connect to AWS IoT Core using TLS mutual authentication protocols.
+
+
+
+
+Here is the CURL request, that I am trying to perform:
+
+
+curl --tlsv1.2 -v \
+    --cacert AmazonRootCA.pem \
+    --cert certificate.pem.crt \
+    --key private.pem.key \
+    --request GET \
+    "https://{redacted}-ats.iot.eu-north-1.amazonaws.com/things/abc"
+
+
+
+but got the following response:
+
+
+< HTTP/1.1 404 Not Found
+< content-type: application/json
+< content-length: 72
+< date: Mon, 18 Nov 2024 14:37:37 GMT
+< x-amzn-RequestId: {redacted}
+< connection: keep-alive
+< x-amzn-ErrorType: ResourceNotFoundException:
+<
+* Connection #0 to host {redacted}-ats.iot.eu-north-1.amazonaws.com left intact
+{"message":"Not Found","traceId":"{redacted}"}
+
+
+
+Same response came on the 
+ListThings
+ endpoint.
+
+
+My policy should allow such API calls:
+
+
+
+
+
+
+I am trying to find the easiest way to authenticate my API calls, because I have so few of them. Executing that complex flow to get a security token seems like overkill in this scenario.

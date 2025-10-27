@@ -1,0 +1,58 @@
+I'm encountering difficulties while attempting to utilize the basic ingest feature within AWS IoT Core. My goal is to ingest data from a device into AWS IoT Core using the basic ingest feature, but I'm encountering errors or unexpected behavior.
+
+
+Here's my code I've written to send the data to my AWS IoT Core :-
+
+
+    import AWSIoTPythonSDK.MQTTLib as AWSIoT
+    import random
+    
+    myClient = AWSIoT.AWSIoTMQTTClient("basic-ingest-thing")
+    myClient.configureEndpoint("XXXXXXXXXXX-ats.iot.us-east-1.amazonaws.com",8883)
+    myClient.configureCredentials("certs/AmazonRootCA1.pem","certs/private.pem.key","certs/certificate.pem.crt")
+    myClient.connect()
+    
+    num = random.random()
+    payload = "{{\"status\":\"{}\"}}".format(num)
+    
+    print(payload)
+    
+    myClient.publish("$aws/rules/basic_ingest_rule/data/wind/adodar", payload, 0)
+
+
+
+
+Here is my AWS IoT Core Rules SQL Query :-
+
+
+    SELECT *,timestamp() as ts FROM "$aws/rules/basic_ingest_rule/data/wind/adodar"
+
+
+
+
+I'm sending the data to cloudwatch logs from AWS IoT Core rules
+
+
+Here is my AWS IoT Core Policy :-
+
+
+
+
+
+
+Despite following these steps, I'm encountering issues such as:
+
+
+
+
+Data Not Being Received
+: The data published by the device is not being received by AWS IoT Core, or it's not being routed as expected by the basic ingest rule.
+
+
+Troubleshooting Steps
+: I've attempted to troubleshoot the problem by checking logs, verifying device connectivity, and reviewing AWS IoT Core documentation, but I haven't been able to identify the root cause of the issue.
+
+
+
+
+I'm seeking guidance on how to troubleshoot this issue effectively or insights into common pitfalls when setting up and using the basic ingest feature in AWS IoT Core. Any assistance or suggestions would be greatly appreciated. Thank you!

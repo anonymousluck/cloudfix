@@ -1,0 +1,21 @@
+I want to use Transfer Family's logical directory to connect two S3 buckets, 
+test-transferfamily-demo
+ and 
+sftp-demo2
+. I created a user using AWS CLI with the command below:
+
+
+aws transfer create-user --user-name user1 --server-id s-xxxxxxxxxxdb --role arn:aws:iam::xxxxxxxxxxx:role/iam-role --home-directory-type LOGICAL `
+--home-directory-mappings '[{\"Entry\":\"/bucket1\", \"Target\":\"/test-transferfamily-demo/user1\"}, {\"Entry\":\"/bucket2\", \"Target\":\"/sftp-demo2/user1\"}]' `
+--ssh-public-key-body (Get-Content -Raw id_rsa.pub)
+
+
+
+Regarding the structure of each S3 bucket, each user has their own named folder(For example, user1 should only be able to access the user1 folder under each S3 bucket.), and I want to use a session policy to ensure that every user can only access their own folder. Therefore, I created a session policy like the one below:
+
+
+
+
+
+
+When I log in to the SFTP server, it tells me that I do not have access permission for /bucket1 and /bucket2. Please provide information on how to write the correct session policy for this situation.

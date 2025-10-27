@@ -1,0 +1,1 @@
+This policy gives access to RDS describe in an account. But how to extend it to multiple accounts in an AWS Organization ?

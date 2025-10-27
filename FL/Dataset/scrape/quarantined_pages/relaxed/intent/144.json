@@ -1,0 +1,7 @@
+I am getting the error in the title every time I attempt to create an an endpoint using an image in ECR.  The ECR repository has the following IAM permissions applied:
+
+
+
+
+
+I have tried recreating everything multiple times, both via CLI and from the Admin UI. New repo, new endpoint config, new model, etc.  I always get the same error, even though I am explicitly granting exactly those permissions to the sagemaker.amazonaws.com principle.

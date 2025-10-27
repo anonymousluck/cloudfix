@@ -1,0 +1,14 @@
+So I am trying to allow all users to change passwords.   I have my test account with a basic user group and really no other permissions.  When that user tries to change via console, the message is;
+
+
+You don't have permission to iam:ChangePassword. To request access, copy the following text and send it to your AWS administrator.
+
+
+AmazonQ says to look for an explicit deny but there is none anywhere.    The security console had a lot of not allowed, I want them to be able to create their own keys, and as I built this policy those errors are gone and just trying to see how I can diagnose more.  The policy I have for that is;
+
+
+
+
+
+
+Any help on this is appreciated.

@@ -1,0 +1,39 @@
+I am attempting to read an SSM parameter from the browser. Using the JavaScript AWS SDK I create a new SSMClient
+
+
+const ssmClient = new SSMClient({
+    region: "us-west-2",
+    credentials: fromCognitoIdentityPool({
+      clientConfig: { region: "us-west-2" },
+      identityPoolId: "us-west-2:xxxxx...",
+    }),
+  });
+
+
+
+and then send a GetParameterCommand:
+
+
+await ssmClient.send(
+    new GetParameterCommand({
+      Name: "{arn of Parameter}"
+    })
+  )
+
+
+
+The identity pool provides a guest role that has the SSMReadOnly permission:
+
+
+
+
+
+
+so it should be able to perform ssm:GetParameter. However when I run this in the browser, I get the error:
+
+
+AccessDeniedException: User: arn:aws:sts::{aws account id}:assumed-role/{role}/CognitoIdentityCredentials is not authorized to perform: ssm:GetParameter on resource: {arn of Parameter} because no session policy allows the ssm:GetParameter action
+
+
+
+I also tried a policy statement with no wildcards, i.e. the only action was ssm:GetParameter and Resource was the specific ARN of my parameter. Is there something I'm missing in terms of configuring permissions? For reference, I was able to use a similar pattern of Identity Pool providing a role to Dynamo Read-only permissions in the same application. I also confirmed I can read the parameter in the IAM Policy Simulator.

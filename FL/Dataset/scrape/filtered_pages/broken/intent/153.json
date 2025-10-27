@@ -1,0 +1,21 @@
+Hi,
+I need my account to perform actions on behalf of another account.
+Please, could you tell me how to do it? I am trying to create trust policies in both accounts:
+
+
+
+
+The main one, called as AccountID A, should have a trust policy with the following structure under "Statement":
+
+
+
+My account, called as AccountID B, should contain another trust policy, with the following structure under "Statement":
+{
+"Effect" : "Allow",
+"Action": "sts:AssumeRole",
+"Principal": {
+"AWS" : "A"
+
+
+}
+Is that right?

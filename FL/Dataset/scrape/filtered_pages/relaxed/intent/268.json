@@ -1,0 +1,54 @@
+I am trying to launch an EMR cluster using the default settings using the EMR new console page.
+
+
+I dont have any existing IAM roles for EMR service and EMR instance profile and am letting AWS create a new one for me.
+
+
+I have also configured a bootstrap action which install some python package as a shell script in S3.
+However, the cluster launch fails with the error code : 
+BOOTSTRAP_FAILURE_BA_DOWNLOAD_FAILED_PRIMARY
+
+
+In the S3 bucket permissions i am setting the below configuration to be set within the instance profile section as below:
+
+
+
+
+Attaching the permissions for the instance role created automatically by AWS below:
+
+
+
+
+
+It is observed that the configuration set in the console for the S3 bucket access permissions is not reflected in the policy created.
+
+
+I updated the policy to allow S3 full access and the cluster launched successfully. However, i want to control access to my buckets.
+
+
+
+
+
+
+I want to know what permissions does EMR needs to launch a cluster with bootstrap action.
+
+
+
+
+
+
+If I need to configure access to other buckets or prefixes do i need to modify the policy manually or it shall be created automatically during the cluster setup process.
+
+
+
+
+
+
+What is the reason for using the elasticmapreduce S3 bucket arn by default even when I am not creating it or specify it in the configuration?
+
+
+
+
+
+
+Any update is much aprreciated. Thanks.

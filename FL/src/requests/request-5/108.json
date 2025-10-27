@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_4135f7c0",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_b615e197",
+      "Effect": "allow",
+      "Action": "qbusiness:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_c76549bc",
+      "Effect": "allow",
+      "Action": "qbusiness:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "deny_71aa7c2c",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_ddf7ae14",
+      "Effect": "allow",
+      "Action": "qbusiness:GetObject",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

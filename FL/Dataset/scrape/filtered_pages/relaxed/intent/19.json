@@ -1,0 +1,69 @@
+As I understand it, getting my domain identity validated allows me to send emails from any user in that domain or any subdomain. This works from the parent account. I believe that I can use a SES Pollicy to delegate authorization to users in a client account so that they can use my domain identity to send emails on my behalf.
+
+
+I'm trying to allow a lambda in a client account to send emails via SES to a third party using a the domain identity in my account but I'm missing something here.
+
+
+Account ID of my parent (production) domain: 111111111111
+Account ID of client delegate (sandbox) domain: 222222222222
+
+
+On the 111111111111 SES console I can see my verified domain identity:
+
+
+Summary for mydomain.com
+Identity status Verified
+Amazon Resource Name (ARN) arn:aws:ses:eu-west-1:111111111111:identity/mydomain.com
+AWS Region EU (Ireland)
+
+
+Under "Authorizations" for that domain I have a policy that I think delegates authority to the client account:
+
+
+
+
+
+
+I suspect there may be an issue here, as the only IAM user in my client account (222222222222) is called "admin", while the Principal in the Policy states "root". I can't change "root" to "admin" in SES, it says the policy is invalid and won't save it.
+
+
+My client lambda creates a raw email, and uses sendRawEmail with the Resource Arn from the Policy in the header:
+
+
+From: admin@mydomain.com
+To: customer@theirdomain.com
+Subject: Test File uploads
+SourceArn: arn:aws:ses:eu-west-1:111111111111:identity/mydomain.com
+MIME-Version: 1.0
+Content-type: Multipart/Mixed; boundary="a6ba134d-7abd-4f0c-8b87-f515af2d7033"
+
+--a6ba134d-7abd-4f0c-8b87-f515af2d7033
+Content-Type: text/plain
+
+This is the body of the email. There is 1 attachment.
+
+
+--a6ba134d-7abd-4f0c-8b87-f515af2d7033
+Content-Type: application/zip; name="zip_1.zip"
+Content-Description: zip_1.zip
+Content-Disposition: attachment; filename="zip_1.zip"; size=3045320
+Content-Transfer-Encoding: base64
+
+UEsDBBQAAAgIAGig8VhNKz55E9giAJHl.....
+...
+...
+etc
+
+
+
+However this fails with the error "Email address is not verified. The following identities failed the check in region EU-WEST-1: 
+admin@mydomain.com
+, 
+customer@theirdomain.com
+". Running the lambda from my account works fine.
+
+
+Anything obvious here? I've been beating this up for a few days and no closer to a solution.
+
+
+David

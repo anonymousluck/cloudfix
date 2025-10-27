@@ -1,0 +1,27 @@
+Dear AWS Community,
+
+
+I try to come up with an IAM policy to restrict access to customer-managed KMS keys. I'm using an IAM role to deploy infrastructure with Terraform. I want to ensure, that the IAM role is able to create, modify, and delete customer-managed KMS keys. But I want to restrict modify and delete to KMS keys created by the role itself.
+
+
+My idea was to use tags to restrict access to the kms:ScheduleKeyDeletion and kms:PutKeyPolicy actions with the following IAM policy.
+
+
+
+
+
+
+However it turns out, that there is no way to restrict access to the 
+kms:TagResource
+ action in a way, that tags can only be added while creating a tag. Instead, the IAM role with this policy is allowed to add the 
+Name
+ tag with value 
+demo
+ to all KMS keys in the account, which bypasses the restriction I'm trying to implement.
+
+
+Am I missing something, or is there no way to properly implement tag based access control for KMS?
+
+
+Thanks,
+Andreas

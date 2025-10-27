@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_4218f3ca",
+      "Effect": "allow",
+      "Action": "s3:ListBucket",
+      "Resource": [
+        "arn:aws:s3:::amazon-braket-data123",
+        "arn:aws:s3:::amazon-braket-document"
+      ]
+    },
+    {
+      "id": "deny_833d7026",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::amazon-braket-data123"
+    },
+    {
+      "id": "allow_f3a8ac88",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::amazon-braket-document"
+    },
+    {
+      "id": "allow_9e22d9cb",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::amazon-braket-file1",
+        "arn:aws:s3:::amazon-braket-document"
+      ]
+    },
+    {
+      "id": "deny_63eef950",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    }
+  ]
+}

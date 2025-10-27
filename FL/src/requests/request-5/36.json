@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_64c0962c",
+      "Effect": "allow",
+      "Action": [
+        "aoss:DashboardsAccessAll",
+        "aoss:APIAccessAll"
+      ],
+      "Resource": "arn:aws:aoss:us-east-2:{accountNumber}:collection/{collectionId}"
+    },
+    {
+      "id": "deny_6ab3a07a",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:aoss:us-east-2:{accountNumber}:collection/{collectionId}"
+    },
+    {
+      "id": "deny_f0bf3c09",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:aoss:us-east-2:{accountNumber}:collection/{collectionId}"
+    },
+    {
+      "id": "allow_3be3c820",
+      "Effect": "allow",
+      "Action": "aoss:DashboardsAccessAll",
+      "Resource": "arn:aws:aoss:us-east-2:{accountNumber}:collection/{collectionId}"
+    },
+    {
+      "id": "allow_7c85293b",
+      "Effect": "allow",
+      "Action": "aoss:APIAccessAll",
+      "Resource": "arn:aws:aoss:us-east-2:{accountNumber}:collection/{collectionId}"
+    }
+  ]
+}

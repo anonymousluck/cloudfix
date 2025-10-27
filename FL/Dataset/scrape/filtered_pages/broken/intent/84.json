@@ -1,0 +1,88 @@
+I am trying to upload my static files to Amazon S3 from my django project using boto3 and django-storages modules.
+Here is the AWS S3 configurations in my settings.py file
+
+
+AWS_ACCESS_KEY_ID = "<public-key>"
+AWS_SECRET_ACCESS_KEY_ID = "<private-key>"
+
+AWS_STORAGE_BUCKET_NAME = "<bucket-name>"
+
+STORAGES  = {
+    # Media files (images) management
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+    
+    # CSS and JS file management
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+}
+
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+AWS_S3_FILE_OVERWRITE = False
+
+
+
+I have given AmazonS3FullAccess permission policy to the IAM user.
+
+
+I have 
+allowed public access
+ to my bucket and here is my bucket policy:
+
+
+
+
+
+
+previously I only gave PutObject action it didn't work. I was gettting the same error given below. I'm using the 
+python manage.py collectstatic
+ command to upload to S3
+
+
+You have requested to collect static files at the destination location as specified in your settings.
+
+This will overwrite existing files!
+Are you sure you want to do this?
+
+Type 'yes' to continue, or 'no' to cancel: yes
+Traceback (most recent call last):
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/manage.py", line 22, in <module>
+    main()
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/django/core/management/__init__.py", line 442, in execute_from_command_line
+    utility.execute()
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/django/core/management/__init__.py", line 436, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/django/core/management/base.py", line 412, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/django/core/management/base.py", line 458, in execute
+    output = self.handle(*args, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/django/contrib/staticfiles/management/commands/collectstatic.py", line 209, in handle
+    collected = self.collect()
+                ^^^^^^^^^^^^^^
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/django/contrib/staticfiles/management/commands/collectstatic.py", line 135, in collect
+    handler(path, prefixed_path, storage)
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/django/contrib/staticfiles/management/commands/collectstatic.py", line 368, in copy_file
+    if not self.delete_file(path, prefixed_path, source_storage):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/django/contrib/staticfiles/management/commands/collectstatic.py", line 278, in delete_file
+    if self.storage.exists(prefixed_path):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/storages/backends/s3.py", line 514, in exists
+    self.connection.meta.client.head_object(Bucket=self.bucket_name, Key=name)
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/botocore/client.py", line 553, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gajeet/Documents/Django/Django_ultimate/dev2/.venv/lib/python3.11/site-packages/botocore/client.py", line 1009, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (403) when calling the HeadObject operation: Forbidden
+
+
+
+
+Thank you

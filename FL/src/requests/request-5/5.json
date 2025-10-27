@@ -1,0 +1,70 @@
+{
+  "Requests": [
+    {
+      "id": "allow_91db891d",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-backup/data.json",
+        "arn:aws:s3:::my-backup"
+      ],
+      "Principal": "arn:aws:iam::83743546469343:user/user-backup",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "123.87.210.171/32"
+        }
+      }
+    },
+    {
+      "id": "allow_b6993453",
+      "Effect": "allow",
+      "Action": "s3:PutBucketPolicy",
+      "Resource": "arn:aws:s3:::my-backup/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/bob",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_85442af1",
+      "Effect": "allow",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": [
+        "arn:aws:s3:::my-backup/document.txt",
+        "arn:aws:s3:::my-backup/data.json"
+      ],
+      "Principal": "arn:aws:iam::83743546469343:user/user-backup",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "123.87.210.171/32"
+        }
+      }
+    },
+    {
+      "id": "deny_1b1f15f9",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::my-backup/document.txt",
+      "Principal": "arn:aws:iam::123456789012:user/alice",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "192.168.1.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_16ae330a",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::my-backup/data.json",
+      "Principal": "arn:aws:iam::83743546469343:user/user-backup",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "123.87.210.171/32"
+        }
+      }
+    }
+  ]
+}

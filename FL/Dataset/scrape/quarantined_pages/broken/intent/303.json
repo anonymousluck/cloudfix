@@ -1,0 +1,24 @@
+I want to view the logs for my GameLift fleet in the CloudWatch LogGroup.
+But the GameLift Instance does not have permissions to upload logs on CloudWatch LogGroup.
+
+
+I set the Instance role of GameLift Fleet like this.
+
+
+
+
+This role has a AWS manged policy named CloudWatchAgentServerPolicy and the policy and trust relationship is written like this.
+
+
+
+
+
+When I tried to create a CloudWatch LogGroup on my GameLift Fleet instance, I got the following permission error.
+
+
+
+
+It seems like GameLift Fleet instance does not have permission to create CloudWatch LogGroup.
+
+
+I don't know how to give that permission.

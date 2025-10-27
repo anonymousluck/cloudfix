@@ -1,0 +1,42 @@
+Hello,
+
+
+I am getting "Access denied" issue with error message "User is not authorized to perform operation on resource  and no identity-based policy allows the ssm:startsession action" when i am trying to connect to EC2 instance (Windows Server) using SSM via AWS CLI installed on my machine.
+
+
+My Organization has provided me an User created under 
+IAM Identity Center
+. I have created the custom managed policy as shown below,  attached the policy to the custom permission set and assigned this permission set to the user.
+
+
+
+
+
+
+I have created a role and tried adding the Identity Center User as well as role in the "Principal" section under the "Trust Relationships" tab of Roles feature, attached the custom managed policy to the role and assigned the role to the EC2 instance.
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::MyAccountID:role/MyRoleName"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+I have executed the command "
+aws ssm start-session --target myinstanceid --profile myprofile
+" to start the session from my local machine but i am getting the access denied issue.
+
+
+Can you please suggest me the cause for the issue and solution for connecting to EC2 instance via AWS CLI using SSM?
+
+
+Kamal

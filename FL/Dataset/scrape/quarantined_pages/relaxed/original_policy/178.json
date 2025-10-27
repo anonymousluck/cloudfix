@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn1"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "idp1/:aud": "aud1"
+        },
+        "ForAnyValue:StringEquals": {
+          "idp1/:roles": [
+            "role1"
+          ]
+        }
+      },
+      "Sid": "statement1"
+    }
+  ]
+}

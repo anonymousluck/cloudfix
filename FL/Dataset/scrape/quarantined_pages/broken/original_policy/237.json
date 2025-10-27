@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "es.amazonaws.com",
+        "AWS": "arn:aws:iam::<account_no>:root"
+      },
+      "Action": "sts:AssumeRole",
+      "Sid": "statement1"
+    }
+  ]
+}

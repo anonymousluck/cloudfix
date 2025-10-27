@@ -1,0 +1,72 @@
+I have service running in AWS account let say A1 and that has the aws iam role lets say R1.
+My service is attached to a service account that has access to role R1.
+Now I have an RDS mysql cluster setup in a different AWS account lets say A2 and that account has a role lets say R2 which has access to connect to RDS cluster
+DB connect permission looks something like below in R2
+
+
+
+
+
+
+the R2 role also have trust relationship with IAM role R1, so that R1 can assume R2
+
+
+I am using python (in my service which is running in account A1), to connect to the RDS mysql database using IAM auth by assuming role R2 I had used the code below
+
+
+#to generate db auth token below is the code
+    def generate_auth_token(self,username,aws_arn,region,db_host):
+        credentials = self.assume_role(aws_arn)
+        rds_client = boto3.client(
+            'rds',
+            region_name=region,
+            aws_access_key_id=credentials['AccessKeyId'],
+            aws_secret_access_key=credentials['SecretAccessKey'],
+            aws_session_token=credentials['SessionToken']
+        )
+        token = rds_client.generate_db_auth_token(
+            DBHostname=db_host,
+            Port=3306,
+            DBUsername=username
+        )
+        return token
+
+
+#Using above token to connect to db in below code
+AwsWrapperConnection.connect(
+                connect,
+                host=host,
+                port=port,
+                database=db_name,
+                user=username,
+                password=token,
+                ssl_disabled=False,
+                client_flags=[ClientFlag.SSL],
+                plugins='iam',
+                wrapper_dialect='aurora-mysql'
+            )
+
+
+
+I am getting this error "access denied "Error occurred while opening a connection: 1045 (28000): Access denied for user 'db_user'@'
+<ip>
+' (using password: YES)"
+
+
+I feel that somehow the way I am using assumed role cred in AwsWrapperConnection.connect method is not right when using IAM plugin, I have tried lot of way by surfing the internet but none of them worked
+
+
+can someone please help me out for this
+
+
+**A role R1 already have permission to assume Role R2 in account B.
+**
+{
+
+"Effect": "Allow",
+
+"Action": "sts:AssumeRole", [Not DB connect it needs assume role in account B role R2]
+
+"Resource": "arn:aws:iam::<Account-A2-ID>:role/R2"
+
+}

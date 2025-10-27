@@ -1,0 +1,105 @@
+Hi AWS Community,
+
+
+I'm reaching out for help with a frustrating issue I've been facing. Despite granting full access to CloudFormation stacks, I'm still encountering an AccessDenied error. This is really impacting my deployment process, and I'm struggling to figure out what might be going wrong.
+
+
+Here's a brief overview of the situation:
+
+
+
+
+IAM Policy: I have a policy that grants full access to CloudFormation actions and resources. The policy looks like this:
+
+
+
+
+
+
+
+
+
+
+
+CloudTrail Event Log:
+
+
+
+
+{
+    "eventVersion": "1.09",
+    "userIdentity": {
+        "type": "IAMUser",
+        "principalId": "AIDA4MTWHLCH7XAVMZPVY",
+        "arn": "arn:aws:iam::<AccountID>:user/<IAMUser>",
+        "accountId": "<AccountID>",
+        "accessKeyId": "ASIA4MTWHLCHW5KQB3MV",
+        "userName": "<IAMUser>",
+        "sessionContext": {
+            "attributes": {
+                "creationDate": "2024-08-14T08:37:47Z",
+                "mfaAuthenticated": "false"
+            }
+        },
+        "invokedBy": "cloudformation.amazonaws.com"
+    },
+    "eventTime": "2024-08-14T08:37:52Z",
+    "eventSource": "s3.amazonaws.com",
+    "eventName": "CreateBucket",
+    "awsRegion": "ap-south-1",
+    "sourceIPAddress": "cloudformation.amazonaws.com",
+    "userAgent": "cloudformation.amazonaws.com",
+    "errorCode": "AccessDenied",
+    "errorMessage": "Access Denied",
+    "requestParameters": {
+        "CreateBucketConfiguration": {
+            "LocationConstraint": "ap-south-1",
+            "xmlns": "http://s3.amazonaws.com/doc/2006-03-01/"
+        },
+        "bucketName": "aws-sam-cli-managed-default-samclisourcebucket-rcekmruyslgl",
+        "Host": "aws-sam-cli-managed-default-samclisourcebucket-rcekmruyslgl.s3.ap-south-1.amazonaws.com",
+        "x-amz-acl": "bucket-owner-full-control"
+    },
+    "responseElements": null,
+    "additionalEventData": {
+        "SignatureVersion": "SigV4",
+        "CipherSuite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "bytesTransferredIn": 192,
+        "AuthenticationMethod": "AuthHeader",
+        "x-amz-id-2": "Gmdsb47WoXYj86HgW52XChlVenj8h90sR6Yd7EnaBBbZjvwfh+TDh4d4mAK1lzChnhijFI/KJok=",
+        "bytesTransferredOut": 243
+    },
+    "requestID": "J5BP3BVYT0RRNY8V",
+    "eventID": "688b5cac-2bcc-44f0-99f3-c1943161ebc6",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "managementEvent": true,
+    "recipientAccountId": "<AccountID>",
+    "eventCategory": "Management"
+}
+
+
+
+What I've Tried:
+
+
+
+
+Verified the IAM policy and ensured it grants full access to CloudFormation actions and resources.
+
+
+Checked CloudFormation permissions and conditions.
+
+
+Reviewed S3 bucket policies and ACLs.
+
+
+
+
+What I'm Looking For:
+
+
+I need to understand why I'm still getting an AccessDenied error despite granting what seems like full access. Any insights or suggestions on what might be missing or incorrect would be greatly appreciated!
+
+
+Thank you in advance for your help.

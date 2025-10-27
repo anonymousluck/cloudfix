@@ -1,0 +1,40 @@
+Yesterday, out of the blue when users upload images on my site an error is thrown:
+
+
+##### RightAws::S3Interface returned an error: 400 Bad Request
+<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>InvalidBucketAclWithObjectOwnership</Code><Message>Bucket cannot have ACLs set with ObjectOwnership's BucketOwnerEnforced setting</Message><RequestId>REQUEST</RequestId><HostId>ID$
+##### RightAws::S3Interface request: https://bucket.s3.amazonaws.com:443/ ####
+
+RightAws::AwsError (InvalidBucketAclWithObjectOwnership: Bucket cannot have ACLs set with ObjectOwnership's BucketOwnerEnforced setting):
+
+
+
+This had never happened before, but earlier I had received an email from AWS:
+
+
+
+
+Hello,
+
+
+We are reaching out to inform you that starting in April 2023 Amazon S3 will change the default security configuration for all new S3 buckets. For new buckets created after this date, S3 Block Public Access will be enabled, and S3 access control lists (ACLs) will be disabled.
+
+
+The majority of S3 use cases do not need public access or ACLs. For most customers, no action is required. If you have use cases for public bucket access or the use of ACLs, you can disable Block Public Access or enable ACLs after you create an S3 bucket. In these cases, you may need to update automation scripts, CloudFormation templates, or other infrastructure configuration tools to configure these settings. To learn more, read the AWS News blog [1] and What's New announcement [2] on this change or visit our user guide for S3 Block Public Access [3] and S3 Object Ownership to disable ACLs [4]. Also, see our user guide for AWS CloudFormation on these settings [5][6].
+
+
+
+
+This seems related, although it is only supposed to apply to new buckets.  However, using guides I found related to this I changed the settings on my bucket by adding a bucket policy:
+
+
+
+
+
+
+And changing the Object Ownership
+
+
+
+Despite these changes I am getting the same error.  What would be causing this?

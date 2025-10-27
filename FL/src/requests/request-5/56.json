@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_ca8e47e7",
+      "Effect": "allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": [
+        "arn:aws:secretsmanager:eu-west-2:#NUMBER#:secret:aws/transfer/data.json",
+        "arn:aws:secretsmanager:eu-west-2:#NUMBER#:secret:aws/transfer/config.xml"
+      ]
+    },
+    {
+      "id": "deny_04f4d107",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:secretsmanager:eu-west-2:#NUMBER#:secret:aws/transfer/document.txt"
+    },
+    {
+      "id": "allow_df53631c",
+      "Effect": "allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:eu-west-2:#NUMBER#:secret:aws/transfer/config.xml"
+    },
+    {
+      "id": "deny_b1382203",
+      "Effect": "deny",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_6217dbb7",
+      "Effect": "allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": [
+        "arn:aws:secretsmanager:eu-west-2:#NUMBER#:secret:aws/transfer/document.txt",
+        "arn:aws:secretsmanager:eu-west-2:#NUMBER#:secret:aws/transfer/data.json"
+      ]
+    }
+  ]
+}

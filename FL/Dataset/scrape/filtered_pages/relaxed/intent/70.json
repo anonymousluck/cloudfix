@@ -1,0 +1,60 @@
+I can't understand why I can get a contact name with my specified credentials and policy but not list contacts. These same credentials and policy work in the CLI for listing contacts. ...
+
+
+Error: Amazon.SimpleEmailV2.AmazonSimpleEmailServiceV2Exception: 'The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details.'
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Amazon.SimpleEmailV2.Model;
+using Amazon.SimpleEmailV2;
+using static System.Net.Mime.MediaTypeNames;
+using System.Linq.Expressions;
+using Amazon.Runtime;
+
+
+namespace NewsLetterGenerator
+{
+    internal class Program
+    {
+        static async Task Main(string[] args)
+        {
+
+            var client = new AmazonSimpleEmailServiceV2Client("ID", "SECRET");
+            
+            // works
+            var cRequest = new GetContactRequest();
+            cRequest.ContactListName = "fmContacts";
+            cRequest.EmailAddress = "brduffy@gmail.com";
+            GetContactResponse response = await client.GetContactAsync(cRequest);
+
+            Console.Write(response.EmailAddress);
+
+            // fails  
+            var cRequest = new ListContactsRequest();
+            cRequest.ContactListName = "fmContacts" ;
+            ListContactsResponse response = await client.ListContactsAsync(cRequest);
+            Console.Write(response.Contacts);
+
+            Console.ReadLine();
+
+        }
+
+
+    }
+}
+
+
+
+
+Policy ...
+
+
+"Version": "2012-10-17",
+"Statement": [
+
+]
+}

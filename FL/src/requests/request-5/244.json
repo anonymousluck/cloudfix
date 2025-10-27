@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_3e43a3cb",
+      "Effect": "allow",
+      "Action": [
+        "es:DeleteInboundCrossClusterSearchConnection",
+        "es:ListDomainsForPackage"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:es:xxxx:domain/project"
+      ]
+    },
+    {
+      "id": "deny_b8284a11",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_e1908be1",
+      "Effect": "allow",
+      "Action": [
+        "es:DeleteVpcEndpoint",
+        "es:GetObject"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_a058fef4",
+      "Effect": "deny",
+      "Action": "es:ListInstanceTypeDetails",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_b72a67b4",
+      "Effect": "allow",
+      "Action": "es:UpdatePackage",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

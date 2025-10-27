@@ -1,0 +1,29 @@
+I have changed a ECS service to scheduled task.
+
+
+After the change the task no longer writes on CloudWatch.
+The scheduled task has a specific role on eventbridge with:
+
+
+
+
+AmazonEC2ContainerServiceEventsRole
+
+
+
+
+And one inline policy
+
+
+
+
+
+The task is executed (I see it on eventbridge metrics) but the logs not are writed.
+
+
+Also I see and "Amazon CloudWatch IAM role" in the console that not is configured but i don't know how configure it, I can't see any documentation
+
+
+
+
+How I can get cloudwatch permisions for an scheduled task?

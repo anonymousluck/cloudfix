@@ -1,0 +1,68 @@
+{
+  "Requests": [
+    {
+      "id": "deny_3f1faa0b",
+      "Effect": "deny",
+      "Action": "logs:CreateLogStream",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_0fbf0192",
+      "Effect": "allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket-test/data.json",
+      "Condition": {
+        "StringLike": {
+          "lambda:SourceFunctionArn": "*Prod"
+        }
+      }
+    },
+    {
+      "id": "allow_f91e412a",
+      "Effect": "allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket-test/data.json",
+        "arn:aws:logs:*:*:log-group:/aws/lambda/MyLambda_file1"
+      ],
+      "Condition": {
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2024-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "allow_c82a509a",
+      "Effect": "allow",
+      "Action": "logs:PutLogEvents",
+      "Resource": "arn:aws:s3:::my-bucket-test/data.json",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_66ff53cb",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "192.168.1.0/24"
+        }
+      }
+    }
+  ]
+}

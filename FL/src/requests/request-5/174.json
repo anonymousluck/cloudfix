@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_bf445648",
+      "Effect": "deny",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "deny_f31dc80b",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::data123"
+    },
+    {
+      "id": "allow_d336bd55",
+      "Effect": "allow",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": [
+        "arn:aws:s3:::document",
+        "arn:aws:s3:::data123"
+      ]
+    },
+    {
+      "id": "allow_5bd7e09f",
+      "Effect": "allow",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": [
+        "arn:aws:s3:::file1",
+        "arn:aws:s3:::document"
+      ]
+    },
+    {
+      "id": "allow_33d10f74",
+      "Effect": "allow",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": "arn:aws:s3:::data123"
+    }
+  ]
+}

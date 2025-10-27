@@ -1,0 +1,67 @@
+{
+  "Requests": [
+    {
+      "id": "allow_ca5eb14a",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::cik-front-end/config.xml",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::339712767340:distribution/EQDQLH88I63IN"
+        }
+      }
+    },
+    {
+      "id": "allow_2b57f0d9",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::cik-front-end/config.xml",
+        "arn:aws:s3:::cik-front-end/document.txt"
+      ],
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::339712767340:distribution/EQDQLH88I63IN"
+        }
+      }
+    },
+    {
+      "id": "deny_5f76bd8c",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::444555666777:user/external-user",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "deny_8337185e",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:s3:::cik-front-end/data.json",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::339712767340:distribution/EQDQLH88I63IN"
+        }
+      }
+    },
+    {
+      "id": "allow_bf81a4cb",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::cik-front-end/data.json",
+      "Principal": "arn:aws:iam::987654321098:user/charlie",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    }
+  ]
+}

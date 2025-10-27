@@ -1,0 +1,13 @@
+After Enabling Long Code and adding Phone number to Phone pool, I an trying to enable Two way Messages.
+After Selecting Amazon connect and giving the IAM role (configured as given in Document), I am getting Validation Error Occurred - Reason="RESOURCE_NOT_ACCESSIBLE" Fields="twoWayChannelRole" .
+Please find snapshot of Trust role policy, and Permission policy attached.
+Trust policy:
+
+
+
+Permission Policy:
+
+
+
+steps I tried to resolve:
+added SNS topic policy:

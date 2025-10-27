@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e6496a6a",
+      "Effect": "allow",
+      "Action": "iot:Subscribe",
+      "Resource": "arn:aws:iot:eu-west-3:*******:client/document.txt"
+    },
+    {
+      "id": "allow_c423ec83",
+      "Effect": "allow",
+      "Action": [
+        "iot:Connect",
+        "iot:Publish"
+      ],
+      "Resource": [
+        "arn:aws:iot:eu-west-3:*******:client/config.xml",
+        "arn:aws:iot:eu-west-3:*******:client/document.txt"
+      ]
+    },
+    {
+      "id": "allow_dbd209dd",
+      "Effect": "allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:iot:eu-west-3:*******:topic/lite/data/#"
+    },
+    {
+      "id": "deny_769a5ce0",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:iot:eu-west-3:*******:topic/lite/data/#"
+    },
+    {
+      "id": "deny_07b38e69",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:iot:eu-west-3:*******:client/document.txt"
+    }
+  ]
+}

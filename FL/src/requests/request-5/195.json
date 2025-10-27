@@ -1,0 +1,25 @@
+{
+  "Requests": [
+    {
+      "id": "allow_6cbd6e6c",
+      "Effect": "allow",
+      "Action": "secretsmanager:getSecretValue",
+      "Resource": "arn:aws:secretsmanager:eu-west-3...............Z",
+      "Principal": "kafka.amazonaws.com"
+    },
+    {
+      "id": "deny_e0db56fb",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:secretsmanager:eu-west-3...............Z",
+      "Principal": "kafka.amazonaws.com"
+    },
+    {
+      "id": "deny_2a5b98fc",
+      "Effect": "deny",
+      "Action": "secretsmanager:getSecretValue",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized"
+    }
+  ]
+}

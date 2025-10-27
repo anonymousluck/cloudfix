@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_c27d32b8",
+      "Effect": "deny",
+      "Action": "sso:DescribeApplication",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_77e1478e",
+      "Effect": "allow",
+      "Action": "sso:DescribeApplication",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_fd7aacc7",
+      "Effect": "allow",
+      "Action": "sso:DescribeApplication",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "deny_d0b35c63",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_92e7503b",
+      "Effect": "allow",
+      "Action": [
+        "sso:DescribeApplication",
+        "sso:DescribeInstance"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    }
+  ]
+}

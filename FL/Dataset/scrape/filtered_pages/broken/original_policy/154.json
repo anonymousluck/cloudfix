@@ -1,0 +1,21 @@
+{
+  "Statement": [
+    {
+      "Sid": "AllowAccessFromAPIGateway",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "apigateway.amazonaws.com"
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/*",
+      "Condition": {
+        "ArnLike": {
+          "aws:SourceArn": "arn:aws:execute-api:us-east-1:account-id:api-id/$default/GET/image"
+        }
+      }
+    }
+  ]
+}

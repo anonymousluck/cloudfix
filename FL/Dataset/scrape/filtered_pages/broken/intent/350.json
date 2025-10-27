@@ -1,0 +1,27 @@
+I'm working with three lambdas: the first one has an API Gateway for a trigger, the second one has an SQS FIFO queue (let's name it queue1) as a trigger, and the third one has also an SQS FIFO queue (let's name it queue2) as a trigger. I also have one DLQ FIFO queues for each of those FIFO queues (2 DLQs in total).
+
+
+So, whenever I trigger the first lambda through the API Gateway, I can see the message being processed in the queues (appears in flight for queue1, and if the retries are exceeded or the visibility timeout expires, that message goes to the DLQ for queue1). Nevertheless, I cannot see any logs on CloudWatch.
+
+
+At first, one may think that this is a problem regarding permissions. I have this IAM role with these permissions. This same role is used by the three lambdas.
+
+
+
+
+Now, in the image, you can see that I have two customer inline policies. These are for allowing sending and receiving messages from the SQS FIFO queues that I have. I have one policy per queue, and this is what I have inside of them:
+
+
+
+
+
+
+I have read 
+this StackOverflow thread
+ and tried what they suggest (checking for the AWSLambdaBasicExecutionRole to be present, changing the function timeout by a second, etc.), and it works for the first execution after the change. But then, If i trigger again my workflow through the API Gateway, no log is printed, but everything else works fine.
+
+
+The only thing that I have not tried yet is to have one role per lambda, and specify explicitly the arn for the CloudWatch log groups. Nevertheless, I don't think that this is the problem, since re-deploying the functions each time that I want to get a log makes everything work fine, but just one time.
+
+
+What do you think could be causing this?

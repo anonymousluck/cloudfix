@@ -1,0 +1,106 @@
+Hi, I am trying to create a DMS source endpoint using cloud formation. DMS retrieves the endpoint details (host, port, username, password) through the Secret that has been created. However, I am running into the following error when deploying the stack:
+
+
+SecretsManagerSecretId arn:aws:secretsmanager:ca-central-1:xxxx:secret:yyyyy is invalid. (Service: AWSDatabaseMigrationService; Status Code: 400; Error Code: InvalidParameterValueException;)
+
+
+
+Here is the Cfn template config:
+
+
+DMSSourceEndpoint:
+    Type: "AWS::DMS::Endpoint"
+    Properties: 
+      EndpointType: source
+      EngineName: mysql
+      MySqlSettings:
+           SecretsManagerAccessRoleArn: !GetAtt DMSSecretsAccessRole.Arn
+           SecretsManagerSecretId: !Ref SecretARN     
+    
+
+
+
+I know it is not an issue with Secret access because I can create the endpoint through the console. However, it should be noted that the secret is located in another account and has been shared via resource and identity polices. Here's how the DMSSecretsAccessRole looks:
+
+
+
+
+
+
+Trust policy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "dms.ca-central-1.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+Here's the cloudtrail output:
+
+
+{
+    "eventVersion": "1.08",
+    "userIdentity": {
+        "type": "AssumedRole",
+        "principalId": "bbbb:AWSCloudFormation",
+        "arn": "arn:aws:sts::aaaa:assumed-role/CloudformationRole/AWSCloudFormation",
+        "accountId": "aaaa",
+        "accessKeyId": "cccc",
+        "sessionContext": {
+            "sessionIssuer": {
+                "type": "Role",
+                "principalId": "bbbb",
+                "arn": "arn:aws:iam::aaaa:role/CloudformationRole",
+                "accountId": "aaaa",
+                "userName": "CloudformationRole"
+            },
+            "webIdFederationData": {},
+            "attributes": {
+                "creationDate": "2023-10-26T19:29:28Z",
+                "mfaAuthenticated": "false"
+            }
+        },
+        "invokedBy": "cloudformation.amazonaws.com"
+    },
+    "eventTime": "2023-10-26T19:29:31Z",
+    "eventSource": "dms.amazonaws.com",
+    "eventName": "CreateEndpoint",
+    "awsRegion": "ca-central-1",
+    "sourceIPAddress": "cloudformation.amazonaws.com",
+    "userAgent": "cloudformation.amazonaws.com",
+    "errorCode": "InvalidParameterValueException",
+    "errorMessage": "SecretsManagerSecretId arn:aws:secretsmanager:ca-central-1:xxxx:secret:yyyy is invalid.",
+    "requestParameters": {
+        "endpointIdentifier": "DMSSourceEndpoint-LoxjGDUeMa7lGn8I",
+        "endpointType": "source",
+        "engineName": "mysql",
+        "password": "HIDDEN_DUE_TO_SECURITY_REASONS",
+        "tags": [],
+        "mySQLSettings": {
+            "secretsManagerAccessRoleArn": "arn:aws:iam::aaaa:role/DMSSecretsAccessRole",
+            "secretsManagerSecretId": "arn:aws:secretsmanager:ca-central-1:xxxx:secret:yyyy"
+        }
+    },
+    "responseElements": null,
+    "requestID": "wwww",
+    "eventID": "vvvv",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "managementEvent": true,
+    "recipientAccountId": "aaaa",
+    "eventCategory": "Management"
+}
+
+
+
+TYIA

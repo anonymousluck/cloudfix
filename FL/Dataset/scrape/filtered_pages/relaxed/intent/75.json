@@ -1,0 +1,235 @@
+I have an esp32 device that has a certificate I generated in AWS to be used as a claim certificate. The esp32 connects to AWS fine and allows me to subscribe to the accepted and rejected topics. When I publish to the $aws/certificates/create/json topic a new certificate is generated in aws with pending activation but the esp32 receives no message back from AWS on either the accepted or rejected topic.
+
+
+#include <ArduinoJson.h>
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <PubSubClient.h>
+#include <SPIFFS.h>  // For saving credentials
+#include <Secrets.h>
+
+// WiFi credentials
+const char* ssid = "";
+const char* password = "";
+
+const char* awsCertTopic = "$aws/certificates/create/json";                                                     // MQTT topic for creating new Certificate
+const char* awsCertAccepted = "$aws/certificates/create/json/accepted";                                         // MQTT topic for new Certificate Accepted
+const char* awsCertRejected = "$aws/certificates/create/json/rejected";                                         // MQTT topic for new Certificate Rejected
+const char* awsFleetTopic = "$aws/provisioning-templates/DrainAlert_FleetTemplate/provision/json";              // MQTT topic for fleet provisioning
+const char* awsFleetAccepted = "$aws/provisioning-templates/DrainAlert_FleetTemplate/provision/json/accepted";  // MQTT topic for fleet provisioning Accepted
+const char* awsFleetRejected = "$aws/provisioning-templates/DrainAlert_FleetTemplate/provision/json/rejected";  // MQTT topic for fleet provisioning Rejected
+const char* awsTestTopic = "ji/tp";
+
+// Time Sync details
+const char* ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 0;
+const int daylightOffset_sec = 3600;
+
+// WiFiClientSecure for secure MQTT connection
+WiFiClientSecure wifiClient;
+PubSubClient mqttClient(wifiClient);
+
+void setupTime() {
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  Serial.println("Waiting for NTP time sync...");
+  while (!time(nullptr)) {
+    delay(1000);
+    Serial.print(".");
+  }
+  Serial.println("\nTime synchronized");
+}
+
+// Function to save the new certificate and private key to SPIFFS
+void saveCredentials(const char* cert, const char* privateKey) {
+  if (!SPIFFS.begin(true)) {
+    Serial.println("Failed to mount file system");
+    return;
+  }
+
+  // Save certificate
+  File certFile = SPIFFS.open("/deviceCert.pem", FILE_WRITE);
+  if (certFile) {
+    certFile.print(cert);
+    certFile.close();
+    Serial.println("Saved new certificate");
+  } else {
+    Serial.println("Failed to open cert file for writing");
+  }
+
+  // Save private key
+  File keyFile = SPIFFS.open("/privateKey.pem", FILE_WRITE);
+  if (keyFile) {
+    keyFile.print(privateKey);
+    keyFile.close();
+    Serial.println("Saved new private key");
+  } else {
+    Serial.println("Failed to open key file for writing");
+  }
+
+  SPIFFS.end();
+}
+
+// Callback function to handle MQTT messages
+void mqttCallback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived on topic: ");
+  Serial.println(topic);
+  // Convert payload to a string
+  String payloadStr = String((char*)payload).substring(0, length);
+  Serial.print("Payload: " + payloadStr);
+
+  // Handle the provisioning response
+  if (strcmp(topic, "$aws/certificates/create/json/accepted") == 0) {
+    Serial.println("Provisioning successful. Saving new credentials...");
+
+    // Parse JSON to extract certificate and private key
+    String newCert = extractCertFromPayload(payloadStr);
+    String newPrivateKey = extractPrivateKeyFromPayload(payloadStr);
+
+    // Save the new credentials
+    saveCredentials(newCert.c_str(), newPrivateKey.c_str());
+  }
+}
+
+String extractCertFromPayload(String payload) {
+  StaticJsonDocument<1024> doc;
+  deserializeJson(doc, payload);
+  return doc["certificatePem"].as<String>();
+}
+
+String extractPrivateKeyFromPayload(String payload) {
+  StaticJsonDocument<1024> doc;
+  deserializeJson(doc, payload);
+  return doc["privateKey"].as<String>();
+}
+
+void connectToWiFi() {
+  Serial.print("Connecting to WiFi...");
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.print(".");
+  }
+  Serial.println("Connected!");
+}
+
+void connectToMQTT() {
+  wifiClient.setCACert(awsRootCA);
+  wifiClient.setCertificate(claimCert);
+  wifiClient.setPrivateKey(claimPrivateKey);
+
+  mqttClient.setServer(awsEndpoint, awsPort);
+  mqttClient.setCallback(mqttCallback);
+
+  while (!mqttClient.connected()) {
+    Serial.print("Connecting to AWS IoT...");
+    if (mqttClient.connect("DnAtClient")) {
+      Serial.println("Connected!");
+
+      // Subscribe to provisioning response topics
+      mqttClient.subscribe(awsCertAccepted);
+      if (mqttClient.subscribe(awsCertAccepted)) {
+        Serial.println("Successfully subscribed to awsCertificateAccepted topic");
+      } else {
+        Serial.println("Failed to subscribe to awsCertificateAccepted topic");
+      }
+
+      mqttClient.subscribe(awsCertRejected);
+      if (mqttClient.subscribe(awsCertRejected)) {
+        Serial.println("Successfully subscribed to awsCertificateRejected topic");
+      } else {
+        Serial.println("Failed to subscribe to awsCertificateRejected topic");
+      }
+
+      mqttClient.subscribe(awsFleetAccepted);
+      if (mqttClient.subscribe(awsFleetAccepted)) {
+        Serial.println("Successfully subscribed to awsFleetAccepted topic");
+      } else {
+        Serial.println("Failed to subscribe to awsFleetAccepted topic");
+      }
+
+      mqttClient.subscribe(awsFleetRejected);
+      if (mqttClient.subscribe(awsFleetRejected)) {
+        Serial.println("Successfully subscribed to awsFleetRejected topic");
+      } else {
+        Serial.println("Failed to subscribe to awsFleetRejected topic");
+      }
+
+      mqttClient.subscribe(awsTestTopic);
+      if (mqttClient.subscribe(awsTestTopic)) {
+        Serial.println("Successfully subscribed to awsTestTopic topic");
+      } else {
+        Serial.println("Failed to subscribe to awsTestTopic topic");
+      }
+
+    } else {
+      Serial.print("Failed to connect, rc=");
+      Serial.print(mqttClient.state());
+      Serial.println(" try again in 5 seconds");
+      delay(5000);
+    }
+  }
+}
+
+void triggerCertCreation() {
+  String payload = "{}";  
+  mqttClient.publish(awsCertTopic, payload.c_str());
+  Serial.println("New Certificate Request Sent...");
+}
+
+void reconnect() {
+  while (!mqttClient.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    if (mqttClient.connect("ESP32Client")) {
+      Serial.println("connected");
+
+      mqttClient.subscribe(awsFleetAccepted);
+      mqttClient.subscribe(awsFleetRejected);
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(mqttClient.state());
+      Serial.println(" try again in 5 seconds");
+      delay(5000);
+    }
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(6, OUTPUT);
+  pinMode(9, INPUT);
+  connectToWiFi();
+  delay(250);
+  setupTime();
+  delay(250);
+  connectToMQTT();
+  delay(1000);
+  triggerCertCreation();
+}
+
+void loop() {
+  if (!mqttClient.connected()) {
+    reconnect();
+  } else {
+    digitalWrite(6, HIGH);
+  }
+
+  if (digitalRead(9) == LOW){
+    Serial.println("Sending message to get Cert topic...  ");
+    triggerCertCreation();
+
+  }
+  mqttClient.loop();
+  delay(250);
+}
+
+
+
+Policy where My-ID is replaced with my account id without the greater/less than symbols.
+
+
+
+
+
+
+I have tried not subscribing as the documentation says that it isn't necessary, but neither way will work.

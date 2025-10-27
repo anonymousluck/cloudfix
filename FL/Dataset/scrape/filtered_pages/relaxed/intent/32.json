@@ -1,0 +1,14 @@
+Hi all,
+I applied the aoss:DashboardsAccessAll policy to my ARN, but it doesn't seem like it's taking. The policy is written like this:
+
+
+
+
+
+I've attached the policy to my IAM user, but when I go to the OpenSearch dashboard, I get a 401. The network access policy on the collection is set to Public.
+
+
+An interesting note is that, in IAM, the "Permissions assigned to this policy" don't show the DashboardAcessAll action. I've attached an image. 
+
+
+Thanks in advance

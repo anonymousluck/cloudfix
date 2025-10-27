@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_3bb83b4f",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:ListAllMyBuckets"
+      ],
+      "Resource": "arn:aws:s3:::<data lake bucket>/document.txt"
+    },
+    {
+      "id": "allow_8d1b4d78",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListMultipartUploadParts",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data123",
+        "arn:aws:s3:::<data lake bucket>"
+      ]
+    },
+    {
+      "id": "allow_ae293803",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::data123"
+    },
+    {
+      "id": "deny_0abcc6eb",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::<data lake bucket>/config.xml"
+    },
+    {
+      "id": "deny_4ebf0d33",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::<data lake bucket>"
+    }
+  ]
+}

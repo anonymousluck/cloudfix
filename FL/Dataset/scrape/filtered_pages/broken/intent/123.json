@@ -1,0 +1,16 @@
+I am trying to get a Lambda function in account A to have its asynchronous function Dead Letter Queue to deliver to an SNS topic in account B. The execution role on the Lambda has the 
+sns:Publish
+ permission on 
+*
+ resources, and the SNS topic's access policy is as follows:
+
+
+
+
+
+
+However, attempting to update the Lambda function's DLQ using Terraform results in the following error: 
+configuration: operation error Lambda: UpdateFunctionConfiguration, https response error StatusCode: 400, RequestID: cdad1dd3-5c2b-4bee-af74-2e6a729b6178, InvalidParameterValueException: The provided execution role does not have permissions to call Publish on SNS
+
+
+I also note that the Console does not offer entering an ARN from a different account into the DLQ field, and that therefore only SNS topics in the same account are permitted. Is this a service limitation, or have I just misconfigured my Lambda/SNS topic? If the former, is there a simple way of achieving the same effect? (I could push the DLQ to a SNS topic which then feeds a different Lambda which sends the message to the account B topic, but that feels excessive...)

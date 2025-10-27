@@ -1,0 +1,15 @@
+Hi,
+We are trying to create a elastic beanstalk environment through CDK. First step is to create Elastic Beanstalk Application and that fails with authorization error. We have the permissions associated with the user.
+Anything else we should add? We also tried to add explicitly beanstalk access to this user, but still getting the same error?
+
+
+8:39:14 pm | CREATE_FAILED        | AWS::ElasticBeanstalk::Application        | SampleApplication
+Resource handler returned message: "User: arn:aws:sts::{ACCOUNT_ID}:assumed-role/cdk-hnb659fds-cfn-exec-role-{ACCOUNT_ID}-ap-south-1/AWSCloudFormation is not authorized to perform: elasticbeanstalk:CreateApplication on resource: arn:aws:elasticbeanstalk:ap-south-1:{ACCOUNT_ID}
+:application/appName (Service: ElasticBeanstalk, Status Code: 403, Request ID: )" (RequestToken: , HandlerErrorCode: GeneralServiceException)
+
+
+
+Permissions associated with this bootstrapped CFN exec role --  cdk-hnb659fds-cfn-exec-role-{ACCOUNT_ID}-ap-south-1
+
+
+Admiinstrator Access

@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "allow_b45e5a41",
+      "Effect": "allow",
+      "Action": [
+        "kms:GenerateDataKey",
+        "kms:Encrypt"
+      ],
+      "Resource": [
+        "arn:aws:s3::: sourcebucket/document.txt",
+        "arn:aws:s3:::sourcebucket/config.xml"
+      ]
+    },
+    {
+      "id": "deny_5615ce0e",
+      "Effect": "deny",
+      "Action": "s3:GetBucketVersioning",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_47981352",
+      "Effect": "allow",
+      "Action": [
+        "kms:Encrypt",
+        "s3:GetObjectVersionForReplication"
+      ],
+      "Resource": "arn:aws:s3:::reportbucket/document.txt"
+    },
+    {
+      "id": "deny_1b38965b",
+      "Effect": "deny",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_e8fc155f",
+      "Effect": "allow",
+      "Action": "s3:PutBucketVersioning",
+      "Resource": [
+        "arn:aws:s3:::sourcebucket/data.json",
+        "arn:aws:s3::: sourcebucket/config.xml"
+      ]
+    }
+  ]
+}

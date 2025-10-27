@@ -1,0 +1,187 @@
+I have a user authenticated by Cognito user-pool, role & identity-pool (using Cognito hosted-ui).
+
+
+After login, the user comes back to my webapp (frontend), I use the 
+id_token
+ (returned by the hosted-ui redirect) with 
+AWS.CognitoIdentityCredentials()
+ so that my
+AWS.config.credentials.identityId
+ has valid value.
+
+
+//Sample code. Given vars userPoolId, identityPoolId, idTokenFromHash
+
+const cognitoIdpUrl = `cognito-idp.${region}.amazonaws.com/${userPoolId}`
+    const cognitoIdentityCredentialOptions = {
+        IdentityPoolId: identityPoolId,
+        Logins: {
+            [cognitoIdpUrl]: idTokenFromHash
+        }
+    }
+
+    const credInst = new AWS.CognitoIdentityCredentials(cognitoIdentityCredentialOptions)
+
+    AWS.config.update({
+        credentials: credInst
+    });
+
+    await AWS.config.credentials.getPromise()
+
+    // AWS.config.credentials.accessKeyId;
+    // AWS.config.credentials.secretAccessKey;
+    // AWS.config.credentials.sessionToken;
+
+    // GOT "identityId"
+    console.log('AWS.config.credentials.identityId', AWS.config.credentials.identityId)
+
+
+
+I would like to connect to IoT Core with:
+
+
+const iot = new AWS.IotData({
+        endpoint: iotEndpoint,
+        region: region,
+        credentials: AWS.config.credentials
+});
+
+
+
+
+and publish some message under the user account like:
+
+
+const params = {
+    "MY_USER_NAME",
+    payload: JSON.stringify(message),
+    qos: 0
+};
+
+iot.publish(params, (err, data) => {
+    if (err) {
+        console.error('Error publishing message:', err);
+    } else {
+        console.log('Message published:', data);
+    }
+});
+
+
+
+As stated in docs (
+https://docs.aws.amazon.com/iot/latest/developerguide/connect-and-pub.html
+)
+
+
+
+
+For devices not registered as things in the AWS IoT Core registry, the
+following policy grants permission to connect to AWS IoT Core with
+client ID "client1" and restricts the device to publishing on a
+clientID-specific MQTT topic:
+
+
+
+
+
+
+
+
+How should I update the policy to allow the logged user to connect/publish to a "MY_USER_NAME" topic?
+
+
+I tried replacing the 
+${iot:ClientId}
+ and 
+client1
+ (sample value) with:
+
+
+
+
+the 
+${aws:username}
+ (that would make sense to me)...
+
+
+the 
+user pool id
+,
+
+
+the webapp 
+clientId
+ provided by Cognito (the app identifier in Cognito context)
+
+
+
+
+but without success ;( .
+
+
+My trust entity:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "cognito-identity.amazonaws.com:aud": "<REGION>:<IDENTITY_POOL_ID>"
+                },
+                "ForAnyValue:StringLike": {
+                    "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+            }
+        }
+   
+
+
+
+My permission policies:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cognito-identity:GetCredentialsForIdentity"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iot:Publish"
+            ],
+            "Resource": [
+                "arn:aws:iot:<REGION>:<ACCOUNT_ID>:topic/${aws:username}"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iot:Connect"
+            ],
+            "Resource": [
+                "arn:aws:iot:<REGION>:<ACCOUNT_ID>:client/${aws:username}"
+            ]
+        }
+    ]
+}

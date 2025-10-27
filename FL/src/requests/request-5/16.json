@@ -1,0 +1,70 @@
+{
+  "Requests": [
+    {
+      "id": "deny_162b3b91",
+      "Effect": "deny",
+      "Action": "elasticfilesystem:ClientRootAccess",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "*",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true",
+          "elasticfilesystem:AccessedViaMountTarget": "true"
+        }
+      }
+    },
+    {
+      "id": "deny_9b219d80",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:elasticfilesystem:us-east-1:<myaccount_id>:file-system/fs-<filesystemid>",
+      "Principal": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "allow_cee7c65b",
+      "Effect": "allow",
+      "Action": "elasticfilesystem:DescribeMountTargets",
+      "Resource": "arn:aws:elasticfilesystem:us-east-1:<myaccount_id>:file-system/fs-<filesystemid>",
+      "Principal": "*",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true",
+          "elasticfilesystem:AccessedViaMountTarget": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_3ccb6d0b",
+      "Effect": "allow",
+      "Action": [
+        "elasticfilesystem:ClientMount",
+        "elasticfilesystem:ClientRootAccess"
+      ],
+      "Resource": "arn:aws:elasticfilesystem:us-east-1:<myaccount_id>:file-system/fs-<filesystemid>",
+      "Principal": "*",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true",
+          "elasticfilesystem:AccessedViaMountTarget": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_b33ff3aa",
+      "Effect": "allow",
+      "Action": "elasticfilesystem:ClientWrite",
+      "Resource": "arn:aws:elasticfilesystem:us-east-1:<myaccount_id>:file-system/fs-<filesystemid>",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:max-keys": "10"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "Requests": [
+    {
+      "id": "allow_50776caa",
+      "Effect": "allow",
+      "Action": [
+        "organizations:TagResource",
+        "organizations:UntagResource"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Condition": {
+        "StringLike": {
+          "aws:ResourceOrgPaths": [
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku70xxx/*",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku7xxx/",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxxx/ou-eihy-3ku70xxx",
+            "*ou-eihy-3ku70yzx*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_146bcc6c",
+      "Effect": "allow",
+      "Action": "organizations:TagResource",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Condition": {
+        "StringLike": {
+          "aws:ResourceOrgPaths": [
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku70xxx/*",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku7xxx/",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxxx/ou-eihy-3ku70xxx",
+            "*ou-eihy-3ku70yzx*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_24de12bb",
+      "Effect": "deny",
+      "Action": "organizations:UntagResource",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "StringLike": {
+          "aws:ResourceOrgPaths": [
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku70xxx/*",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku7xxx/",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxxx/ou-eihy-3ku70xxx",
+            "*ou-eihy-3ku70yzx*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_3bbd0675",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringLike": {
+          "aws:ResourceOrgPaths": [
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku70xxx/*",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku7xxx/",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxxx/ou-eihy-3ku70xxx",
+            "*ou-eihy-3ku70yzx*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_fe58adf0",
+      "Effect": "allow",
+      "Action": [
+        "organizations:TagResource",
+        "organizations:UntagResource"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringLike": {
+          "aws:ResourceOrgPaths": [
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku70xxx/*",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxx/ou-eihy-3ku7xxx/",
+            "o-xxxxx/r-eihy/ou-eihy-xihtvxxxx/ou-eihy-3ku70xxx",
+            "*ou-eihy-3ku70yzx*"
+          ]
+        }
+      }
+    }
+  ]
+}

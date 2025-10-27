@@ -1,0 +1,459 @@
+I can not revoke the temporary IAM access Token when sign-in with a different user using the same HTML Page.
+
+
+Configuration Cognito User Pool:
+
+
+
+
+User Attributes: Mail, Phone Number
+
+
+MFA (enabled by Google Auth)
+
+
+Device Tracking (enabled)
+
+
+Group Name: Admin
+
+
+Group Name Role: 
+S3-Access-Role
+
+
+Trust Entities
+
+
+
+
+
+
+
+Permission Policy Attached to S3-Access-Role : 
+Amazon S3 Full Access
+
+
+APP Integration:
+
+
+Secret Code: blablabla
+
+
+Authentication flows:
+
+
+ALLOW_REFRESH_TOKEN_AUTH
+
+
+ALLOW_USER_SRP_AUTH
+
+
+Cognito Identity Pool
+
+
+Identity Provider: us-east-1_{UserPoolID}
+
+
+Identity Provider Role Settings: 
+Role with preferred_role claim in tokens
+
+
+(I am not very  clear about this setting)
+
+
+Basic Authentication: Activate basic flow (Checked)
+
+
+User access authentication role: Lambda-Access-Role 
+(not access to S3)
+
+
+
+
+Now, I have two users: Elena and Laura.
+
+
+Elena is in Group Admin,
+
+
+Laura is NOT in Group Admin
+
+
+
+
+Laura Sign-In and obtain: 
+accessToken
+, 
+idToken
+ and 
+refreshToken
+ and call a SDK javascript v3 function with the idToken:
+
+
+
+
+import
+ 
+{
+ S3Client
+,
+ GetObjectCommand 
+}
+ 
+from
+ 
+"@aws-sdk/client-s3"
+;
+ 
+
+import
+ 
+{
+ fromCognitoIdentityPool 
+}
+ 
+from
+ 
+"@aws-sdk/credential-providers"
+;
+
+
+
+
+export
+ 
+const
+ 
+GetObjectBucket
+ 
+=
+ 
+async
+ 
+(
+idToken
+)
+ 
+=>
+{
+
+
+
+
+    
+let
+ credentials 
+=
+ 
+fromCognitoIdentityPool
+(
+{
+
+
+        
+clientConfig
+:
+ 
+{
+ 
+region
+:
+ 
+'us-east-1'
+ 
+}
+,
+ 
+// Configure the underlying CognitoIdentityClient.
+
+
+        
+identityPoolId
+:
+ 
+'us-east-1:blablabla'
+,
+
+
+        
+logins
+:
+ 
+{
+
+
+            
+'cognito-idp.us-east-1.amazonaws.com/us-east-1_{UserPoolId}'
+:
+ idToken
+,
+
+
+        
+}
+
+
+    
+}
+)
+;
+
+
+    
+const
+ s3Client 
+=
+ 
+new
+ 
+S3Client
+(
+{
+
+
+        
+region
+:
+ 
+'us-east-1'
+,
+
+
+        
+credentials
+:
+ credentials
+
+    
+}
+)
+;
+
+
+    
+const
+ input 
+=
+ 
+{
+Bucket
+:
+'bbb'
+,
+ 
+Key
+:
+'aaa.txt'
+}
+;
+
+
+    
+const
+ command 
+=
+ 
+new
+ 
+GetObjectCommand
+(
+input
+)
+;
+
+
+    
+return
+(
+await
+ s3Client
+.
+send
+(
+command
+)
+)
+;
+
+
+Returns: Exception Access Denied, 
+Good!
+. Because Laura has no permission to access S3
+
+
+Now, Elena Sign-In (I am using the same HTLM static page for Sign-In)
+
+
+Returns the bucket object, 
+Good!
+, Because Elenas is in the Group of User Pool that has permission to access S3
+
+
+But Now, Laura signs in again, and instead of returning: Access Denied, get the object without any problem. 
+Bad news!
+
+
+Trying on a different HTML Page (open in Incognito mode) it works as expected.
+
+
+I guess the problem is that the temporary token with IAM credentials is stored locally in a cookie and it has an expiration time. I don't know how to force it to revoke.
+
+
+I tried:
+Close the session for both users (Laura and Elena) in Cognito AWS Console (it does not work)
+
+
+Add a Policy AWSRevokeOlderSessions in 
+S3-Access-Role
+ (it does not work)
+
+
+So, 
+How can I revoke the temporary token with IAM credentials in a programmatic way?
+
+
+On the other hand, when I try to revoke the idToken using:
+
+
+const
+ 
+revokeToken
+ 
+=
+ 
+async
+ 
+(
+{
+token
+,
+ clientId
+,
+ clientSecret
+}
+)
+=>
+{
+
+
+    
+const
+ client 
+=
+ 
+new
+ 
+CognitoIdentityProviderClient
+(
+{
+region
+:
+'us-east-1'
+}
+)
+;
+
+
+    
+const
+ input 
+=
+ 
+{
+ 
+// RevokeTokenRequest
+
+
+      
+Token
+:
+ token
+,
+ 
+// required
+
+
+      
+ClientId
+:
+ clientId
+,
+ 
+// required
+
+
+    
+}
+;
+
+
+    
+if
+(
+clientSecret
+)
+
+
+      input
+[
+'ClientSecret'
+]
+ 
+=
+ clientSecret
+;
+
+
+    
+const
+ command 
+=
+ 
+new
+ 
+RevokeTokenCommand
+(
+input
+)
+;
+
+
+    
+const
+ r 
+=
+ 
+await
+ client
+.
+send
+(
+command
+)
+;
+
+
+    
+return
+(
+r
+)
+;
+
+
+}
+;
+
+
+I get 
+UnsupportedTokenTypeException: Unsupported token type
+
+
+The same if I pass the accessToken instead of idToken.
+
+
+I do not know why.
+
+
+Thank you in advance

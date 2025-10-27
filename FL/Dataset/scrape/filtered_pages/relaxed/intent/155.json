@@ -1,0 +1,30 @@
+I was reading the 
+AWS documentation
+ explaining how to create the CodePipeline service role. However, I don't understand why it needs the following statement:
+
+
+
+
+
+inside the 
+RolePolicy.json
+ file.
+
+
+I am 
+not asking for explanation
+ of what 
+iam:PassRole
+ is and why and when we use it in general. I understand that it allows a principal to pass a role to another service. However, I'm confused about why we need it particularly inside the CodePipeline service. So,
+
+
+Q1: What is the principal, what is/are role(s), and what is/are service(s) in this case?
+
+Q2: Isn't it insecure to use 
+"Resource": "*"
+?
+
+
+Important:
+
+If you don't understand the question or don't know the answer, DO NOT post spams in order to simply collect points. It will be downvoted, you will get a rude response and I'll report your answer to remove from the post.

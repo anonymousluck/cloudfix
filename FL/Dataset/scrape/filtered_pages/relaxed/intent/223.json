@@ -1,0 +1,99 @@
+More often than not, when creating a new Bedrock Knowledge Base in the console, I get the following error upon submitting "Create knowledge base".
+
+
+undefined There were problems with the supplied replacements: [Replacement "" for multi-value placeholder "foundationModelId" was empty or contained a wildcard character]
+
+
+
+
+This occurs when selecting any embedding model and throws the same error
+
+
+I've tried using the "Quick create a new vector datastore" as well as using a vector Collection on OpenSearch via "Choose a vector store you have created"
+
+
+I noticed a new vector Collection is always created when submitting "Create knowledge base" and 
+then
+ the error throws, so it's possible to reuse that newly created Collection vector db. The same error will throw even when reusing the Collection.
+
+
+
+
+UPDATE
+ | So creating a brand new Role in the console Create Knowledge Base flow, unblocks this issue. However, when I compare the two roles - the old, updated one I was trying to reuse mentioned in comment below and the brand new role created - the old, updated role is a superset of the new role. So all the permissions created in the new role are indeed in the old, updated role. So I don't understand why the old, updated role would be the issue, but apparently it is.
+
+
+Old Role
+Policy: AmazonBedrockFoundationModelPolicyForKnowledgeBase_oldrole
+
+
+
+
+
+
+New Role
+Policy: AmazonBedrockFoundationModelPolicyForKnowledgeBase_newrole
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "BedrockInvokeModelStatement",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:InvokeModel"
+            ],
+            "Resource": [
+                "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0"
+            ]
+        }
+    ]
+}
+
+
+
+
+
+Old Role (i updated with new collection ARN I used in Create Knowledge Base console workflow)
+Policy: AmazonBedrockOSSPolicyForKnowledgeBase_oldrole
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "OpenSearchServerlessAPIAccessAllStatement",
+            "Effect": "Allow",
+            "Action": [
+                "aoss:APIAccessAll"
+            ],
+            "Resource": [
+                "arn:aws:aoss:us-east-1:account:collection/oldcollection",
+                "arn:aws:aoss:us-east-1:account:collection/newcollection"
+            ]
+        }
+    ]
+}
+
+
+
+New Role
+Policy: AmazonBedrockOSSPolicyForKnowledgeBase_newrole
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "OpenSearchServerlessAPIAccessAllStatement",
+            "Effect": "Allow",
+            "Action": [
+                "aoss:APIAccessAll"
+            ],
+            "Resource": [
+                "arn:aws:aoss:us-east-1:account:collection/newcollection"
+            ]
+        }
+    ]
+}

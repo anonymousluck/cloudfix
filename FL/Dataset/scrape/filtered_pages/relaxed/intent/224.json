@@ -1,0 +1,37 @@
+Hi,
+
+
+We're currently building an MSK cluster. We use 2 types of authentication for 2 different clients.
+
+
+The IAM authentication works fine.
+
+
+But for the SASL/SCRAM authentication that it's not the case, we created a secret for username/password connection and linked it to the MSK cluster.
+
+
+Using our client or with a UI client for windows it's the same issue we have a connection but with limited functionalities (like creating a topic or reading one).
+
+
+Please take a look at the error the UI clients returns :
+
+
+
+
+Could not complete DescribeConfigs action: you can try to continue with limited functionality. ClusterAuthorizationException: Cluster authorization failed.
+Make sure that your user has all access rights (DescribeConsumerGroups, DescribeCluster, DescribeConfigs) for full functionality.
+
+
+
+
+Also take a look at our AWS secret policy JSON file :
+
+
+
+
+
+
+Do we need to modify the ACLs policies directly on the Kafka instance ? How?
+
+
+Thanks

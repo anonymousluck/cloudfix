@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_18934801",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::datalake-published-data/document.txt"
+    },
+    {
+      "id": "allow_db4f9a35",
+      "Effect": "allow",
+      "Action": [
+        "kinesis:PutRecord",
+        "glue:GetCrawler"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_8c9ddafd",
+      "Effect": "allow",
+      "Action": [
+        "cloudwatch:PutMetricData",
+        "athena:CreateWorkGroup"
+      ],
+      "Resource": [
+        "arn:aws:s3:::datalake-published-data/document.txt",
+        "arn:aws:s3:::datalake-published-data/config.xml"
+      ]
+    },
+    {
+      "id": "allow_42d0bb37",
+      "Effect": "allow",
+      "Action": "s3:GetObjectTagging",
+      "Resource": "arn:aws:s3:::datalake-curated-datasets/config.xml"
+    },
+    {
+      "id": "deny_67bc922c",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:s3:::datalake-submissions/data.json"
+    }
+  ]
+}

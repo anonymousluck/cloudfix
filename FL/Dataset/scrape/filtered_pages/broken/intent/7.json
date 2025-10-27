@@ -1,0 +1,11 @@
+I have an S3 bucked with access limited only from my external server by ip address:
+
+
+
+
+
+
+Now I'm trying to add a Backup Plan using the default role, but it fails due to missing permissions.
+
+
+I tried to search how to give access to defaul backup rules but I didn't find it.

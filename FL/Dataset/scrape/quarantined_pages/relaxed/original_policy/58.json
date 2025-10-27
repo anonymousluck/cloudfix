@@ -1,0 +1,37 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowPush",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::0123456789012:role/ecr-push-my-demo-service-role"
+      },
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:CompleteLayerUpload",
+        "ecr:DescribeRepositories",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:InitiateLayerUpload",
+        "ecr:ListImages",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+      ]
+    },
+    {
+      "Sid": "AllowPull",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::987654321098:role/production-eks-node-role"
+      },
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:DescribeRepositories",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:ListImages"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+Hello, I need to configure a policy to apply to aws organization accounts.
+Requirement 1: AcceptDataGrant action must be allowed only among accounts of the same organization and must be denied from accounts not part of the aws organization.
+Requirement 2: the aws organization payer account must be able to send/receive DataGrants to/from any aws account, regardless of being part of the organization or not
+
+
+we tried a couple of options, shown below, without success
+
+
+{
+"Effect": "Deny",
+"Action": "dataexchange:AcceptDataGrant",
+"Resource": [
+"*"
+],
+"Condition": {
+"StringNotEquals": {
+"aws:ResourceOrgID": "PRINCIPALORGID"
+]
+}
+}
+}

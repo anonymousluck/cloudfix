@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "deny_8935a522",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:s3:::subline-be/document.txt",
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    },
+    {
+      "id": "allow_02ffa836",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucketPolicy"
+      ],
+      "Resource": [
+        "arn:aws:s3:::subline-be/document.txt",
+        "arn:aws:s3:::subline-be/data.json"
+      ],
+      "Principal": "arn:aws:iam::<ACCOUNT_ID>:root"
+    },
+    {
+      "id": "deny_166041e7",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::subline-be/document.txt",
+      "Principal": "arn:aws:iam::<ACCOUNT_ID>:root"
+    },
+    {
+      "id": "allow_250032c4",
+      "Effect": "allow",
+      "Action": "s3:GetBucketPolicy",
+      "Resource": "arn:aws:s3:::subline-be/document.txt",
+      "Principal": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_7858eb80",
+      "Effect": "allow",
+      "Action": "s3:ListBucketMultipartUploads",
+      "Resource": "arn:aws:s3:::subline-be/document.txt",
+      "Principal": "arn:aws:iam::<ACCOUNT_ID>:root"
+    }
+  ]
+}

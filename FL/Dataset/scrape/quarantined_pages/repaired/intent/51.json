@@ -1,0 +1,18 @@
+Hi, I am trying out Amazon Q and using the Q retriever. I have successfully added a S3 bucket as the data source. As I try to sync the files in the S3, I received error:
+"Access denied when calling Amazon Q business BatchPutDocument API. Please check your data source IAM role."
+
+
+The IAM role for data source it is using has the following permissions policies. What else can be missing? Please advise.
+
+
+
+
+AmazonKendraFullAccess
+
+
+AmazonS3FullAccess
+
+
+
+
+Trusted Entities:

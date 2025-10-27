@@ -1,0 +1,5 @@
+The CloudFormation stack Data-lake-foundation-DataLakeFoundationStack-IS67G4LRJQIU-ElasticsearchStack-YY9NNQARTKAR failed to create the resource [CopyLambdaDeployment] due to an error in the CloudWatch Logs. The error message reads:
+An error occurred (AccessDenied) when calling the CopyObject operation: Access Denied.
+
+
+I attempted to resolve the issue by adding IAM permissions based on suggested solutions, but none of them worked. Below are the IAM permissions for the role being used.

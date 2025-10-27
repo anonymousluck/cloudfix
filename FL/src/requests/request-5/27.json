@@ -1,0 +1,70 @@
+{
+  "Requests": [
+    {
+      "id": "allow_ef470374",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteObjectTagging",
+        "s3:GetBucketWebsite"
+      ],
+      "Resource": [
+        "arn:aws:s3:::workday-adaptive-cp/data.json",
+        "arn:aws:s3:::workday-adaptive-cp/CloudTrail_S3_Events/AWSLogs/111222333/data.json"
+      ],
+      "Principal": "logging.s3.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-server-side-encryption": "AES256"
+        }
+      }
+    },
+    {
+      "id": "allow_e90e8060",
+      "Effect": "allow",
+      "Action": "s3:GetBucketVersioning",
+      "Resource": "arn:aws:s3:::workday-adaptive-cp/document.txt",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    },
+    {
+      "id": "deny_8d34ab43",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::workday-adaptive-cp/CloudTrail_S3_Events/AWSLogs/111222333/data.json",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:max-keys": "10"
+        }
+      }
+    },
+    {
+      "id": "deny_d6f20bcc",
+      "Effect": "deny",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::123456789012:user/bob",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_2b167b43",
+      "Effect": "allow",
+      "Action": "s3:ListObjectVersions",
+      "Resource": "arn:aws:s3:::workday-adaptive-cp/CloudTrail_S3_Events/AWSLogs/111222333/config.xml",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    }
+  ]
+}

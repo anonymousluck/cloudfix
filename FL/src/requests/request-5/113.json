@@ -1,0 +1,52 @@
+{
+  "Requests": [
+    {
+      "id": "allow_11473d4c",
+      "Effect": "allow",
+      "Action": [
+        "iot:Receive",
+        "iot:Subscribe"
+      ],
+      "Resource": [
+        "arn:aws:iot:eu-west-1:123456789012:topic/${iot:Connection.Thing.ThingName}/temperature",
+        "arn:aws:iot:eu-west-1:123456789012:topic/${iot:Connection.Thing.ThingName}/command"
+      ]
+    },
+    {
+      "id": "deny_8891c5ac",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:iot:eu-west-1:123456789012:topic/${iot:Connection.Thing.ThingName}/command"
+    },
+    {
+      "id": "allow_4a390c77",
+      "Effect": "allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Subscribe"
+      ],
+      "Resource": [
+        "arn:aws:iot:eu-west-1:123456789012:topicfilter/${iot:Connection.Thing.ThingName}/command",
+        "arn:aws:iot:eu-west-1:123456789012:topic/${iot:Connection.Thing.ThingName}/temperature"
+      ]
+    },
+    {
+      "id": "deny_0cee74e0",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:iot:eu-west-1:123456789012:client/${iot:Connection.Thing.ThingName}"
+    },
+    {
+      "id": "allow_b6c66454",
+      "Effect": "allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:eu-west-1:123456789012:client/${iot:Connection.Thing.ThingName}",
+        "arn:aws:iot:eu-west-1:123456789012:topic/${iot:Connection.Thing.ThingName}/temperature"
+      ]
+    }
+  ]
+}

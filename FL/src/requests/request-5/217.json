@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "deny_a821a1b4",
+      "Effect": "deny",
+      "Action": "ssm:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_b936277d",
+      "Effect": "allow",
+      "Action": "ssm:GetObject",
+      "Resource": [
+        "arn:aws:ssm:us-east-1:<account_id>:parameter/airflowfile1",
+        "arn:aws:ssm:us-east-1:<account_id>:parameter/airflowdata123"
+      ]
+    },
+    {
+      "id": "allow_7384f387",
+      "Effect": "allow",
+      "Action": "ssm:GetObject",
+      "Resource": "arn:aws:ssm:us-east-1:<account_id>:parameter/airflowdata123"
+    },
+    {
+      "id": "deny_90235e17",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:ssm:us-east-1:<account_id>:parameter/airflowdata123"
+    },
+    {
+      "id": "allow_92f11ed7",
+      "Effect": "allow",
+      "Action": "ssm:GetObject",
+      "Resource": "arn:aws:ssm:us-east-1:<account_id>:parameter/airflowdocument"
+    }
+  ]
+}

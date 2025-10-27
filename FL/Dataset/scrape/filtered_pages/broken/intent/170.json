@@ -1,0 +1,245 @@
+Hello,
+I am trying to use CloudWatch Evidently on my frontend app to have a/b test on headline strings. As much as I could follow, I am supposed to create a Cognito identity pool and allow Guest access (unauthorized) to Evidently using a guest role.
+
+
+I'd be really happy if somebody can point me at the right direction or figure out what am I missing or doing wrong.
+
+
+I end up getting the following error on my frontend client. I think the main point is "no session policy allows the evidently:EvaluateFeature action" from the following error message
+
+
+AccessDeniedException: User: arn:aws:sts::<aws-account-id>:assumed-role/evidently-role/CognitoIdentityCredentials is not authorized to perform: evidently:EvaluateFeature on resource: arn:aws:evidently:eu-central-1:<aws-account-id>:project/dev-website/feature/hero-h1 because no session policy allows the evidently:EvaluateFeature action
+
+
+
+I've been following these links, but it doesn't help when AWS provides a tutorial with hardcoded credentials and then suggest not to follow that practice and there is no "guest" user example..
+
+https://aws.amazon.com/blogs/aws/cloudwatch-evidently/
+
+
+https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-sample-application.html
+
+
+
+
+I have created a Identity Pool with Basic (classic) authentication active
+
+
+I have created an IAM role with the following permission policy
+
+
+
+
+
+
+
+
+
+
+On the role, the following Trust relationship is present
+
+
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "cognito-identity.amazonaws.com:aud": "eu-central-1:<identity-pool-id>"
+                },
+                "ForAnyValue:StringLike": {
+                    "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                }
+            }
+        }
+    ]
+}
+
+
+
+I have the following implementation.
+
+
+const
+ client 
+=
+ 
+new
+ 
+EvidentlyClient
+(
+{
+
+
+  
+region
+:
+ 
+REGION
+,
+
+
+  
+endpoint
+:
+ 
+ENDPOINT
+,
+
+
+  
+credentials
+:
+ 
+fromCognitoIdentityPool
+(
+{
+
+
+    
+client
+:
+ 
+new
+ 
+CognitoIdentityClient
+(
+{
+ 
+region
+:
+ 
+REGION
+ 
+}
+)
+,
+
+
+    
+identityPoolId
+:
+ 
+IDENTITY_POOL_ID
+,
+
+
+  
+}
+)
+,
+
+
+}
+)
+;
+
+
+
+
+const
+ command 
+=
+ 
+new
+ 
+EvaluateFeatureCommand
+(
+{
+
+
+  
+entityId
+:
+ 
+'myId'
+,
+
+
+  
+feature
+:
+ 
+'hero-h1'
+,
+
+
+  
+project
+:
+ 
+'dev-website'
+,
+
+
+}
+)
+;
+
+
+
+
+client
+.
+send
+(
+command
+)
+.
+then
+(
+(
+response
+)
+ 
+=>
+ 
+{
+
+
+  console
+.
+log
+(
+'Feature value:'
+,
+ response
+.
+value
+)
+;
+
+
+}
+)
+.
+catch
+(
+(
+error
+)
+ 
+=>
+ 
+{
+
+
+  console
+.
+error
+(
+error
+)
+;
+
+
+}
+)
+;

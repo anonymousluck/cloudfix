@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_5d486605",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_9dda278b",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_517f65d2",
+      "Effect": "allow",
+      "Action": [
+        "ses:CreateContact",
+        "ses:SendEmail"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_5b2a9841",
+      "Effect": "allow",
+      "Action": "ses:ListContacts",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "allow_d588a7ee",
+      "Effect": "allow",
+      "Action": [
+        "ses:SendEmail",
+        "ses:GetContactList"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    }
+  ]
+}

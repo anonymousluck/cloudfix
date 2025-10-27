@@ -1,0 +1,39 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudtrail.amazonaws.com"
+      },
+      "Action": [
+        "cloudtrail:StartQuery",
+        "cloudtrail:StartDashboardRefresh",
+        "cloudtrail:GetEventDataStore",
+        "cloudtrail:GetQueryResults"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceAccount": "${AWS::AccountId}"
+        }
+      },
+      "Resource": "*",
+      "Sid": "statement1"
+    },
+    {
+      "Sid": "AllowSecurityAccount",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::${SecurityAccountId}:root"
+        ]
+      },
+      "Action": [
+        "cloudtrail:StartQuery",
+        "cloudtrail:StartDashboardRefresh",
+        "cloudtrail:GetEventDataStore",
+        "cloudtrail:GetQueryResults"
+      ]
+    }
+  ]
+}

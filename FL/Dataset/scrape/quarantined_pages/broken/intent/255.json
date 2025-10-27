@@ -1,0 +1,99 @@
+Hi all,
+
+
+In our 
+AWS Organization
+ We've a 
+LogArchive Centralized Account
+ used by our 
+Security Team
+ where We usually send all CloudWatch logs from all of our Application Accounts "The Accounts where we deploy our Applications Workloads".
+
+
+We are looking forward to doing the same with 
+CloudFront Real-Time logs
+ , We need to send all of them to this 
+Centralized Log Account
+.
+
+
+I tried quickly using the CLI to setup the 
+Real-Time Logs
+ Configuration for one of our 
+CloudFront Distributions
+ pointing to a 
+Kinesis Data Stream 
+and a 
+IAM Role
+ in the
+ LogArchive Account
+ :
+
+
+
+
+CLI Command :
+
+
+
+
+aws cloudfront create-realtime-log-config --cli-input-json "file://rtl-config.json" 
+
+
+
+
+
+JSON Input :
+
+
+
+
+{
+    "EndPoints": [
+        {
+            "StreamType": "Kinesis",
+            "KinesisStreamConfig": {
+                "RoleARN": "arn:aws:iam::LogAccountID:role/CloudFrontRealtimeLogConfigRole",
+                "StreamARN": "arn:aws:kinesis:eu-west-3:LogAccountID:stream/demoDataStream"
+            }
+        }
+    ],
+    "Fields": [
+        "c-country"
+    ],
+    "Name": "demorealtime",
+    "SamplingRate": 1
+}
+
+
+
+
+
+IAM Role Trust RelationShip in the LogArchive Account :
+
+
+
+
+
+
+
+
+
+
+Test Results :
+
+
+
+
+An error occurred (AccessDenied) when calling the CreateRealtimeLogConfig operation: Cross-account pass role is not allowed. 
+
+
+
+So, I was wondering if there is a direct way to send all 
+CloudFront Real-Time Logs 
+to a Cross-Account
+ Kinesis Data Stream/Firehose
+ ?
+
+
+Thanks

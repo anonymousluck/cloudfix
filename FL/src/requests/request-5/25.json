@@ -1,0 +1,71 @@
+{
+  "Requests": [
+    {
+      "id": "allow_6f269cad",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/eks:eks-cluster-name": "${aws:PrincipalTag/eks:eks-cluster-name}"
+        },
+        "StringLike": {
+          "aws:RequestTag/eks:kubernetes-node-class-name": "*",
+          "aws:RequestTag/eks:kubernetes-node-pool-name": "*"
+        }
+      }
+    },
+    {
+      "id": "allow_76c54601",
+      "Effect": "allow",
+      "Action": "ec2:CreateFleet",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    },
+    {
+      "id": "deny_36e1cc77",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/eks:eks-cluster-name": "${aws:PrincipalTag/eks:eks-cluster-name}"
+        },
+        "StringLike": {
+          "aws:RequestTag/eks:kubernetes-node-class-name": "*",
+          "aws:RequestTag/eks:kubernetes-node-pool-name": "*"
+        }
+      }
+    },
+    {
+      "id": "deny_31322eaa",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2024-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "allow_4ebaa87e",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/eks:eks-cluster-name": "${aws:PrincipalTag/eks:eks-cluster-name}"
+        },
+        "StringLike": {
+          "aws:RequestTag/eks:kubernetes-node-class-name": "*",
+          "aws:RequestTag/eks:kubernetes-node-pool-name": "*"
+        }
+      }
+    }
+  ]
+}

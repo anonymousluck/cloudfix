@@ -1,0 +1,33 @@
+I'm trying to write python (boto3) script to set up users, permissions, and name-spaced tables (using table prefixes)
+
+
+Most of this is working, but I can't get past a "Account is not authorized" error when trying to set autoscaling on the dynamodb tables.
+
+
+Below I'll post one of the iterations for IAM policies I've attempted, followed by the python code that attempts to set the autoscaling.
+
+
+
+
+
+
+  response = client.put_scaling_policy(
+      PolicyName= prefix + '_' + table + "_read_scaling",
+      ServiceNamespace='dynamodb',
+      ResourceId='table/' + prefix + '_' + table,
+      ScalableDimension='dynamodb:table:ReadCapacityUnits',
+      PolicyType='StepScaling',
+      StepScalingPolicyConfiguration={
+          'AdjustmentType': 'ChangeInCapacity',
+          'StepAdjustments': [
+              {
+                  'MetricIntervalLowerBound': 1,
+                  'MetricIntervalUpperBound': 20,
+                  'ScalingAdjustment': 2
+              },
+          ],
+          'MinAdjustmentMagnitude': 2,
+          'Cooldown': 120,
+          'MetricAggregationType': 'Average'
+      }
+  )

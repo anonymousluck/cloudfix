@@ -1,0 +1,67 @@
+I have account A and account B. Account A has a lambda and execution role. Account B has a custom event bus and event bus rule and an IAM role that allows PutEvents on the custom event bus. The rule matches all events.
+
+
+My goal is for the lambda in account A to make PutEvents requests on the custom event bus in account B. Then, the event bus rule in account B will match the event and I should see a metric for MatchedEvents in CloudWatch.
+
+
+The IAM role in account B trusts the IAM role in account A. This statement is under trust relationships.
+
+
+        
+
+
+
+And the IAM role in account A is allowed to assume role. This statement is under permissions:
+
+
+    "Statement": [
+        {
+            "Action": [
+                "sts:AssumeRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::ACCOUNT_B:role/AccountBIAMRole"
+            ],
+            "Effect": "Allow"
+        }
+    ]
+
+
+
+The EventBus in account B also has resource-based policy to allow PutEvents on the EventBus from the IAM role in the same account. I'm not sure this is even necessary.
+
+
+In Lambda code in account A, I build AWSCredentialsProvider with 
+STSAssumeRoleSessionCredentialsProvider
+ using the IAM role ARN from account B. The credentials are used in the EventBridge client. The 
+AWSSecurityTokenService
+ created uses 
+DefaultAWSCredentialsProviderChain.getInstance()
+ credentials and is passed to the  
+STSAssumeRoleSessionCredentialsProvider
+:
+
+
+        final AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.standard()
+                .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
+                .withRegion(eventBusAwsRegion)
+                .build();
+        return new STSAssumeRoleSessionCredentialsProvider.Builder(
+                        AccountBIAMRoleArn,
+                        "MySession")
+                .withStsClient(sts)
+                .build();
+
+
+
+Regardless, I'm seeing a timeout when calling PutEvents:
+
+
+com.amazonaws.http.timers.client.ClientExecutionTimeoutException: Client execution did not complete before the specified timeout configuration.
+
+
+
+Also account B's "last activity" is never ("-"). So I'm assuming that account A role was never able to assume account B role?
+
+
+We're using 5 second timeouts but the timeout looks almost immediate (<20ms). Any ideas?

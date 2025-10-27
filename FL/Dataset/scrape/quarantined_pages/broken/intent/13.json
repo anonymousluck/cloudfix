@@ -1,0 +1,19 @@
+I'm trying to use a private image from ECR, i have configured the IAM Role with AdministratorAccess and TrustedPolicy as next:
+
+
+
+
+
+
+In the Build configuration i used:
+
+
+Configuration:
+      Container:
+        Registry: ECR
+        Image: xxxx.dkr.ecr.us-east-1.amazonaws.com/my_image
+
+
+
+But i'm getting this error in the logs:
+CLIENT_ERROR: Unable to pull customer's container image

@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_a4becaff",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": [
+        "arn:aws:es:us-east-1:1234567890:domain/ap-dev-search",
+        "arn:aws:es:us-east-1:1234567890:domain/ap-dev-search/data.json"
+      ]
+    },
+    {
+      "id": "deny_529cff23",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:es:us-east-1:1234567890:domain/ap-dev-search/document.txt"
+    },
+    {
+      "id": "deny_92dd57e8",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:es:us-east-1:1234567890:domain/ap-dev-search"
+    },
+    {
+      "id": "allow_a9c6f89a",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": [
+        "arn:aws:es:us-east-1:1234567890:domain/ap-dev-search/document.txt",
+        "arn:aws:es:us-east-1:1234567890:domain/ap-dev-search"
+      ]
+    },
+    {
+      "id": "allow_292fed7a",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": [
+        "arn:aws:es:us-east-1:1234567890:domain/ap-dev-search/config.xml",
+        "arn:aws:es:us-east-1:1234567890:domain/ap-dev-search/document.txt"
+      ]
+    }
+  ]
+}

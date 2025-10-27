@@ -1,0 +1,51 @@
+{
+  "Requests": [
+    {
+      "id": "allow_fe45e67f",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteObjectTagging",
+        "s3:GetBucketPolicy"
+      ],
+      "Resource": [
+        "arn:aws:s3:::Bucket-Name/document.txt",
+        "arn:aws:s3:::Bucket-Name/data.json"
+      ],
+      "Principal": "arn:aws:iam::123456789012:user/bob"
+    },
+    {
+      "id": "deny_28e453a9",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::Bucket-Name/document.txt",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    },
+    {
+      "id": "deny_be45f94d",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3:::Bucket-Name/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/bob"
+    },
+    {
+      "id": "allow_2b03b115",
+      "Effect": "allow",
+      "Action": "s3:GetBucketWebsite",
+      "Resource": "arn:aws:s3:::Bucket-Name/document.txt",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_db42391c",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:PutBucketPolicy"
+      ],
+      "Resource": [
+        "arn:aws:s3:::Bucket-Name/document.txt",
+        "arn:aws:s3:::Bucket-Name/config.xml"
+      ],
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    }
+  ]
+}

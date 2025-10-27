@@ -1,0 +1,44 @@
+I am trying to get and Amplify build to pull a file from an S3 bucket in another AWS account. Both accounts live under the same organisation. The bucket in account A has the following policy
+
+
+
+
+
+
+Account B has the Amplify application with a service role attached and the following 
+amplify.yml
+:
+
+
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - aws s3api get-object --bucket bucket-account-a --key file.txt ./file.txt
+        - yarn install
+    build:
+      commands:
+        - yarn run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+
+
+
+The build fails outputting the following error: 
+An error occurred (AccessDenied) when calling the GetObject operation: Access Denied
+. I have seen that the service role assigned is being assumed and refers to account B, so I am not sure what I am missing or what is stopping this from working. I have tried removing the condition on the above policy and updating the 
+Principal
+ on the S3 bucket policy to the assumed role (
+arn:aws:sts::bbbbbbbbbbbb:assumed-role/staging-amplify-service-role/BuildSession
+), the Amplify service, even just without the account id (
+arn:aws:iam::bbbbbbbbbbbb:root
+), all producing the same error.
+
+
+Has anyone tried something similar?

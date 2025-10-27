@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_4cb593dd",
+      "Effect": "allow",
+      "Action": [
+        "logs:PutLogEvents",
+        "logs:CreateLogStream"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_0567f2f3",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_1af6e0ac",
+      "Effect": "allow",
+      "Action": "logs:CreateLogStream",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_eb44d3ef",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_30528d76",
+      "Effect": "allow",
+      "Action": "logs:CreateLogStream",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

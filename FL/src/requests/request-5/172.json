@@ -1,0 +1,52 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e67f0b23",
+      "Effect": "allow",
+      "Action": [
+        "iam:ChangePassword",
+        "iam:ListSigningCertificates"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::*:user/${aws:username}"
+      ]
+    },
+    {
+      "id": "allow_80738653",
+      "Effect": "allow",
+      "Action": [
+        "iam:GetAccessKeyLastUsed",
+        "iam:GetLoginProfile"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "deny_6442d280",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_448e1b09",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_b89ae527",
+      "Effect": "allow",
+      "Action": [
+        "iam:ListSSHPublicKeys",
+        "iam:GetSSHPublicKey"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::*:user/${aws:username}"
+      ]
+    }
+  ]
+}

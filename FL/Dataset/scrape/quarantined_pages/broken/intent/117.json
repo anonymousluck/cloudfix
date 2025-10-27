@@ -1,0 +1,8 @@
+I have a code build leading to EKS. When it calls this particular command "CREDENTIALS=$(aws sts assume-role --role-arn arn:aws:iam::3318******:role/EksWorkshopCodeBuildKubectlRole  --role-session-name code-build --duration-seconds 900)" I get an error
+"An error occurred (AccessDenied) when calling the AssumeRole operation: User: arn:aws:sts::331*****:assumed-role/codebuild-kubernetes-eks-service-role/AWSCodeBuild-31746234-c1a9-4fe9-9cbc-b0d54264613e is not authorized to perform: sts:AssumeRole on resource: arn:aws:iam::331879450537:role/EksWorkshopCodeBuildKubectlRole"
+
+
+My code build trusted relationship looks like
+
+I have an STS policy attached to my user, group, codebuils service role and eksworkshopkubectlrole.
+What could I be doing wrong

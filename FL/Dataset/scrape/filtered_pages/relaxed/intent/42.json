@@ -1,0 +1,61 @@
+Hello guys, I need help on this matter. As the title says I am getting an error after I deployed my project. It is working fine in my local laptop. The language I used is python. So I made web page using python framework to grab some data from aws iot core and it is working as expected after this test I deploy it on Render. However, this error appears. I ask Render support but he says it is not on the server side. It is an exception thrown by awsIotSDK.
+
+
+
+
+raise subscribeTimeoutException()
+Aug 26 11:14:39 AM  AWSIoTPythonSDK.exception.AWSIoTExceptions.subscribeTimeoutException
+
+
+
+
+So I search the web for troubleshooting, I found some post to changed the policy attached to the thing that is connected in aws iot core.
+so my current policy looks like this below.
+
+
+
+
+
+
+and nothing changed. it still throws an error.
+
+
+As for my python code.
+
+
+myAWSIoTMQTTClient = AWSIoTPyMQTT.AWSIoTMQTTClient(CLIENT_ID)
+myAWSIoTMQTTClient.configureEndpoint(ENDPOINT, 8883)
+myAWSIoTMQTTClient.configureCredentials(PATH_TO_ROOT, PATH_TO_KEY, PATH_TO_CERT)
+myAWSIoTMQTTClient.configureMQTTOperationTimeout(30)
+myAWSIoTMQTTClient.connect()
+
+
+
+I hope someone can help me in this matter, because I've been searching the net and all the solution I have found is not working for me.
+
+
+by the way below is the traceback:
+
+
+Subscribe timed out
+Aug 26 11:27:09 AM  [2023-08-26 03:27:09,750] ERROR in app: Exception on /_dash-update-component [POST]
+Aug 26 11:27:09 AM  Traceback (most recent call last):
+Aug 26 11:27:09 AM    File "/opt/render/project/src/.venv/lib/python3.10/site-packages/flask/app.py", line 2529, in wsgi_app
+Aug 26 11:27:09 AM      response = self.full_dispatch_request()
+Aug 26 11:27:09 AM    File "/opt/render/project/src/.venv/lib/python3.10/site-packages/flask/app.py", line 1825, in full_dispatch_request
+Aug 26 11:27:09 AM      rv = self.handle_user_exception(e)
+Aug 26 11:27:09 AM    File "/opt/render/project/src/.venv/lib/python3.10/site-packages/flask/app.py", line 1823, in full_dispatch_request
+Aug 26 11:27:09 AM      rv = self.dispatch_request()
+Aug 26 11:27:09 AM    File "/opt/render/project/src/.venv/lib/python3.10/site-packages/flask/app.py", line 1799, in dispatch_request
+Aug 26 11:27:09 AM      return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+Aug 26 11:27:09 AM    File "/opt/render/project/src/.venv/lib/python3.10/site-packages/dash/dash.py", line 1264, in dispatch
+Aug 26 11:27:09 AM      ctx.run(
+Aug 26 11:27:09 AM    File "/opt/render/project/src/.venv/lib/python3.10/site-packages/dash/_callback.py", line 437, in add_context
+Aug 26 11:27:09 AM      output_value = func(*func_args, **func_kwargs)  # %% callback invoked %%
+Aug 26 11:27:09 AM    File "/opt/render/project/src/src/app.py", line 154, in update_output
+Aug 26 11:27:09 AM      myAWSIoTMQTTClient.subscribe(wincc_Level_Tag, 1, customCallback)
+Aug 26 11:27:09 AM    File "/opt/render/project/src/.venv/lib/python3.10/site-packages/AWSIoTPythonSDK/MQTTLib.py", line 703, in subscribe
+Aug 26 11:27:09 AM      return self._mqtt_core.subscribe(topic, QoS, callback)
+Aug 26 11:27:09 AM    File "/opt/render/project/src/.venv/lib/python3.10/site-packages/AWSIoTPythonSDK/core/protocol/mqtt_core.py", line 306, in subscribe
+Aug 26 11:27:09 AM      raise subscribeTimeoutException()
+Aug 26 11:27:09 AM  AWSIoTPythonSDK.exception.AWSIoTExceptions.subscribeTimeoutException

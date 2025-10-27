@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Time Analysis Comparison Across Request Sizes}
+\label{tab:time_comparison}
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Req} & \textbf{Policies} & \textbf{Avg} & \textbf{Avg Time} & \textbf{SMT} & \textbf{LLM} & \textbf{Success} \\
+\textbf{Size} & & \textbf{Iter.} & \textbf{(s)} & \textbf{Time (s)} & \textbf{Time (s)} & \textbf{Rate (\%)} \\
+\midrule
+10 & 282 & 1.80 & 136.5 & 0.27 & 136.2 & 84.0\% \\
+20 & 282 & 2.85 & 456.3 & 0.44 & 455.9 & 60.3\% \\
+30 & 282 & 3.08 & 547.3 & 1.11 & 546.2 & 54.3\% \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,32 @@
+hi sir,
+
+
+I have to use iot core device advisor to get the aws iot core qualification, now I meet many problem, so I'm trying to solve it one by one.
+
+
+I'm following the 
+document
+ to set policy of IAM in
+IAM-->Policies-->Create policy
+
+
+I modify the example contents to my account Id
+
+
+
+
+
+
+
+now the policy editor return me some red error word:
+
+
+Ln 4, Col 8
+Missing Resource: Add a Resource or NotResource element to the policy statement. Learn more
+
+
+Ln 7, Col 25
+Unsupported Principal: The policy type IDENTITY_POLICY does not support the Principal element. Remove the Principal element. Learn more
+
+
+what's wrong with my json?

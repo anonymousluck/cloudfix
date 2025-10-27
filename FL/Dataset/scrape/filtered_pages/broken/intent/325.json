@@ -1,0 +1,37 @@
+I've set up a React+Cloudfront+S3 SPA. Cloudfront has an OAC and the S3 bucket policy only allows CF to access the contents of the bucket. All public access is blocked. The bucket is configured for static website 
+enabled
+. There is an 
+index.html
+ and 
+error.html
+ configured and those resources exist in the bucket with those names.
+
+
+Bucket Policy
+
+
+
+
+
+
+Problem
+
+
+All of this works. I can visit my CF url and see the react application. However, if I attempt to access some non-existent resource in the bucket (for example 
+https://xyz.cloudfront.net/foo
+, I get the following error:
+
+
+
+<Error>
+  <Code>AccessDenied</Code>
+  <Message>Access Denied</Message>
+  <RequestId>VZEPZ2TPB5HX0W2V</RequestId>
+  <HostId>2MmWdKGa13rUK0YTsQ+5GJPJnEgzJNvuLV+qL0Soc/taJpMaV4yd2+gVdvfIa5cjVtiZwNgUXDg=</HostId>
+</Error>
+
+
+
+Why is this not returning my 
+error.html
+, as configured for the S3 bucket?

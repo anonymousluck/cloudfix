@@ -1,0 +1,29 @@
+Following the tutorial for 
+IoT Ingestion to Sitewise - Step 7
+, the Sitewise action creates an unworkable policy if there are substitutions in the property alias (as described in the tutorial).  Regardless of whether you create a fresh role, or assign to an existing role, the policy is unworkable because it doesn't take account of the substitution in the policy alias.
+
+
+
+
+
+
+
+Elsewhere in the docs where it describes 
+how to construct rules
+ and talks about a more liberal policy.  If the generated policy is left in place, no data will be ingested (set a MQTT topic or log for the error action in the rule and you'll see the failure messages relating to no matching policy.
+
+
+If you modify the policy to have a more liberal policy, then the ingestion will work.
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "iotsitewise:BatchPutAssetPropertyValue",
+            "Resource": "*"
+        }
+    ]
+}

@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_09fc5235",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_23f8a9dc",
+      "Effect": "allow",
+      "Action": "cognito-identity:GetCredentialsForIdentity",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_4da66346",
+      "Effect": "allow",
+      "Action": "cognito-identity:GetCredentialsForIdentity",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "deny_94b1e374",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_2b82360e",
+      "Effect": "allow",
+      "Action": "cognito-identity:GetCredentialsForIdentity",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    }
+  ]
+}

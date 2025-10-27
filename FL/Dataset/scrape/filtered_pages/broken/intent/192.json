@@ -1,0 +1,123 @@
+Hi, Im trying to create manual snapshots from my Opensearch cluster. I followed the procedure in 
+documentation
+ and some posts without success.
+
+
+This is what Im doing:
+
+
+
+
+
+
+Create TheSnapshotRole:
+
+
+ 	
+
+
+
+
+
+
+
+TheSnapshotRole Trust relationship:
+
+
+ {
+ 	"Version": "2012-10-17",
+ 	"Statement": [
+ 		{
+ 			"Effect": "Allow",
+ 			"Principal": {
+ 				"Service": "es.amazonaws.com"
+ 			},
+ 			"Action": "sts:AssumeRole"
+ 		}
+ 	]
+ }
+
+
+
+
+
+
+
+I created an IAM user (snapuser), and attach it this policy:
+
+
+ {
+ 	"Version": "2012-10-17",
+ 	"Statement": [
+ 		{
+ 			"Effect": "Allow",
+ 			"Action": "iam:PassRole",
+ 			"Resource": "arn:aws:iam::yyyyy:role/TheSnapshotRole"
+ 		},
+ 		{
+ 			"Effect": "Allow",
+ 			"Action": "es:ESHttpPut",
+ 			"Resource": "arn:aws:es:us-east-2:yyyyy:domain/opensearch-yyyyy/*"
+ 		}
+ 	]
+ }
+
+
+
+
+
+
+
+In Opensearch console Security - Roles, I created a new role with this permissions:
+
+
+ cluster:admin/snapshot/create
+ cluster:admin/snapshot/get
+ cluster:admin/snapshot/status
+ cluster:admin/snapshot/delete
+ cluster:admin/repository/delete
+ cluster:admin/repository/get
+ cluster:admin/repository/put
+ cluster:admin/repository/verify
+
+
+
+
+
+
+
+Enter Roles - Mapped Users, and add to backend roles, mi created IAM user (snapuser) ARN:
+
+
+ arn:aws:iam::yyyyy:user/snapuser
+
+
+
+
+
+
+
+Try to create the repository through python script and authenticating with the created user (snapuser) and AWS credetials and get this error:
+
+
+ {
+    "error":{
+ 	  "root_cause":[
+ 		 {
+ 			"type":"security_exception",
+ 			"reason":"no permissions for [cluster:admin/repository/put] and User [name=arn:aws:iam::yyyyy:user/snapuser, backend_roles=[], requestedTenant=null]"
+ 		 }
+ 	  ],
+ 	  "type":"security_exception",
+ 	  "reason":"no permissions for [cluster:admin/repository/put] and User [name=arn:aws:iam::yyyyy:user/snapuser, backend_roles=[], requestedTenant=null]"
+    },
+    "status":403
+ }
+
+
+
+
+
+
+
+Any idea how to solve this issue?

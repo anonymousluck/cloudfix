@@ -1,0 +1,48 @@
+{
+  "Requests": [
+    {
+      "id": "deny_727aa882",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_6a23e25d",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::mybucket",
+      "Principal": "arn:aws:iam::33333333:role/service-role/my_authRole"
+    },
+    {
+      "id": "allow_80fd942b",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObjectAttributes",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": "arn:aws:s3:::mybucket/data.json",
+      "Principal": "arn:aws:iam::33333333:role/service-role/my_authRole"
+    },
+    {
+      "id": "allow_31fbb7e5",
+      "Effect": "allow",
+      "Action": "s3:GetObjectVersion",
+      "Resource": "arn:aws:s3:::mybucket/document.txt",
+      "Principal": "arn:aws:iam::33333333:role/service-role/my_authRole"
+    },
+    {
+      "id": "allow_4718c36c",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObjectAttributes",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::mybucket/data.json",
+        "arn:aws:s3:::mybucket/document.txt"
+      ],
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    }
+  ]
+}

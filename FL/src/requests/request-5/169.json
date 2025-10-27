@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_5643afe4",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::<<my_bucket_name>>"
+    },
+    {
+      "id": "allow_bfb805d3",
+      "Effect": "allow",
+      "Action": "logs:CreateLogStream",
+      "Resource": [
+        "arn:aws:s3:::textract-adapters-us-east-1-<<auto_created_id_2>>/data.json",
+        "arn:aws:s3:::<<my_bucket_name>>/data.json"
+      ]
+    },
+    {
+      "id": "allow_02c700be",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObject",
+        "textract:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::textract-adapters-us-east-1-<<auto_created_id_2>>/data.json",
+        "arn:aws:s3:::textract-console-us-east-1-<<auto_created_id_1>>/data.json"
+      ]
+    },
+    {
+      "id": "deny_6df7dc7c",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::<<my_bucket_name>>"
+    },
+    {
+      "id": "allow_9ef160aa",
+      "Effect": "allow",
+      "Action": [
+        "logs:FilterLogEvents",
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": "arn:aws:s3:::textract-adapters-us-east-1-<<auto_created_id_2>>/data.json"
+    }
+  ]
+}

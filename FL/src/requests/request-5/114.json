@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_a8fb5b93",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::<bucket-name>/config.xml"
+    },
+    {
+      "id": "allow_9a54fc8e",
+      "Effect": "allow",
+      "Action": "s3:PutObjectAcl",
+      "Resource": [
+        "arn:aws:s3:::<bucket-name>/document.txt",
+        "arn:aws:s3:::<bucket-name>/config.xml"
+      ]
+    },
+    {
+      "id": "allow_7aa60940",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketLogging",
+        "s3:GetBucketLogging"
+      ],
+      "Resource": [
+        "arn:aws:s3:::<bucket-name>/config.xml",
+        "arn:aws:s3:::<bucket-name>/document.txt"
+      ]
+    },
+    {
+      "id": "allow_7b109380",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:GetBucketTagging"
+      ],
+      "Resource": "arn:aws:s3:::<bucket-name>/document.txt"
+    },
+    {
+      "id": "deny_e1809a46",
+      "Effect": "deny",
+      "Action": "s3:DeleteBucketPolicy",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    }
+  ]
+}

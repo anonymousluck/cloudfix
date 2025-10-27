@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::<ACCOUNTA>:user/techuser"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "<EXTERNALID>"
+        }
+      },
+      "Sid": "statement1"
+    },
+    {
+      "Effect": "Deny",
+      "Action": "*",
+      "Resource": "*",
+      "Condition": {
+        "NotIpAddress": {
+          "aws:SourceIp": "10.0.0.0/16"
+        },
+        "Bool": {
+          "aws:ViaAWSService": "false"
+        }
+      },
+      "Sid": "statement2"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_cdca3e76",
+      "Effect": "allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Connect"
+      ],
+      "Resource": "arn:aws:iot:us-east-1:XXXXXXXXXXX:client/document.txt"
+    },
+    {
+      "id": "allow_e5afdc3e",
+      "Effect": "allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:iot:us-east-1:XXXXXXXXXXX:client/data.json"
+    },
+    {
+      "id": "deny_6d2175c6",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:iot:us-east-1:XXXXXXXXXXX:client/document.txt"
+    },
+    {
+      "id": "deny_77553f32",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:iot:us-east-1:XXXXXXXXXXX:client/data.json"
+    },
+    {
+      "id": "allow_4cb293fd",
+      "Effect": "allow",
+      "Action": "iot:Publish",
+      "Resource": "arn:aws:iot:us-east-1:XXXXXXXXXXX:client/document.txt"
+    }
+  ]
+}

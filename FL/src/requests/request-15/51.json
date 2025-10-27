@@ -1,0 +1,184 @@
+{
+  "Requests": [
+    {
+      "id": "allow_c73fec77",
+      "Effect": "allow",
+      "Action": "athena:BatchGetQueryExecution",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "allow_992ba084",
+      "Effect": "allow",
+      "Action": "logs:DeleteLogStream",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::123456789012:user/test-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "deny_2fc4262f",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3:::denied-bucket-0/file-0.txt",
+      "Principal": "ssm-incidents.amazonaws.com",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_1a80ee23",
+      "Effect": "allow",
+      "Action": "iam:AddUserToGroup",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::123456789012:role/forbidden-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_62f1de09",
+      "Effect": "allow",
+      "Action": "kms:EnableKey",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_1a31d528",
+      "Effect": "allow",
+      "Action": "guardduty:DeleteIPSet",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::123456789012:user/test-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "deny_29061b8d",
+      "Effect": "deny",
+      "Action": "sqs:ReceiveMessage",
+      "Resource": "arn:aws:s3:::denied-bucket-1/file-1.txt",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_bed02674",
+      "Effect": "allow",
+      "Action": "config:DeleteConfigRule",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "deny_13acdaa8",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "authorized/arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager/file.txt",
+      "Principal": "arn:aws:iam::111222333444:user/david",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI"
+        }
+      }
+    },
+    {
+      "id": "allow_60de96fa",
+      "Effect": "allow",
+      "Action": "sqs:ListDeadLetterSourceQueues",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::123456789012:user/test-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "allow_05bfa0f5",
+      "Effect": "allow",
+      "Action": "iam:GetRole",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_e18d14ed",
+      "Effect": "allow",
+      "Action": "sagemaker:CreateNotebookInstance",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager",
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "deny_97f20016",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "forbidden-arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager-specific",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI"
+        }
+      }
+    },
+    {
+      "id": "deny_9d370f69",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:sns:ap-south-1:xxxxxxxxx:AWSChatBot-Incident-Manager-forbidden-resource",
+      "Principal": "ssm-incidents.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "deny_7f28f4cd",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::denied-bucket-2/file-2.txt",
+      "Principal": "arn:aws:iam::123456789012:user/test-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    }
+  ]
+}

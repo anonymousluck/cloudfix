@@ -1,0 +1,5 @@
+We received an email with an IAM Security notification saying "Your role(s) that currently do not evaluate the token.actions.githubusercontent.com:sub condition key are listed in the "Affected resources" tab."
+Looking at the roles, they both 
+do
+ evaluate the key.
+Could anyone explain what is wrong with that Trust Policy of one of the flagged roles?

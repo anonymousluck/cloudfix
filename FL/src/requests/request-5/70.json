@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "deny_61e54cfd",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:iam::1234:policy/AmazonBedrockS3PolicyForKnowledgeBase_xyz"
+    },
+    {
+      "id": "allow_f42e5f40",
+      "Effect": "allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::1234:policy/AmazonBedrockS3PolicyForKnowledgeBase_xyz"
+    },
+    {
+      "id": "allow_a088b1d1",
+      "Effect": "allow",
+      "Action": [
+        "iam:GetPolicy",
+        "iam:AttachRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::1234:policy/AmazonBedrockS3PolicyForKnowledgeBase_xyz"
+    },
+    {
+      "id": "deny_646e3d04",
+      "Effect": "deny",
+      "Action": "iam:AttachRolePolicy",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_a8e2362a",
+      "Effect": "allow",
+      "Action": "iam:CreatePolicy",
+      "Resource": "arn:aws:iam::1234:policy/AmazonBedrockS3PolicyForKnowledgeBase_xyz"
+    }
+  ]
+}

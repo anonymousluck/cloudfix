@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_5f491946",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::uploads/images/data.json",
+        "arn:aws:s3:::uploads/images/document.txt"
+      ]
+    },
+    {
+      "id": "allow_3edecd21",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::uploads/images/data.json"
+    },
+    {
+      "id": "deny_91af9959",
+      "Effect": "deny",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_514c62d3",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::uploads/images/document.txt"
+    },
+    {
+      "id": "deny_59f929ed",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::uploads/images/document.txt"
+    }
+  ]
+}

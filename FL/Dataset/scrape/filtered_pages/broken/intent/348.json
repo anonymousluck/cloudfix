@@ -1,0 +1,335 @@
+Take the following CloudFormation stack which configures an 
+AWS::SQS::QueueInlinePolicy
+:
+
+
+SandboxTestQueueInlinePolicy
+:
+
+
+  
+Type
+:
+ AWS
+:
+:
+SQS
+:
+:
+QueueInlinePolicy
+
+  
+Properties
+:
+
+
+    
+Queue
+:
+ 
+!Ref
+ SandboxTestQueue
+
+    
+PolicyDocument
+:
+
+
+      
+Version
+:
+ 
+"2012-10-17"
+
+
+      
+# Note: referenced resources "SandboxTestQueue" and "SandboxTestTopic" are defined in this template, but redacted from this example
+
+
+      
+Statement
+:
+
+
+        
+-
+
+
+          
+Resource
+:
+ 
+!GetAtt
+ SandboxTestQueue.Arn
+
+          
+Action
+:
+ SQS
+:
+SendMessage
+
+          
+Effect
+:
+ Allow
+
+          
+Principal
+:
+ 
+"*"
+
+
+          
+Condition
+:
+
+
+            
+ArnEquals
+:
+
+
+              
+aws:SourceArn
+:
+ 
+!Ref
+ SandboxTestTopic
+
+
+Now, imagine an 
+AWS::SQS::QueuePolicy
+ is added which (accidentally) references the same underlying queue. For example:
+
+
+  
+# (...)
+
+
+
+
+  
+SandboxTestQueuePolicyNew
+:
+
+
+    
+Type
+:
+ AWS
+:
+:
+SQS
+:
+:
+QueuePolicy
+
+    
+Properties
+:
+
+
+      
+Queues
+:
+
+
+        
+-
+ 
+Ref
+:
+ SandboxTestQueue 
+# <--- oops! we're referencing the same queue as our existing `QueueInlinePolicy`
+
+
+      
+PolicyDocument
+:
+
+
+        
+Version
+:
+ 
+"2012-10-17"
+
+
+        
+# Note: the statement here differs from the original, referencing SQS queue 2 / SNS topic 2 (redacted from this example)
+
+
+        
+Statement
+:
+
+
+          
+Action
+:
+ SQS
+:
+SendMessage
+
+          
+Effect
+:
+ Allow
+
+          
+Resource
+:
+ 
+!GetAtt
+ SandboxTestQueue2.Arn
+
+          
+Principal
+:
+ 
+'*'
+
+
+          
+Condition
+:
+
+
+            
+ArnEquals
+:
+
+
+              
+aws:SourceArn
+:
+ 
+!Ref
+ SandboxTestTopic2
+
+
+Once the stack has been updated, 
+the original 
+QueueInlinePolicy
+ is replaced
+ and running drift detection reports the 
+QueueInlinePolicy
+ as being "IN SYNC"
+, despite the policy being different.
+
+
+Now, if you update the stack's 
+QueuePolicy
+ to reference a different queue (i.e. update the ref: 
+- Ref: SomeOtherQueue
+), the original queue's policy will revert to the default:
+
+
+{
+
+
+  
+"Version"
+:
+ 
+"2012-10-17"
+,
+
+
+  
+"Id"
+:
+ 
+"arn:aws:sqs:<redacted>:sandbox-dev-sqs-test/SQSDefaultPolicy"
+
+
+}
+
+
+Running drift detection now (correctly) marks the 
+QueueInlinePolicy
+ as "DELETED".
+
+
+
+
+I am trying to understand how to protect a 
+QueueInlinePolicy
+ from being overwritten by a 
+QueuePolicy
+ in this way.
+
+
+What I've tried:
+
+
+
+
+Assigning a 
+stack policy
+ to 
+deny ALL updates to ALL resources
+:
+
+
+
+
+
+
+
+
+
+Setting 
+Deletion
+ and 
+UpdateReplace
+ policies on the 
+QueueInlinePolicy
+ resource:
+
+
+
+
+  
+SandboxTestQueuePolicy
+:
+
+
+    
+Type
+:
+ AWS
+:
+:
+SQS
+:
+:
+QueueInlinePolicy
+
+    
+DeletionPolicy
+:
+ Retain
+
+    
+UpdateReplacePolicy
+:
+ Retain
+
+    
+Properties
+:
+
+
+      
+# (...)
+
+
+Neither of these attempts had any effect and the 
+QueuePolicy
+ continued to delete/replace the existing 
+QueueInlinePolicy
+ - 
+is this a bug?

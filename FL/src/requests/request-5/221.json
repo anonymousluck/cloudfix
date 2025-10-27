@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_661a6825",
+      "Effect": "allow",
+      "Action": [
+        "ses:SendBulkEmail",
+        "ses:SendEmail"
+      ],
+      "Resource": "arn:aws:ses:eu-west-3:111222333444configuration-set/config.xml"
+    },
+    {
+      "id": "deny_82658b91",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:ses:eu-west-3:111222333444:template/config.xml"
+    },
+    {
+      "id": "allow_f67b7c67",
+      "Effect": "allow",
+      "Action": [
+        "ses:SendBulkEmail",
+        "ses:SendEmail"
+      ],
+      "Resource": "arn:aws:ses:eu-west-3:111222333444configuration-set/data.json"
+    },
+    {
+      "id": "deny_17555f80",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:ses:eu-west-3:111222333444configuration-set/data.json"
+    },
+    {
+      "id": "allow_16a1cb11",
+      "Effect": "allow",
+      "Action": [
+        "ses:SendEmail",
+        "ses:SendBulkEmail"
+      ],
+      "Resource": "arn:aws:ses:eu-west-3:111222333444:template/document.txt"
+    }
+  ]
+}

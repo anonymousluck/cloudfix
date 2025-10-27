@@ -1,0 +1,20 @@
+I enables IAM identity centre in the root account of my organisation and created a user with the AdministratorAccess permission set.
+
+
+After using the Access portal to log in as that user I get the same "complete registration" modal view when trying to view the VPC or IAM resource.
+
+
+Other resources like S3, DynamoDB etc. seem to be accessible.
+
+
+I'm just testing a terraform deployment to provision and new VPC and I can neither view the VPC resource in the console or provision the resource via terraform.
+
+
+The policy is the standard:
+
+
+
+
+
+
+What is causing this issue?

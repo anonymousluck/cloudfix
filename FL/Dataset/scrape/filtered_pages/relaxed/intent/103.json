@@ -1,0 +1,4 @@
+We would like to restrict the via tags or any other way for our developers to access only limited secrets via aws secrets manager.
+
+The error is below:
+Failed to fetch a list of secrets.

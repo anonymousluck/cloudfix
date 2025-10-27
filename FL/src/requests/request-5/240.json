@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_f3c45228",
+      "Effect": "allow",
+      "Action": "ecs:ListClusters",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_c9ce2669",
+      "Effect": "allow",
+      "Action": "ecs:ListClusters",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "deny_8854abc2",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_aaa9616c",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_e73b12c4",
+      "Effect": "allow",
+      "Action": "ecs:ListClusters",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    }
+  ]
+}

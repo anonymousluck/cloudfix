@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_0acf683b",
+      "Effect": "allow",
+      "Action": "lex:GetBot",
+      "Resource": "arn:aws:lex:us-east-1:1234567890:bot/ABCDEFG",
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized"
+    },
+    {
+      "id": "allow_0aeccd43",
+      "Effect": "allow",
+      "Action": "lex:UpdateBot",
+      "Resource": "arn:aws:lex:us-east-1:1234567890:bot/ABCDEFG",
+      "Principal": "arn:aws:iam:1234567890:user/lastname.firstname"
+    },
+    {
+      "id": "deny_49073106",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:lex:us-east-1:1234567890:bot/ABCDEFG",
+      "Principal": "arn:aws:iam:1234567890:user/lastname.firstname"
+    },
+    {
+      "id": "deny_b53b5f07",
+      "Effect": "deny",
+      "Action": "lex:GetBot",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    },
+    {
+      "id": "allow_a8d11ea3",
+      "Effect": "allow",
+      "Action": [
+        "lex:UpdateBot",
+        "lex:CreateSlot"
+      ],
+      "Resource": "arn:aws:lex:us-east-1:1234567890:bot/ABCDEFG",
+      "Principal": "arn:aws:iam:1234567890:user/lastname.firstname"
+    }
+  ]
+}

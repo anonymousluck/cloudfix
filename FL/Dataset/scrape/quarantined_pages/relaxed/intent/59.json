@@ -1,0 +1,78 @@
+I have created OIDC iDP
+
+
+I have created role with the following trust policy
+
+
+It always fails: Failed to assume role arn:aws:iam::111:role/keycloak-role: AccessDenied - Not authorized to perform sts:AssumeRoleWithWebIdentity
+
+
+If I remove 2nd (bool) condition - everything works properly.
+
+
+
+
+
+
+
+So it seems that current IAM implementation allows me to use only
+
+
+
+
+aud
+
+
+sub
+
+
+email
+
+
+
+
+fields to filter the access and nothing else.
+
+
+Questions
+
+
+
+
+So I have roles within the keycloak client, how do I filter access based on roles assigned? They are exported in the access and ID tokens, but nothing has worked for me so far.
+
+
+I have a conclusion that if I need to provide AssumeRoleWithWebIdentity for the role - I need to have N clients (i.e. one per group of users), which is confusing to manage.
+
+
+
+
+Am I missing something?
+
+
+I have groups
+
+
+
+
+devops
+
+
+developers
+
+
+
+
+and they should be able to assume different IAM roles via sts:AssumeRoleWithWebIdentity and I hoped to filter their access at the trust policy level, by filtering with something like this
+
+
+"Condition": {
+    "StringEquals": {
+        "keycloak.site.com/realms/test-realm:aud": "client-aws"
+    },
+    "ForAnyValue:StringEquals": {
+        "keycloak.site.com/realms/test-realm:roles": [
+            "devops-role"
+        ]
+    }
+}

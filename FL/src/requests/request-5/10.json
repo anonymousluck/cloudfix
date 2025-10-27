@@ -1,0 +1,49 @@
+{
+  "Requests": [
+    {
+      "id": "deny_c8afd4d3",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_81fb595a",
+      "Effect": "allow",
+      "Action": [
+        "amplify:UpdateBranch",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_e0aa601e",
+      "Effect": "allow",
+      "Action": [
+        "amplify:ListBackendEnvironments",
+        "amplify:CreateBranch"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "deny_a3dc23b8",
+      "Effect": "deny",
+      "Action": "amplify:UpdateWebhook",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_d34271f1",
+      "Effect": "allow",
+      "Action": "amplify:ListDomainAssociations",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    }
+  ]
+}

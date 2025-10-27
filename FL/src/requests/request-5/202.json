@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_b46c953f",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_feb77bcf",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_9c922bef",
+      "Effect": "allow",
+      "Action": "ecr:GetDownloadUrlForLayer",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "allow_c8391e9a",
+      "Effect": "allow",
+      "Action": [
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:DescribeImages"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_539ff40a",
+      "Effect": "allow",
+      "Action": [
+        "ecr:DescribeImages",
+        "ecr:BatchGetImage"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    }
+  ]
+}

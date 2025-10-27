@@ -1,0 +1,73 @@
+{
+  "Requests": [
+    {
+      "id": "allow_dca2c842",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::vpc-flow-log-sudsark/config.xml",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_d0a3e2c6",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::vpc-flow-log-sudsark/document.txt",
+      "Principal": "arn:aws:iam::444555666777:user/external-user",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "id": "deny_9297787f",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::vpc-flow-log-sudsark/data.json",
+      "Principal": "delivery.logs.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-acl": "bucket-owner-full-control",
+          "aws:SourceAccount": "333344445555"
+        }
+      }
+    },
+    {
+      "id": "allow_94e745dc",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::vpc-flow-log-sudsark/data.json",
+        "arn:aws:s3:::vpc-flow-log-sudsark/config.xml"
+      ],
+      "Principal": "delivery.logs.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-acl": "bucket-owner-full-control",
+          "aws:SourceAccount": "333344445555"
+        }
+      }
+    },
+    {
+      "id": "allow_c5f998ac",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::vpc-flow-log-sudsark/document.txt",
+        "arn:aws:s3:::vpc-flow-log-sudsark/data.json"
+      ],
+      "Principal": "delivery.logs.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-acl": "bucket-owner-full-control",
+          "aws:SourceAccount": "333344445555"
+        }
+      }
+    }
+  ]
+}

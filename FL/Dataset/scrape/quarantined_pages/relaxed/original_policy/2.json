@@ -1,0 +1,13 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::767398046214:oidc-provider/mytenant.auth0app.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Sid": "statement1"
+    }
+  ]
+}

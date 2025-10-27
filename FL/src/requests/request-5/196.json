@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_7ea46b32",
+      "Effect": "allow",
+      "Action": "iot:GetObject",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_c965e851",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_9507890e",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_2ab0d97a",
+      "Effect": "allow",
+      "Action": "iot:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_eda6cb44",
+      "Effect": "allow",
+      "Action": "iot:GetObject",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    }
+  ]
+}

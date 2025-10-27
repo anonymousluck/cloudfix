@@ -1,0 +1,19 @@
+Hello,
+
+
+I have a JWT issued by an IDP with 
+roles=["role1"]
+, I would like to match an IAM role based on that JWT role, I tried:
+
+
+
+
+
+
+It seems like the 
+roles
+ claim is not propogated, as it never matches with ForAnyValue and matches everything with ForAllValues. Does anyone have an experience of how to match based on on roles claim? I do not have issue with other string based claims.
+
+
+Regards,
+Alon

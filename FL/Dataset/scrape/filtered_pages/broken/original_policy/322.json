@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "batch:SubmitJob",
+      "Resource": [
+        "arn:aws:batch:[account ID]:job-definition/[job definition name]:*",
+        "arn:aws:batch:[account ID]:job/[job name]",
+        "arn:aws:batch:[account ID]:job-queue/[job queue name]"
+      ],
+      "Sid": "statement1"
+    }
+  ]
+}

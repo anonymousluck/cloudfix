@@ -1,0 +1,51 @@
+I'm trying to set up an AWS S3 bucket for secure image handling on my website. Users should be able to upload, view, and print images. The bucket's public access is blocked to prevent direct access to the object URLs.
+
+
+Current Setup:
+
+
+Bucket Policy:
+
+
+
+
+
+
+CORS configuration :
+
+
+[
+    {
+        "AllowedHeaders": ["*"],
+        "AllowedMethods": ["GET", "HEAD", "POST", "PUT"],
+        "AllowedOrigins": ["https://example.com"],
+        "ExposeHeaders": ["ETag"],
+        "MaxAgeSeconds": 3000
+    }
+]
+
+
+
+Issue:
+
+
+When users view images on the website, everything functions correctly. However, when trying to print these images, the browser console shows a CORS error:
+
+
+Access to image at '
+https://mybucket.s3.ap-south-1.amazonaws.com/test/user-001/testimage.jpg
+' from origin '
+https://example.com
+' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+
+Goal:
+
+
+I want users to:
+
+
+Upload images through the website.
+
+
+View and print these images while ensuring the S3 bucket's public access is blocked

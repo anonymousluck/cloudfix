@@ -1,0 +1,35 @@
+In my AWSMarketplace product listing I get always a "FAILD" status in case of:
+
+
+                    "ErrorCode": "ASSET_ACCESS_EXCEPTION",
+                    "ErrorMessage": "We don't have the necessary permissions to read the contents of the specified component ARN [arn:aws:imagebuilder:us-east-1::component//1]. Ensure that the IAM access role provided in the API input has the required read 
+permissions."
+
+
+
+The provided role inside the change-set has the inlinepolicy:
+
+
+
+
+
+
+And with Trust relationships
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ec2.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+What is wrong here with my role?

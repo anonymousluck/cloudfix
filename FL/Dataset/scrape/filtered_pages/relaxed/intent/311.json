@@ -1,0 +1,8 @@
+Hi, In the documentation to enable ELB logs, it is stated that I should add the following policy to my S3 bucket :
+
+
+
+
+
+
+I'm a bit confused by the "Principal" field. It seems to allow the root user of a global elb account. Who does this policy actually allow to access the bucket ? Does that mean anyone can send their elb logs to my bucket provided they know the arn ? Or is it only for my aws account ?

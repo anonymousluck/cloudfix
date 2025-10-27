@@ -1,0 +1,47 @@
+Hi, I have a docker container image lambda that needs to download a file from S3 and process it, next part of the code:
+
+
+s3 = boto3.client('s3', region_name="us-east-2")
+s3.download_file(Bucket=bucket, Key=key_file, Filename=local_file)
+# --> Process the file <-- #
+
+
+
+I create a role and a trust policy, and attach them to the lambda:
+
+
+
+
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "lambda.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+And Im getting the error:
+
+
+[ERROR] ClientError: An error occurred (400) when calling the HeadObject operation: Bad Request
+
+
+
+
+But, when i add an user credentials directly in the code (like next line of code), it works well.
+
+
+ s3 = boto3.client('s3', region_name="us-east-2", aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'), aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'))
+
+
+
+Is there I way to solve this issue without including credenciatials to code?

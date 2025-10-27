@@ -1,0 +1,71 @@
+{
+  "Requests": [
+    {
+      "id": "allow_dd41b702",
+      "Effect": "allow",
+      "Action": "s3:GetObjectVersion",
+      "Resource": "arn:aws:s3:::${transfer:HomeBucket}",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "${transfer:HomeFolder}/*",
+            "${transfer:HomeFolder}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_1394eb5d",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:s3:::${transfer:HomeDirectory}/document.txt",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "id": "deny_77027382",
+      "Effect": "deny",
+      "Action": "s3:GetObjectACL",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "${transfer:HomeFolder}/*",
+            "${transfer:HomeFolder}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_aba34a66",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetObjectACL"
+      ],
+      "Resource": "arn:aws:s3:::${transfer:HomeBucket}",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "allow_1da60f68",
+      "Effect": "allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::${transfer:HomeDirectory}/config.xml",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "${transfer:HomeFolder}/*",
+            "${transfer:HomeFolder}"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyEC2AuxilliaryInfraOwnerTag",
+      "Effect": "Deny",
+      "Action": [
+        "autoscaling:CreateAutoScalingGroup"
+      ],
+      "Resource": [
+        "arn:aws:autoscaling:*:*:autoScalingGroup/*"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/InfraOwner": "true"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "Requests": [
+    {
+      "id": "deny_e028c7dd",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/S3-Uploads-Media/document.txt",
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    },
+    {
+      "id": "allow_1a9010af",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:ListBucketVersions"
+      ],
+      "Resource": [
+        "arn:aws:s3:::elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/resources/environments/data.json",
+        "arn:aws:s3:::elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/data.json"
+      ],
+      "Principal": "arn:aws:iam::4177xxxxxxxx:role/PinoyAgriSite-Role"
+    },
+    {
+      "id": "deny_7822f21b",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/data.json",
+      "Principal": "arn:aws:iam::4177xxxxxxxx:role/PinoyAgriSite-Role"
+    },
+    {
+      "id": "allow_9bd32498",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteBucket",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": [
+        "arn:aws:s3:::elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/resources/environments/data.json",
+        "arn:aws:s3:::elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/S3-Uploads-Media/document.txt"
+      ],
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized"
+    },
+    {
+      "id": "allow_d455080f",
+      "Effect": "allow",
+      "Action": "s3:DeleteBucket",
+      "Resource": [
+        "arn:aws:s3:::elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/config.xml",
+        "arn:aws:s3:::elasticbeanstalk-ap-southeast-1-4177xxxxxxxx/S3-Uploads-Media/config.xml"
+      ],
+      "Principal": "arn:aws:iam::4177xxxxxxxx:role/PinoyAgriSite-Role"
+    }
+  ]
+}

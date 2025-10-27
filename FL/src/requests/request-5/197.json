@@ -1,0 +1,70 @@
+{
+  "Requests": [
+    {
+      "id": "allow_db1cca8a",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketCors",
+        "s3:PutBucketLifecycle"
+      ],
+      "Resource": "arn:aws:s3:::great-expectations-docs/document.txt",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:sourceVpce": "vpce-0c0f4bb767f820bda"
+        }
+      }
+    },
+    {
+      "id": "deny_c95a32a8",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:s3:::great-expectations-docs/document.txt",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:sourceVpce": "vpce-0c0f4bb767f820bda"
+        }
+      }
+    },
+    {
+      "id": "deny_a6810073",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:s3:::great-expectations-docs/config.xml",
+      "Principal": "arn:aws:iam::111222333444:user/david",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_5c347bc6",
+      "Effect": "allow",
+      "Action": "s3:PutObjectTagging",
+      "Resource": "arn:aws:s3:::great-expectations-docs/document.txt",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "allow_abba5b76",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketTagging",
+        "s3:GetBucketLifecycle"
+      ],
+      "Resource": "arn:aws:s3:::great-expectations-docs/document.txt",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:sourceVpce": "vpce-0c0f4bb767f820bda"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "Requests": [
+    {
+      "id": "allow_5e57973f",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": [
+        "arn:aws:s3:::ecs-service-logs/document.txt",
+        "arn:aws:s3:::ecs-service-logs/data.json"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "deny_ca603bb0",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::ecs-service-logs/config.xml",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_9a64fc9f",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": "arn:aws:s3:::ecs-service-logs/data.json",
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    },
+    {
+      "id": "deny_dbd65ab4",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::ecs-service-logs/data.json",
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    },
+    {
+      "id": "allow_588de91d",
+      "Effect": "allow",
+      "Action": "s3:PutObjectAcl",
+      "Resource": [
+        "arn:aws:s3:::ecs-service-logs/config.xml",
+        "arn:aws:s3:::ecs-service-logs/data.json"
+      ],
+      "Principal": "*"
+    }
+  ]
+}

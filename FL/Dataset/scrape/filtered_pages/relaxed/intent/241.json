@@ -1,0 +1,48 @@
+AWS Honeycode API service call from AWS Glue python code using boto3 is giving issue.
+
+
+Sharing the code snippet below:
+
+
+import boto3
+
+honeycode_client = boto3.client('honeycode')
+response = honeycode_client.list_tables(workbookId = 'eb59751e-ef06-4de0-a4a9-c355e49308ab')
+
+
+
+NOTE: workbook and tables are already created in Honeycode. Role applied to glue job is having below policies:
+
+
+AmazonS3FullAccess
+
+
+
+
+
+
+AmazonHoneycodeFullAccess
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "honeycode:*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        }
+    ]
+}
+
+
+
+Above code snippet is giving below error:
+
+
+AccessDeniedException: An error occurred (AccessDeniedException) when calling the ListTables operation: Team is not associated to an AWS Account
+
+
+what extra access is required for above mentioned access issue?

@@ -1,0 +1,27 @@
+I have this SCP attached to account A in my org:
+
+
+
+
+
+As I understand:
+
+
+
+
+the SCP will deny if each and every record's type in my request equals A or AAAA
+
+
+the SCP will not deny if at least one record's type in my request is not equal A or AAAA
+
+
+
+
+However, when I create R53 records in account A using the console:
+
+
+
+the SCP still blocks the request even though the request contains a record of type "CNAME" which is not A or AAAA
+
+
+What is wrong in my understanding of this "ForAllValues" ? Please help me. Thanks

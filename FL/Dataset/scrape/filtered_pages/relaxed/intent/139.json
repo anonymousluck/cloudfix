@@ -1,0 +1,22 @@
+Hey Team,
+
+
+On one specific device we are getting following error whenever we try to deploy custom component. This log is from greengrass.log file.
+
+
+2023-05-05T15:17:21.082Z [INFO] (pool-2-thread-31) com.aws.greengrass.componentmanager.DependencyResolver: resolve-group-dependencies-finish. Finish resolving group dependencies. {resolvedComponents={aws.greengrass.Cli=ComponentMetadata(componentIdentifier=aws.greengrass.Cli-v2.7.0, dependencies={aws.greengrass.Nucleus=>=2.5.0 <2.8.0}), aws.greengrass.TokenExchangeService=ComponentMetadata(componentIdentifier=aws.greengrass.TokenExchangeService-v2.0.3, dependencies={}), aws.greengrass.SecretManager=ComponentMetadata(componentIdentifier=aws.greengrass.SecretManager-v2.1.4, dependencies={aws.greengrass.Nucleus=>=2.5.0 <2.10.0}), FrontendManager=ComponentMetadata(componentIdentifier=FrontendManager-v6.0.0, dependencies={}), aws.greengrass.Nucleus=ComponentMetadata(componentIdentifier=aws.greengrass.Nucleus-v2.7.0, dependencies={})}, componentToVersionRequirements={aws.greengrass.Cli={thinggroup/newPuneBoardGroup2==2.7.0}, aws.greengrass.TokenExchangeService={thinggroup/newPuneBoardGroup2==2.0.3}, aws.greengrass.SecretManager={thinggroup/newPuneBoardGroup2==2.1.4}, FrontendManager={thinggroup/newPuneBoardGroup2==6.0.0}, aws.greengrass.Nucleus={aws.greengrass.Cli=>=2.5.0 <2.8.0, aws.greengrass.SecretManager=>=2.5.0 <2.10.0}}}
+2023-05-05T15:17:21.098Z [INFO] (pool-2-thread-31) com.aws.greengrass.componentmanager.ComponentManager: prepare-package-start. {packageIdentifier=aws.greengrass.Cli-v2.7.0}
+2023-05-05T15:17:21.153Z [INFO] (pool-2-thread-31) com.aws.greengrass.componentmanager.ComponentManager: prepare-package-start. {packageIdentifier=aws.greengrass.TokenExchangeService-v2.0.3}
+2023-05-05T15:17:21.156Z [INFO] (pool-2-thread-31) com.aws.greengrass.componentmanager.ComponentManager: prepare-package-start. {packageIdentifier=aws.greengrass.SecretManager-v2.1.4}
+2023-05-05T15:17:21.176Z [INFO] (pool-2-thread-31) com.aws.greengrass.componentmanager.ComponentManager: prepare-package-start. {packageIdentifier=FrontendManager-v6.0.0}
+2023-05-05T15:17:22.347Z [ERROR] (pool-2-thread-31) com.aws.greengrass.tes.CredentialRequestHandler: Unable to cache expired credentials which expired at 2023-05-05T11:38:16Z. {iotCredentialsPath=/role-aliases/GreengrassCoreTokenExchangeRoleAlias/credentials}
+2023-05-05T15:17:22.348Z [ERROR] (pool-2-thread-31) com.aws.greengrass.tes.CredentialRequestHandler: Error in retrieving AwsCredentials from TES. {iotCredentialsPath=/role-aliases/GreengrassCoreTokenExchangeRoleAlias/credentials, credentialData=TES responded with credentials that expired at 2023-05-05T11:38:16Z}
+2023-05-05T15:17:22.348Z [INFO] (pool-2-thread-31) com.aws.greengrass.componentmanager.builtins.S3Downloader: get-bucket-location. task failed and will be retried. {task-attempt=1, componentIdentifier=FrontendManager, artifactUri=s3://elsa-custom-component-us-west-2-831490426837/FrontendManager/6.0.0/FrontendManager.zip}
+software.amazon.awssdk.core.exception.SdkClientException: Failed to fetch credentials
+at software.amazon.awssdk.core.exception.SdkClientException$BuilderImpl.build(SdkClientException.java:102)
+at software.amazon.awssdk.core.exception.SdkClientException.create(SdkClientException.java:43)
+at com.aws.greengrass.tes.LazyCredentialProvider.resolveCredentials(LazyCredentialProvider.java:31)
+at software.amazon.awssdk.core.internal.util.MetricUtils.measureDuration(MetricUtils.java:50)
+
+
+Certificate is already have policies with following configurations.

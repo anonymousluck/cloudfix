@@ -1,0 +1,107 @@
+I have plenty of databases listed in Glue. I am using a policy with limited resource access so that I can only see specific type of databases.
+
+
+These are my policies with respective permission: 1.resource-policy
+
+
+
+
+
+
+S3 policy
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketAcl"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "s3:ListAllMyBuckets",
+            "Resource": "*"
+        }
+    ]
+}
+
+
+
+When I do a query through AWS CLI using the following command:
+
+
+aws glue get-databases --query "DatabaseList[*].Name"
+
+
+
+
+
+But when I try to do the query using AWS SDK for Java I get no results. These are my code snippets and results:
+
+
+package alation.awsglue.mde.extractor;
+
+import alation.aws.auth.AWSAuthentication;
+import alation.awsglue.Main;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.glue.AWSGlue;
+import com.amazonaws.services.glue.AWSGlueClientBuilder;
+import com.amazonaws.services.glue.model.AWSGlueException;
+import com.amazonaws.services.glue.model.Database;
+import com.amazonaws.services.glue.model.GetDatabasesRequest;
+import com.amazonaws.services.glue.model.GetDatabasesResult;
+import org.apache.log4j.PropertyConfigurator;
+
+import java.util.List;
+
+public class sampleMDE {
+    public static void main(String[] args) {
+        System.setProperty("com.amazonaws.sdk.enableDefaultMetrics", "true");
+        PropertyConfigurator.configure(Main.class.getClassLoader().getResource("log4j.properties"));
+        AWSGlue amazonGlueClient = null;
+        try{
+        // Initialize the Glue client
+        AWSCredentialsProvider awsCredProvider =
+            new AWSAuthentication(
+                "<your_key>",
+                "<your_id>")
+                .getCredential();
+        amazonGlueClient = AWSGlueClientBuilder.standard()
+            .withCredentials(awsCredProvider)
+            .withRegion(Regions.US_EAST_1).build();
+    } catch (Exception e) {
+        System.err.println("Failed to create Glue client: " + e.getMessage());
+        e.printStackTrace();
+        return;
+    }
+        try{
+
+        // Create the request
+        GetDatabasesRequest request = new GetDatabasesRequest();
+
+        // Get the list of databases
+        GetDatabasesResult response = amazonGlueClient.getDatabases(request);
+
+        // Process the response
+        List<Database> databases = response.getDatabaseList();
+        if (databases.isEmpty()) {
+            System.out.println("No databases found.");
+        }
+        for (Database database : databases) {
+            System.out.println("Database name: " + database.getName());
+        }
+    } catch (AWSGlueException e) {
+        System.err.println("Error occurred while retrieving databases: " + e.getErrorMessage());
+        e.printStackTrace();
+    }
+
+    }
+}

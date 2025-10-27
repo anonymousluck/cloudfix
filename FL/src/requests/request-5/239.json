@@ -1,0 +1,73 @@
+{
+  "Requests": [
+    {
+      "id": "deny_9425e4ea",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::987654321098:user/charlie",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:max-keys": "10"
+        }
+      }
+    },
+    {
+      "id": "deny_55927a9c",
+      "Effect": "deny",
+      "Action": "kms:Encrypt",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::XXX:role/service-role/appName-pipeline-role",
+      "Condition": {
+        "Bool": {
+          "kms:GrantIsForAWSResource": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_f27ee1a7",
+      "Effect": "allow",
+      "Action": "kms:RetireGrant",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "allow_5271636a",
+      "Effect": "allow",
+      "Action": "kms:UpdateKeyDescription",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Principal": "arn:aws:iam::XXX:role/service-role/appName-pipeline-role",
+      "Condition": {
+        "Bool": {
+          "kms:GrantIsForAWSResource": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_cf4c9085",
+      "Effect": "allow",
+      "Action": [
+        "kms:DeleteAlias",
+        "kms:UpdateKeyDescription"
+      ],
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Principal": "arn:aws:iam::XXX:role/service-role/appName-build-role",
+      "Condition": {
+        "Bool": {
+          "kms:GrantIsForAWSResource": "true"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "Requests": [
+    {
+      "id": "deny_96e93971",
+      "Effect": "deny",
+      "Action": "SNS:Publish",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    },
+    {
+      "id": "allow_51114785",
+      "Effect": "allow",
+      "Action": "SNS:Publish",
+      "Resource": "arn:aws:sns:ap-southeast-1:406745342818:snowpipe_topic",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    },
+    {
+      "id": "deny_275aa1ce",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:sns:ap-southeast-1:406745342818:snowpipe_topic",
+      "Principal": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

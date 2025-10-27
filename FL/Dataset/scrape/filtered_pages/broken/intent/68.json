@@ -1,0 +1,18 @@
+I have a lambda function which is supposed to write files on s3 to a folder in a bucket
+
+
+I set this IAM role to the lambda function:
+
+
+
+
+
+
+So it should be allowed to write to the "uploads" bucket, into the "Images" folder, right?
+But it won't work, meaning the image is not written on s3.
+
+
+However, if I add "AmazonS3FullAccess" which is the AWS given policy, it works.
+
+
+So the question is, what does S3FullAccess have that my restricted policy doesn't?

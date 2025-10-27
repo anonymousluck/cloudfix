@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_0f97b89e",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_e301244d",
+      "Effect": "deny",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_5103e1b3",
+      "Effect": "allow",
+      "Action": "rds-db:connect",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_3916350b",
+      "Effect": "allow",
+      "Action": "rds-db:connect",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_b639c4f6",
+      "Effect": "allow",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

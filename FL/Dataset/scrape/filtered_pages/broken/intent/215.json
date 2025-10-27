@@ -1,0 +1,38 @@
+I have set up a user in the IAM Identity Center console that is assigned to a group that I'd like to only have access to a few select s3 buckets and the AWS Textract service. I've created a group with the following permissions to allow access to certain specific buckets as well as the textract service itself via the IAM permissions JSON below (modified for privacy reasons):
+
+
+
+
+When signing in as this user and navigating to textract I get errors on the demo page (
+We are unable to access the S3 object that's specified for processing.
+), the Bulk Document Uploader page (
+Your S3 bucket couldn't be created. Please try again or contact your account administrator.
+) when choosing to Import documents from S3 bucket, and the Custom Queries page for a given test adapter that's been created (
+We are unable to access the adapter bucket
+). I have also modified the <<my_bucket_name>> bucket's permissions to have the following permissions:
+
+{     "Version": "2012-10-17",     "Statement": [         {             "Sid": "AllowTextractToReadObjects",             "Effect": "Allow",             "Principal": {                 "Service": "textract.amazonaws.com"             },             "Action": [                 "s3:GetObject",                 "s3:PutObject",                 "s3:ListBucket"             ],             "Resource": [                 "arn:aws:s3:::<<my_bucket_name>>",                 "arn:aws:s3:::<<my_bucket_name>>/*"             ]         }     ] }
+ and I am still getting the aforementioned errors.
+
+
+The ONLY solution that I've found so far is to grant access to 
+all
+ buckets within my account by adding the following two lines to the first IAM policy above in the Resource section:
+
+                "arn:aws:s3:::*",                 "arn:aws:s3:::*/*"
+
+
+I've also tried changing my Action to 
+*
+ in the first policy while removing the 
+arn:aws:s3:::*
+ sections to no avail.
+
+
+I've also verified that the created bucket is in the same region "us-east-1" as the drop-down in the top-corner of the web interface.
+
+
+Can anyone help me diagnose why this user I've created is unable to access the service unless they have full access to all s3 buckets in our account?
+
+
+Any help would be greatly appreciated!

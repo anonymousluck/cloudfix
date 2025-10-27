@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "sts:AssumeRole"
+      ],
+      "Effect": "Allow",
+      "Principal": {
+        "Service": [
+          "ec2.amazonaws.com",
+          "s3.amazonaws.com",
+          "cloudwatch-crossaccount.amazonaws.com",
+          "cloudformation.amazonaws.com",
+          "member.org.stacksets.cloudformation.amazonaws.com",
+          "sagemaker.amazonaws.com",
+          "rekognition.amazonaws.com",
+          "iam.amazonaws.com",
+          "panorama.amazonaws.com"
+        ]
+      },
+      "Sid": "statement1"
+    }
+  ]
+}

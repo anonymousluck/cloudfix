@@ -1,0 +1,19 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::0123456789:oidc-provider/example.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "example.com:sub": "value_here",
+          "example.com:custom_claim": "value_here"
+        }
+      },
+      "Sid": "statement1"
+    }
+  ]
+}

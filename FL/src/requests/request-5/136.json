@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "allow_52a7be15",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::xxxxxxxx/document.txt",
+      "Principal": "*"
+    },
+    {
+      "id": "deny_dd221b35",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "allow_feed8ec7",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::xxxxxxxx/data.json",
+        "arn:aws:s3:::xxxxxxxx/config.xml"
+      ],
+      "Principal": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_523f84dc",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::xxxxxxxx/document.txt",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_e8a7d7dc",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::xxxxxxxx/config.xml",
+        "arn:aws:s3:::xxxxxxxx/document.txt"
+      ],
+      "Principal": "*"
+    }
+  ]
+}

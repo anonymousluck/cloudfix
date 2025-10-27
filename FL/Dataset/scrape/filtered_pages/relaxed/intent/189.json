@@ -1,0 +1,12 @@
+I added a 'user' from the root account and created 'roles' and 'policies'.
+However, even if I logIn with the 'IAM User' account and 'Change Role', I cannot access the Billing related menu.
+
+
+Here are the "permissions" we added to the "user account"
+
+
+"Version": "2012-10-17",
+"Statement": [
+
+]
+}

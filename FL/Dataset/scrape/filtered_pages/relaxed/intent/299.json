@@ -1,0 +1,12 @@
+I want to configure an alarm action to trigger a cross-account Lambda function when the alarm in the 'alarm' state.
+I have added an alarm action for the alarm in account A, and I have also created the resource policy for the function in account B using AWS CLI suggested in this doc 
+https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-and-actions
+. Here is the resource-based policy of the lambda in account B:
+
+
+    ,
+
+
+
+
+The alarm history shows that the lambda action was successfully executed. But I don't see any invocation for the lambda in B account. The lambda monitoring metrics show 0 errors, 0 throttles, async events received but dropped. I have confirmed that the lambda in B account is working if I test it directly or invoke the lambda from the same account as the alarm.

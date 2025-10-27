@@ -1,0 +1,41 @@
+I believe I have found a disparity between how IAM and STS each treat the "External ID" condition that can be added to the trusted entities (assume-role-policy) of an IAM role.
+
+
+TL;DR seems like IAM allows for spaces to be in the "ExternalId" but the STS service/api rejects AssumeRole requests that have spaces in the external id.
+
+
+Steps to reproduce - you need 2 AWS accounts:
+
+
+
+
+In account A (say account ID 
+123456789012
+) create an IAM role with the following "Trusted entities" (assume-role-policy) allowing account B (say account ID 
+567890123456"
+) to assume it:
+
+
+
+
+
+
+
+
+Then using an IAM entity in account B (
+567890123456
+) (can be an IAM user with full admin permissions for example - or any other IAM entity with permission to sts:AssumeRole the role we created in account A), try the following:
+
+
+AWS_PROFILE=bug_reproduction aws sts assume-role --role-session-name something-$(date +%s) --role-arn arn:aws:iam::123456789012:role/MyRole --external-id "something with a space"
+
+
+
+The CLI will error out with the following error from the STS API:
+
+
+An error occurred (ValidationError) when calling the AssumeRole operation: 1 validation error detected: Value 'something with a space' at 'externalId' failed to satisfy constraint: Member must satisfy regular expression pattern: [\w+=,.@:\/-]*
+
+
+
+Not a question but perhaps this forum post will help AWS folks either reject ExternalIds with spaces in the trusted entities policies OR will change the STS service to allow spaces.

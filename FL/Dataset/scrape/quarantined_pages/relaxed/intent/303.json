@@ -1,0 +1,70 @@
+Test Endpoint failed: Application-Status: 1020912, Application-Message: Failed to retrieve secret. Unable to find Secrets Manager secret, Application-Detailed-Message: Unable to find AWS Secrets Manager secret Arn 'arn:aws:secretsmanager:
+<region>
+:
+<account>
+:secret:XXXXXXX' The secrets_manager get secret value failed: curlCode: 7, Couldn't connect to server Too many retries: curlCode: 7, Couldn't connect to server
+
+
+Hi, I'm doing a DMS Endpoint connection test between Priavate VPCs.
+I'm fighting the above error.
+
+
+I set it up as below.
+
+
+
+
+VPC1: Replication instance
+
+
+VPC2 : Mysql RDS (admin password with secret manager)
+
+
+The VPC is on the same account.
+
+
+
+
+I also created a 
+SecretManager VPC Endpoint on VPC1,
+
+
+and the IAM Role connected to the DMS endpoint...
+This role has the following policy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": [
+                "arn:aws:secretsmanager:<region>:<account>:secret:XXXXXXX",
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+            ],
+            "Resource": "arn:aws:kms:<region>:<account>:key/*"
+        }
+    ]
+}
+
+
+
+Here is the role trust policy:
+
+
+
+
+
+
+but the connection is not possible.
+
+
+If I test the endpoint connection without using SecretManager with the same user password value, it will connect well.
+What's the problem? Please help me.

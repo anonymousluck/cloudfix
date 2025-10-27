@@ -1,0 +1,93 @@
+Hi AWS, I am writing the code for CI/CD pipeline to download the zipped folder from S3 bucket to EC2 instance location using GitHub Actions. I have tweaked my code in order to keep the artifacts instead of overriding the file. The format is like 
+s3://<bucket-name>/<folder-name>/file.zip
+ where the folder name is 4 digits 
+git-commit sha
+. Now while I am trying to download the zipped file from s3 bucket to ec2 instance, the command is executed successfully with no error but the file is not getting downloaded. I have tried 
+aws cp --recursive
+ and 
+aws sync
+ command but nothing worked out.
+
+
+This is the pipeline code:
+
+
+name: "Deploying a CI/CD for .NET sample app in ASP.NET 4.7 using GitHub Actions and store artifacts in Amazon S3"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+  ZIP_DOWNLOAD_LOCATION: ${{ secrets.ZIP_DOWNLOAD_LOCATION }}
+  
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+    - name: Checkout code repository
+      uses: actions/checkout@v3
+  
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.
+    - name: Restore Packages
+      run: nuget restore HelloWorldSampleApp.sl
+    - name: Build solution
+      run: msbuild HelloWorldSampleApp.sln /p:Configuration=Release /p:DeployOnBuild=true
+
+    - name: Set AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+        
+    - name: Get Git commit SHA and upload artifacts to Amazon S3
+      shell: powershell
+      env:
+        BUILD: ${{ secrets.BUILD }}
+      run: |
+        $output = git rev-parse --short=4 HEAD
+        aws s3 cp ${{ env.BUILD }} s3://${{ env.S3_BUCKET_NAME }}/$output/
+
+  deploy:
+    needs: build
+    runs-on: [ self-hosted, Windows, X64 ]
+    defaults:
+      run:
+        shell: cmd
+    
+    steps:
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+       
+      - name: Download the zip file from S3 to EC2 folder
+        shell: powershell
+        run: |
+          $latest_folder = aws s3 ls ${{ env.S3_BUCKET_NAME }} --recursive | Sort-Object LastWriteTime | Select-Object -Last 1
+          C:\"Program Files"\Amazon\AWSCLIV2\aws s3 sync s3://${{ env.S3_BUCKET_NAME }}/$latest_folder ${{ env.ZIP_DOWNLOAD_LOCATION }}
+
+
+
+Here is the policy attached to the IAM user:
+
+
+
+
+
+
+Please help.

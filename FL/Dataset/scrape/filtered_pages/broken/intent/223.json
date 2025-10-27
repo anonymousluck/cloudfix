@@ -1,0 +1,73 @@
+I'm creating an app where you can create an organization, invite people to join it and end up using Sagemaker Studio, and therefore Canvas. Everything works perfectly until I want users to only be able to access their organization's folder to import data and create datasets. Each organization's folder looks like this: "bucket-name/ULID" (ULID being the organization's id). As a first step, I recreate the SagemakerFullAccess policy, removing the "ListBucket" action, which lists all bucket's folders, in order to customize it. I then create a policy for my sagemaker execution role so that users only have access to their folders. I also create a policy for my users so that they can only add, get and delete objects in their folders. Here are the two policies:
+
+
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "Restrict access to org folder",
+			"Effect": "Allow",
+			"Action": "s3:ListBucket",
+			"Resource": "arn:aws:s3:::my-bucket-name",
+			"Condition": {
+				"StringLike": {
+					"s3:prefix":"${aws:PrincipalTag/org_id}/*"          // "01HPHA50JHJVJZTVMEEF2HLPQZV/*"
+				}
+			}
+		}
+	]
+}
+
+
+
+
+
+From what I've seen across lots of forums, this is the right way to restrict a user to a folder, however when I use it here, I don't have access to the folder.
+
+
+
+I've tried a lot of things:
+
+
+
+
+Change the resource to "arn:aws:s3:::my-bucket-name/ULID".
+
+
+Change the s3 prefix to:
+
+
+
+
+directly the ULID
+
+
+by another folder
+
+
+"
+ULID
+"
+
+
+"ULID/"
+
+
+"ULID"
+
+
+"/ULID"
+
+
+....
+The only time there was no error was when I used "*", everything is displayed but it's not what I want.
+I suspect Sagemaker Canvas is not very permissive, either display everything or nothing, it's already the same with buckets listing: either everything or nothing.
+
+
+
+
+
+
+
+
+If anyone could help me with this problem, I'd be grateful.

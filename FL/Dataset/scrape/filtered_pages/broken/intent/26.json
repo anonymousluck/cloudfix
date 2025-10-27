@@ -1,0 +1,25 @@
+I have access to the Serial Console for my EC2 instance, however once the after loading i am unable to enter commands in the screen. Not sure if the IAM user is missing any more access permissions. Currently below is the permission provided.
+
+
+"Version": "2012-10-17",
+"Statement": [
+,
+
+
+{
+"Sid": "AllowinstanceBasedSerialConsoleAccess",
+
+
+"Effect": "Allow",
+"Action": [
+"<
+instance info>
+"
+],
+"Resource": "<instance info"
+}
+]
+}
+
+
+Additionally my main objective is to have access to the serial console and then "DISABLE the RDP" services in the Instance. Right now we have no other way to access the server, thus I am hoping that there is a way to REMOVE or DISABLE the RDP in my instance using the Serial Console. Is this possible? If yes, can someone provide the script that needs to be executed ? If Not, can someone suggest an alternative way ? FYI ..It's a Windows Server

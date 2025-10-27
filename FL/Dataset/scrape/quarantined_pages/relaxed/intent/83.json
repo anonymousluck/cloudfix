@@ -1,0 +1,51 @@
+I have an Amazon OpenSearch domain configured with internal users only (no IAM users or Cognito). I’m trying to set up snapshot backups to an S3 bucket.
+
+
+I followed the AWS documentation and created the following IAM role:
+arn:aws:iam::<AWS_ACC>:role/opensearch-snapshot-role
+
+
+The trust policy:
+
+
+
+
+
+
+The permissions policy attached to the role:
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:DeleteObject"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:s3:::opensearch.backup",
+        "arn:aws:s3:::opensearch.backup/*"
+      ]
+    }
+  ]
+}
+
+
+
+However, when trying to register the snapshot repository via Dev Tools (logged in as the OpenSearch master user), I get this error:
+
+
+{
+  "Message": "User: anonymous is not authorized to perform: iam:PassRole on resource: arn:aws:iam::<AWS_ACC>:role/opensearch-snapshot-role because no resource-based policy allows the iam:PassRole action"
+}
+
+
+
+How can I allow internal users (especially the master user) to perform the iam:PassRole required to use this role for snapshots?
+
+
+Do I need to attach a resource-based policy somewhere else or configure something differently since I’m not using IAM-authenticated users?

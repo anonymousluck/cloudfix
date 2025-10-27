@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "allow_43a15da3",
+      "Effect": "allow",
+      "Action": [
+        "sms-voice:SendTextMessage",
+        "sms-voice:SendVoiceMessage"
+      ],
+      "Resource": "arn:aws:sms-voice:Region:A-ID:sender-id/SenderID/ISO",
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    },
+    {
+      "id": "deny_1985f78b",
+      "Effect": "deny",
+      "Action": "sms-voice:SendMediaMessage",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::B-ID:root"
+    },
+    {
+      "id": "deny_75f77a6f",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:sms-voice:Region:A-ID:sender-id/SenderID/ISO",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "allow_4a4b3e57",
+      "Effect": "allow",
+      "Action": "sms-voice:SendVoiceMessage",
+      "Resource": "arn:aws:sms-voice:Region:A-ID:sender-id/SenderID/ISO",
+      "Principal": "arn:aws:iam::B-ID:root"
+    },
+    {
+      "id": "allow_ad23de1b",
+      "Effect": "allow",
+      "Action": [
+        "sms-voice:DescribeSenderIds",
+        "sms-voice:SendMediaMessage"
+      ],
+      "Resource": "arn:aws:sms-voice:Region:A-ID:sender-id/SenderID/ISO",
+      "Principal": "arn:aws:iam::B-ID:root"
+    }
+  ]
+}

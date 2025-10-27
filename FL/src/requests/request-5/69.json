@@ -1,0 +1,49 @@
+{
+  "Requests": [
+    {
+      "id": "allow_04335fda",
+      "Effect": "allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Receive"
+      ],
+      "Resource": [
+        "arn:aws:iot:us-east-1:<My-ID>:topic/$aws/provisioning-templates/DrainAlert_FleetTemplate/provision/document.txt",
+        "arn:aws:iot:us-east-1:<My-ID>:topic/$aws/provisioning-templates/DrainAlert_FleetTemplate/provision/config.xml"
+      ]
+    },
+    {
+      "id": "allow_716f659d",
+      "Effect": "allow",
+      "Action": [
+        "iot:Subscribe",
+        "iot:Receive"
+      ],
+      "Resource": [
+        "arn:aws:iot:us-east-1:<My-ID>:topic/$aws/provisioning-templates/DrainAlert_FleetTemplate/provision/config.xml",
+        "arn:aws:iot:us-east-1:<My-ID>:topicfilter/$aws/provisioning-templates/DrainAlert_FleetTemplate/provision/config.xml"
+      ]
+    },
+    {
+      "id": "deny_86072313",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iot:us-east-1:<My-ID>:topic/$aws/provisioning-templates/DrainAlert_FleetTemplate/provision/config.xml"
+    },
+    {
+      "id": "allow_f3e3f7d7",
+      "Effect": "allow",
+      "Action": "iot:Receive",
+      "Resource": [
+        "arn:aws:iot:us-east-1:<My-ID>:topic/$aws/certificates/create/data.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "deny_c409bc1d",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:iot:us-east-1:<My-ID>:topic/$aws/provisioning-templates/DrainAlert_FleetTemplate/provision/config.xml"
+    }
+  ]
+}

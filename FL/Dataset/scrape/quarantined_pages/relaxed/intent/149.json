@@ -1,0 +1,57 @@
+I am trying to implement OIDC flow for my CDN application,
+As a starting point wanted to intercept the request to CDN through Lamda Edge Viewer request.
+Created a Sample Lambda edge function with the following code just to intercept the flow:
+
+
+exports.handler = async (event, context) => {
+    const request = event.Records[0].cf.request;
+    const headers = request.headers;
+
+    // Add custom header to request headers
+    headers['x-custom-header'] = [{ key: 'X-Custom-Header', value: 'MyCustomValue' }];
+
+    // Return the modified request to CloudFront
+
+	return {
+		status: '302',
+		statusDescription: 'Found',
+		body: 'Redirecting to OIDC provider',
+		headers: {
+			location: [
+				{
+					key: 'Location',
+					value: `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=asdsa-0a7d-40d7-bd35-XXX`
+				}
+			]
+		}
+	};
+};
+
+
+
+And attached the roles:
+
+
+Trusted relation Ship:
+
+
+
+
+{     "Version": "2012-10-17",     "Statement": [         {             "Action": [                 "cloudfront:ListDistributions",                 "cloudfront:UpdateDistribution",                 "cloudfront:GetDistributionConfig"             ],             "Resource": "*",             "Effect": "Allow",             "Sid": "CloudfrontLambdaRoleCloudFrontPermissions"         },         {             "Action": [                 "s3:PutBucketAcl",                 "s3:GetBucketAcl"             ],             "Resource": "arn:aws:s3:::*",             "Effect": "Allow",             "Sid": "CloudfrontLambdaRoleS3Permissions"         },         {             "Action": "logs:CreateLogGroup",             "Resource": "arn:aws:logs:*:ACCID:*",             "Effect": "Allow",             "Sid": "CloudfrontLambdaRoleCreateLogGroupPermissions"         },         {             "Action": [                 "logs:CreateLogStream",                 "logs:PutLogEvents"             ],             "Resource": "arn:aws:logs:*:ACC_ID:log-group:/aws/lambda/*:*",             "Effect": "Allow",             "Sid": "CloudfrontLambdaRoleLogsStreamLogEventsPermissions"         }     ] }
+
+
+**ATTACHED LambdaEdge to CDN AS **
+Viewer request
+Lambda@Edge
+arn:aws:lambda:us-east-1:ACC_ID:function:oidc-handler:1
+
+
+But when I access CDN I get following error:
+
+
+503 ERROR
+The request could not be satisfied.
+The Lambda function associated with the CloudFront distribution is invalid or doesn't have the required permissions.
+
+
+Could you please if I am missing any further steps:

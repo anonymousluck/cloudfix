@@ -1,0 +1,14 @@
+Hello all,
+
+
+I have the following iam role:
+
+
+
+
+
+
+I have velero backups in region A and I would like to replicate them to Region B. they are encrypted by a multi region kms key. Key exists on both region.
+
+
+Thanks

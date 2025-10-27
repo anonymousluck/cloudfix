@@ -1,0 +1,284 @@
+Instructions I Followed to Set Up Amazon Q Business with Anonymous Access
+
+
+I've been trying to set up an Amazon Q Business chatbot with anonymous access. Here are the steps I've followed and the issues I've encountered:
+
+
+Steps Taken:
+
+
+
+
+
+
+Created an Amazon Q Business application with anonymous access:
+
+
+aws qbusiness create-application 
+
+
+--description "Public chatbot application with anonymous access" 
+
+
+--role-arn "arn:aws:iam::
+<account-number>
+:role/AmazonQBusinessAnonymousAccessRole" 
+
+
+--display-name "PublicChatbot" 
+
+
+--identity-type "ANONYMOUS"
+
+
+
+
+
+
+Created an IAM role (AmazonQBusinessAnonymousAccessRole) with the necessary permissions:
+
+
+aws iam create-role 
+
+
+--role-name AmazonQBusinessAnonymousAccessRole 
+
+
+--assume-role-policy-document ""
+
+
+
+
+
+
+Created and attached a policy to the role:
+
+
+aws iam create-policy 
+
+
+--policy-name AmazonQBusinessAnonymousAccess 
+
+
+--policy-document "{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["qbusiness:
+"],"Resource":"
+"}]}"
+
+
+aws iam attach-role-policy 
+
+
+--role-name AmazonQBusinessAnonymousAccessRole 
+
+
+--policy-arn "arn:aws:iam::<account_number>:policy/AmazonQBusinessAnonymousAccess"
+
+
+
+
+
+
+Created a web experience for the application:
+
+
+aws qbusiness create-web-experience 
+
+
+--origins ["
+https://example.com
+",
+ "http://localhost:3000"] 
+
+
+--sample-prompts-control-mode "ENABLED" 
+
+
+--welcome-message "Welcome to our public chatbot!" 
+
+
+--role-arn "arn:aws:iam::<account_number>:role/AmazonQBusinessAnonymousAccessRole" 
+
+
+--title "Public Chatbot" 
+
+
+--application-id "<application_id>"
+
+
+
+
+
+
+Received a URL like 
+https://tevgwwht.chat.qbusiness.us-east-1.on.aws/
+
+
+
+
+
+
+Instructions Followed in AWS Management Console
+
+
+Step 1: Create an Amazon Q Business Application
+
+
+
+
+Logged into the AWS Management Console
+
+
+Navigated to the Amazon Q Business service
+
+
+Clicked "Create application"
+
+
+Filled in the following details:
+• Display name: "PublicChatbot"
+• Description: "Public chatbot application with anonymous access"
+• Identity type: Selected "ANONYMOUS" from the dropdown
+• IAM Role: Selected "AmazonQBusinessAnonymousAccessRole"
+
+
+Clicked "Create application"
+
+
+
+
+Step 2: Configure IAM Role Permissions
+
+
+
+
+Navigated to IAM in the AWS Management Console
+
+
+Selected "Roles" from the left navigation
+
+
+Located or created "AmazonQBusinessAnonymousAccessRole"
+
+
+Added the following policies to the role:
+• AmazonQBusinessFullAccess
+• Created a custom policy named "AmazonQBusinessAnonymousAccess" with full qbusiness:* permissions
+
+
+
+
+Step 3: Create a Web Experience
+
+
+
+
+Returned to the Amazon Q Business console
+
+
+Selected the newly created application
+
+
+Clicked on "Web experiences" tab
+
+
+Clicked "Create web experience"
+
+
+Configured the following settings:
+• Title: "Public Chatbot"
+• Welcome message: "Welcome to our public chatbot!"
+• Sample prompts: Enabled
+• Origins: Added multiple origins including example.com and localhost:3000
+• Role ARN: Selected the AmazonQBusinessAnonymousAccessRole
+
+
+Clicked "Create"
+
+
+
+
+Step 4: Attempted to Access the Generated URL
+
+
+
+
+Copied the generated URL (
+https://tevgwwht.chat.qbusiness.us-east-1.on.aws/
+)
+
+
+Tried accessing it in a browser
+
+
+Encountered 403 Forbidden error
+
+
+The URL redirects to a path containing "code=invalid_code" in the URL
+
+
+Final URL looks like: 
+https://tevgwwht.chat.qbusiness.us-east-1.on.aws/error?code=invalid-code#/
+
+
+
+
+Step 5: Troubleshooting Attempts
+
+
+
+
+Tried accessing in incognito/private browsing mode
+
+
+Updated web experience settings with different origins
+
+
+Deleted and recreated the web experience
+
+
+Verified IAM permissions were correct
+
+
+Created HTML files to embed the chatbot via iframe
+
+
+
+
+Despite following all these steps correctly according to AWS documentation, the URL continues to return a 403 Forbidden error, preventing client access for testing.
+
+
+Issues Encountered:
+
+
+
+
+The URL consistently returns a 403 Forbidden error with an "invalid-code" message
+
+
+Tried accessing in incognito/private browsing windows - same error
+
+
+Tried updating the web experience with different origin settings - no change
+
+
+Created HTML files to embed the chatbot via iframe - still getting 403 errors
+
+
+Deleted and recreated the web experience multiple times - same issue
+
+
+Verified IAM permissions are correct - still not working
+
+
+AWS documentation states anonymous access should make it publicly accessible, but this isn't working in practice
+
+
+
+
+What I Need:
+
+
+I need a solution to make my Amazon Q Business chatbot truly accessible for client testing. The preview URL works within AWS Console but not for external users. I've tried multiple approaches as documented above but continue to encounter 403 errors.
+
+
+Has anyone successfully deployed an Amazon Q Business chatbot with anonymous access that's truly accessible to the public? What specific configuration am I missing? Is there any other way that they can access the application without logging in as user?

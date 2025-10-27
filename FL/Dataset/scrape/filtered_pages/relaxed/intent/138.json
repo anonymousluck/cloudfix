@@ -1,0 +1,4 @@
+I set up a Rest API with resource, 'ANY' method and stage. The Lambda function was tested and the API method  GET (integration request type: Lambda_proxy) , and they both  returned the list i need from a bucket. But when i try to access the API which does not require key, it is set to: "false", I keep getting this message: "{"message":"Missing Authentication Token"}". I looked around for the same problem, saw a similar one but no one ever solved his problem asked 5 months ago.
+
+
+P.S. There is an IAM role attached to the Lambda function with a AmazonS3ReadOnlyAccess and i even added an additional "bucket_allow" ( the bucket is public).

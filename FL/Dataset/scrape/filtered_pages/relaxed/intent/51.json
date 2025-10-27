@@ -1,0 +1,61 @@
+Hello  I'm kinda new in AWS I read a lot and I can't figure out what's going on.
+when I try to use the lexv2
+
+
+{
+
+
+    
+"message"
+:
+ 
+"Credential should be scoped to correct service: 'lex'. "
+
+
+}
+
+
+I did the following:
+
+
+
+
+Create a CLI aws account (
+test
+ user)
+
+
+I added the permissions: 
+AmazonLexReadOnly
+ and 
+AmazonLexRunBotsOnly
+ I even added another that I read in another website ( I Created a new policy) with this json:
+
+
+
+
+
+
+
+
+
+I created an access api key/secret key
+
+
+Added to postman as AWS identification and hitting this url
+
+https://runtime-v2-lex.us-east-1.amazonaws.com/bots/KVI5WI1AAA/botAliases/UZA1JMDAAA/botLocales/en_US/sessions/random/text
+ (the last letters I replaced with 
+AAA
+ just to hide the complete url and check if is the name or the ID)
+
+
+
+
+I got the botId from lex website, the alias I think is the correct (same from lex but I'm not sure if is the name or this ID), the (access key 1 is the one I'm using, and says 
+Access key last usedNever
+
+
+
+
+I can't figure out what's wrong, I tried to read a lot of tutorials but I have no luck. How I can setup this correctly?

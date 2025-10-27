@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_ce4e43be",
+      "Effect": "deny",
+      "Action": "kafka-cluster:ReadData",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_429abd03",
+      "Effect": "allow",
+      "Action": [
+        "kafka-cluster:Connect",
+        "kafka-cluster:WriteData"
+      ],
+      "Resource": "arn:aws:kafka:us-west-2:12ditAWSID:group/demo-cluster-1/document.txt"
+    },
+    {
+      "id": "allow_a305b748",
+      "Effect": "allow",
+      "Action": "kafka-cluster:DescribeGroup",
+      "Resource": "arn:aws:kafka:us-west-2:12ditAWSID:cluster/demo-cluster-1/config.xml"
+    },
+    {
+      "id": "deny_52b75b51",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:kafka:us-west-2:12ditAWSID:cluster/demo-cluster-1/config.xml"
+    },
+    {
+      "id": "allow_63b8ee4b",
+      "Effect": "allow",
+      "Action": [
+        "kafka-cluster:Connect",
+        "kafka-cluster:WriteDataIdempotently"
+      ],
+      "Resource": "arn:aws:kafka:us-west-2:12ditAWSID:topic/demo-cluster-1/config.xml"
+    }
+  ]
+}

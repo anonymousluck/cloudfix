@@ -1,0 +1,16 @@
+I created a service role with the following trust relationship:
+
+
+    "Version": "2012-10-17",
+    "Statement": [
+        
+    ]
+}```
+
+When I try to use this role to create a Firehose Delivery Stream, I get this error:
+
+`Firehose is unable to assume role arn:aws:iam::111111111111:role/myservicerolewithexternalid. Please check the role provided.`
+
+I assume this is because the Firehose service is not passing the external id when trying to create the Deliver Stream.  Strangely this DOES work if I set the external ID in the trust relationship to be the AWS account number, but no other external ID seems to work.
+
+How do services  (specifically  Data Firehose) pass an external id when trying to assume service roles?

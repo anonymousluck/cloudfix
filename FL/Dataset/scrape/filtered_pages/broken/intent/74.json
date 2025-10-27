@@ -1,0 +1,33 @@
+I want to set up access control in API Gateway based on the endpoint's sub-path and method. For example, when the endpoint is 
+https://httpbin.org/
+, I was able to successfully block access to the GET /get API using API Gateway's Resource Policy feature with the following JSON configuration:
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "execute-api:Invoke",
+      "Resource": [
+        "arn:aws:execute-api:ap-northeast-2:0xxxxxxxxx2:rxxxxxxxxx2/*/GET/get",
+        ......
+      ]
+    }
+  ]
+}
+
+
+
+However, this method poses a problem when there is a Path Variable. For instance, I want to block access to the GET /user/{id} API, but allow access to the sub-path GET /user/{id}/api/{api}. I replaced the curly braces {} in the API with * in the JSON configuration:
+
+
+
+
+
+
+With this policy, access to GET /user/* is blocked, but unfortunately, access to the sub-path GET /user/*/api/* is also blocked.
+
+
+What I want is to block GET /user/{id} while allowing access to the sub-path GET /user/{id}/api/{api}. I would like to know the correct method or configuration to implement access control based on method and path.

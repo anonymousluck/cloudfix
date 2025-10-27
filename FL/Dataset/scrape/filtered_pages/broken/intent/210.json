@@ -1,0 +1,396 @@
+Hi,
+
+
+Am using the below template for creating new was transfer family with vpc end point.
+
+
+But we could not reach VPC end point with  other networks.
+
+
+Because it seems to route issue.
+
+
+Can any one please suggest me to fix.
+
+
+Error Screen shot
+
+
+
+
+Successful screen shot - Currently in production
+
+
+
+
+Description:  This template create aws transfer family with add user and deploys a VPC and security group, with a pair of public and private subnets spread
+  across Single Availability Zones. It deploys an internet gateway, with a default
+  route on the public subnets. It deploys a pair of NAT gateways (one AZ),
+  and default routes for them in the private subnets, 
+
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  EnvironmentName:
+    Description: An environment name that is prefixed to resource names
+    Type: String
+
+  VpcCIDR:
+    Description: Please enter the IP range (CIDR notation) for this VPC
+    Type: String
+    Default: 10.192.0.0/16
+
+  PublicSubnetCIDR:
+    Description: Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone
+    Type: String
+    Default: 10.192.10.0/24
+
+  PrivateSubnetCIDR:
+    Description: Please enter the IP range (CIDR notation) for the private subnet in the first Availability Zone
+    Type: String
+    Default: 10.192.20.0/24
+
+  CreateServer:
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Type: String
+    Description: >-
+      Whether this stack creates a server internally or not. If a server is
+      created internally, the customer identity provider is automatically
+      associated with it.
+    Default: 'true'
+  
+  Endpointtype:
+    AllowedValues:
+      - 'Internal'
+      - 'Internet facing'
+    Type: String
+    Default: 'Internet facing'
+
+Conditions:
+  CreateServer:
+    'Fn::Equals':
+      - Ref: CreateServer
+      - 'true'    
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Resources
+
+  CloudWatchLoggingRole:
+    Description: IAM role used by Transfer  to log API requests to CloudWatch
+    Type: 'AWS::IAM::Role'
+    Condition: CreateServer
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - transfer.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'  
+   
+  GoldcoastTvodUser:
+    Type: 'AWS::Transfer::User'
+    Properties:
+      HomeDirectory: "/goldcoast-tvod"
+      HomeDirectoryType: "PATH"
+      Policy:
+        'Fn::Sub': |
+          
+      Role:
+        'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:role/TransferManagementRole'
+      ServerId:
+        'Fn::GetAtt': TransferServer.ServerId
+      SshPublicKeys:
+        - >-
+          ssh-rsa
+          AAAAB3
+      UserName: GoldcoastTvodUser
+
+  etcsvoduser:
+    Type: 'AWS::Transfer::User'
+    Properties:
+      HomeDirectory: "/etc-svod"
+      HomeDirectoryType: "PATH"
+      Policy:
+        'Fn::Sub': |
+          {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Sid": "AllowFullAccessToBucket",
+              "Action": "s3:*",
+              "Effect": "Allow", 
+              "Resource": [
+                "arn:aws:s3:::my-bucket",
+                "arn:aws:s3:::my-bucket/*"
+              ]
+            }
+          }
+      Role:
+        'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:role/TransferManagementRole'
+      ServerId:
+        'Fn::GetAtt': TransferServer.ServerId
+      SshPublicKeys:
+        - >-
+          ssh-rsa AAAAB3
+      UserName: etc-svod-user
+
+  etctvoduser:
+    Type: 'AWS::Transfer::User'
+    Properties:
+      HomeDirectory: "/tvn-tvod"
+      HomeDirectoryType: "PATH"
+      Policy:
+        'Fn::Sub': |
+          {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Sid": "AllowFullAccessToBucket",
+              "Action": "s3:*",
+              "Effect": "Allow", 
+              "Resource": [
+                "arn:aws:s3:::my-bucket",
+                "arn:aws:s3:::my-bucket/*"
+              ]
+            }
+          }
+      Role:
+        'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:role/TransferManagementRole'
+      ServerId:
+        'Fn::GetAtt': TransferServer.ServerId
+      SshPublicKeys:
+        - >-
+          ssh-rsa AAAAB3
+      UserName: etc-tvod-user
+
+  lhtcsvoduser:
+    Type: 'AWS::Transfer::User'
+    Properties:
+      HomeDirectory: "/lhtc-svod"
+      HomeDirectoryType: "PATH"
+      Policy:
+        'Fn::Sub': |
+          {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Sid": "AllowFullAccessToBucket",
+              "Action": "s3:*",
+              "Effect": "Allow", 
+              "Resource": [
+                "arn:aws:s3:::my-bucket",
+                "arn:aws:s3:::my-bucket/*"
+              ]
+            }
+          }
+      Role:
+        'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:role/TransferManagementRole'
+      ServerId:
+        'Fn::GetAtt': TransferServer.ServerId
+      SshPublicKeys:
+        - >-
+          ssh-rsa AAAAB3
+      UserName: lhtc-svod-user
+
+  lhtctvoduser:
+    Type: 'AWS::Transfer::User'
+    Properties:
+      HomeDirectory: "/tvn-tvod"
+      HomeDirectoryType: "PATH"
+      Policy:
+        'Fn::Sub': |
+          {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Sid": "AllowFullAccessToBucket",
+              "Action": "s3:*",
+              "Effect": "Allow", 
+              "Resource": [
+                "arn:aws:s3:::my-bucket",
+                "arn:aws:s3:::my-bucket/*"
+              ]
+            }
+          }
+      Role:
+        'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:role/TransferManagementRole'
+      ServerId:
+        'Fn::GetAtt': TransferServer.ServerId
+      SshPublicKeys:
+        - >-
+          ssh-rsa AAAAB3
+      UserName: lhtc-tvod-user
+
+  mastercopyfoleuser:
+    Type: 'AWS::Transfer::User'
+    Properties:
+      HomeDirectory: "/mastercopyfiles"
+      HomeDirectoryType: "PATH"
+      Policy:
+        'Fn::Sub': |
+          {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Sid": "AllowFullAccessToBucket",
+              "Action": "s3:*",
+              "Effect": "Allow", 
+              "Resource": [
+                "arn:aws:s3:::my-bucket",
+                "arn:aws:s3:::my-bucket/*"
+              ]
+            }
+          }
+      Role:
+        'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:role/TransferManagementRole'
+      ServerId:
+        'Fn::GetAtt': TransferServer.ServerId
+      SshPublicKeys:
+        - >-
+          ssh-rsa AAAAB3
+      UserName: mastercopyfole-user
+  
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref PublicSubnetCIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Subnet
+
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref PrivateSubnetCIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Private Subnet
+
+  NatGatewayEIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Elsatic Ip
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Routes
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Private Routes
+
+  PrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      SubnetId: !Ref PrivateSubnet
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "Production Security Group"
+      GroupDescription: "Security Group with inbound and outbound rule" 
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: udp
+        FromPort: 69
+        ToPort: 69
+        CidrIp: 96.47.148.171/32
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 3.16.146.0/29
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}
+
+  TfVPCInterfaceEndpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      VpcEndpointType: Interface
+      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.logs'
+      VpcId: !Ref VPC
+      SubnetIds: 
+        - !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+
+  TransferServer:
+    Type: 'AWS::Transfer::Server'
+    Condition: CreateServer
+    Properties:
+      EndpointType: 'VPC'
+      SecurityPolicyName: TransferSecurityPolicy-FIPS-2020-06
+      LoggingRole:
+        'Fn::GetAtt': CloudWatchLoggingRole.Arn
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Transferserver
+
+      EndpointDetails:
+        VpcId: !Ref VPC
+        SubnetIds: 
+          - !Ref PublicSubnet
+        AddressAllocationIds:
+          - !GetAtt NatGatewayEIP.AllocationId
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Transferserver

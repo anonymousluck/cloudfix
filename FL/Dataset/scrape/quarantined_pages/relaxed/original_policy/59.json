@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::1111:oidc-provider/keycloak.site.com/realms/test-realm"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "keycloak.site.com/realms/test-realm:aud": "client-aws"
+        },
+        "Bool": {
+          "keycloak.site.com/realms/test-realm:email_verified": "true"
+        }
+      },
+      "Sid": "statement1"
+    }
+  ]
+}

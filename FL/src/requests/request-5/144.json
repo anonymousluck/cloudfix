@@ -1,0 +1,71 @@
+{
+  "Requests": [
+    {
+      "id": "deny_9d0b3c38",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "allow_6fe0bf7a",
+      "Effect": "allow",
+      "Action": "s3:AcceptDataGrant",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalAccount": "ACCOUNTID"
+        }
+      }
+    },
+    {
+      "id": "allow_3d7438f2",
+      "Effect": "allow",
+      "Action": "s3:AcceptDataGrant",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    },
+    {
+      "id": "deny_5e823886",
+      "Effect": "deny",
+      "Action": "s3:AcceptDataGrant",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalOrgID": "ORGID"
+        },
+        "StringNotEquals": {
+          "aws:PrincipalAccount": "ACCOUNTID"
+        }
+      }
+    },
+    {
+      "id": "allow_bcee42f2",
+      "Effect": "allow",
+      "Action": "s3:AcceptDataGrant",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalOrgID": "ORGID"
+        },
+        "StringNotEquals": {
+          "aws:PrincipalAccount": "ACCOUNTID"
+        }
+      }
+    }
+  ]
+}

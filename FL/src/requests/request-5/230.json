@@ -1,0 +1,65 @@
+{
+  "Requests": [
+    {
+      "id": "allow_cf0973c5",
+      "Effect": "allow",
+      "Action": [
+        "s3:DeleteBucketCors",
+        "s3:DeleteBucketPolicy"
+      ],
+      "Resource": "arn:aws:logs:eu-central-1:******:log-group:/aws/lambda/cwsyn-grafana-thanosdocument",
+      "Condition": {
+        "StringEquals": {
+          "cloudwatch:namespace": "CloudWatchSynthetics"
+        }
+      }
+    },
+    {
+      "id": "deny_9b163f95",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::thanos-syn-canary",
+      "Condition": {
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2024-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "allow_d90c4efe",
+      "Effect": "allow",
+      "Action": "ec2:DeleteNetworkInterface",
+      "Resource": "arn:aws:s3:::thanos-syn-canary",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    },
+    {
+      "id": "allow_d736cd39",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketAcl",
+        "logs:CreateLogStream"
+      ],
+      "Resource": "arn:aws:logs:eu-central-1:******:log-group:/aws/lambda/cwsyn-grafana-thanosfile1",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "deny_42666c78",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::thanos-syn-canary",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    }
+  ]
+}

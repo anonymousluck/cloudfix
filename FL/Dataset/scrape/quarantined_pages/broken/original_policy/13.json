@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowAccessToCodeCatalyst",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": [
+          "codecatalyst-runner.amazonaws.com",
+          "codecatalyst.amazonaws.com",
+          "codebuild.amazonaws.com"
+        ]
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "ArnLike": {
+          "aws:SourceArn": [
+            "arn:aws:codecatalyst:::space/xxxx",
+            "arn:aws:codecatalyst:::space/xxxx/project/*"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+Is there a way to design a Lambda execution role policy to restrict access by using Lambda alias name. For example, I want to have an alias "Prod" and only executions of function with that alias would have permissions to write to a particular bucket. I tried using the new lambda:SourceFunctionArn condition, but it does not seem to include the alias, or I am not using it correctly. In the example below I am trying to achieve ability of all variants of my function to write into 
+my-bucket-test
+, but only Prod alias to be able to write to 
+my-bucket-data
+. Is there a way to achieve this?
+
+
+
+
+
+
+Thanks,
+Alex

@@ -1,0 +1,12 @@
+In my next.js amplify app, there is a valid policy attached to the Service role.
+
+
+The role has policy , which has acccess to S3 Read and write.
+
+
+
+
+
+
+Even with that, when , I try to put an object on S3, I get ,
+Could not load credentials from any providers Error [CredentialsProviderError]: Could not load credentials from any providers

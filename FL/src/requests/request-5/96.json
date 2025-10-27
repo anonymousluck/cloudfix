@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_2f657e19",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:sns:eu-west-1:account-b-id:sns-topic-name",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceAccount": [
+            "account-b-id",
+            "account-a-id"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_3e3c5d0e",
+      "Effect": "deny",
+      "Action": "sns:Publish",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Environment": "Production"
+        }
+      }
+    },
+    {
+      "id": "allow_1ae27ae9",
+      "Effect": "allow",
+      "Action": "sns:Publish",
+      "Resource": "arn:aws:sns:eu-west-1:account-b-id:sns-topic-name",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceAccount": [
+            "account-b-id",
+            "account-a-id"
+          ]
+        }
+      }
+    }
+  ]
+}

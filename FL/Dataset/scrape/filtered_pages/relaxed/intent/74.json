@@ -1,0 +1,43 @@
+Hi, I have a secret in account 111111111111 and I'm trying to access it from account 222222222222.
+
+
+To do this I followed this tutorial 
+https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_examples_cross.html
+
+
+I have this policy attached to a role called 
+my-super-role
+
+
+ 
+
+
+
+and this resource policy in the secret 
+mysecret
+
+
+{ 
+    "Version": "2012-10-17",
+    "Statement": [ 
+        { 
+            "Effect" : "Allow", 
+            "Principal" : { 
+                "AWS" : "arn:aws:iam::222222222:role/my-super-role" 
+            }, 
+            "Action" : "secretsmanager:GetSecretValue", 
+            "Resource" : "*" 
+        } 
+    ] 
+} 
+
+
+
+and I get the error
+
+
+ User: arn:aws:sts::222222222:assumed-role/my-super-role/i-xxxxxxxxxx is not authorized to perform: secretsmanager:GetSecretValue on resource: arn:aws:secretsmanager:sa-east-1:111111111:secret:mysecret because no resource-based policy allows the secretsmanager:GetSecretValue action 
+
+
+
+I've also specified the ARN of the secret in the resource policy of itself and that didn't change anything

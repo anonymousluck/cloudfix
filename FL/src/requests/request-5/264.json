@@ -1,0 +1,39 @@
+{
+  "Requests": [
+    {
+      "id": "deny_dfb98ab2",
+      "Effect": "deny",
+      "Action": "es:GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    },
+    {
+      "id": "allow_ba5c4442",
+      "Effect": "allow",
+      "Action": "es:GetObject",
+      "Resource": "arn:aws:es:us-east-1:000000000000:domain/my-domain/document.txt",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    },
+    {
+      "id": "allow_c29b3c16",
+      "Effect": "allow",
+      "Action": "es:GetObject",
+      "Resource": "arn:aws:es:us-east-1:000000000000:domain/my-domain/config.xml",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role"
+    },
+    {
+      "id": "deny_cacf0a04",
+      "Effect": "deny",
+      "Action": "es:GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    },
+    {
+      "id": "allow_fffa68ab",
+      "Effect": "allow",
+      "Action": "es:GetObject",
+      "Resource": "arn:aws:es:us-east-1:000000000000:domain/my-domain/data.json",
+      "Principal": "*"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "Requests": [
+    {
+      "id": "allow_0bcc751d",
+      "Effect": "allow",
+      "Action": [
+        "ec2:RunInstances",
+        "lambda:CreateFunction"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "allow_f8a5b7a5",
+      "Effect": "allow",
+      "Action": [
+        "lambda:DeleteFunction",
+        "lambda:InvokeFunction"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*:*:volume/document.txt",
+        "arn:aws:ec2:*:*:instance/data.json"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Product": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_cf96d1bb",
+      "Effect": "allow",
+      "Action": [
+        "lambda:UpdateFunctionCode",
+        "dynamodb:CreateTable"
+      ],
+      "Resource": "arn:aws:ec2:*:*:instance/config.xml",
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Name": "true"
+        }
+      }
+    },
+    {
+      "id": "deny_655fd34e",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "deny_bcbcc8cd",
+      "Effect": "deny",
+      "Action": "ec2:StartInstances",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/InfraOwner": "true"
+        }
+      }
+    }
+  ]
+}

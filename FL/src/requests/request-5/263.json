@@ -1,0 +1,75 @@
+{
+  "Requests": [
+    {
+      "id": "allow_47abbe21",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::test-transferfamily-demo",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "${transfer:UserName}/*",
+            "test-transferfamily-demo/${transfer:UserName}/*",
+            "sftp-demo2/${transfer:UserName}/*"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_275758a7",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::sftp-demo2/${transfer:UserName}/data.json",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_bb6a0d45",
+      "Effect": "allow",
+      "Action": "s3:ListBucket",
+      "Resource": [
+        "arn:aws:s3:::sftp-demo2/${transfer:UserName}/config.xml",
+        "arn:aws:s3:::test-transferfamily-demo"
+      ],
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "192.168.1.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_734893bc",
+      "Effect": "deny",
+      "Action": "s3:DeleteObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_4a94937b",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::sftp-demo2/${transfer:UserName}/config.xml",
+        "arn:aws:s3:::test-transferfamily-demo"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    }
+  ]
+}

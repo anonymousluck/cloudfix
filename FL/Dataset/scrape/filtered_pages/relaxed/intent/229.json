@@ -1,0 +1,44 @@
+Hello, I has an error below when calling batch inference:
+
+An error occurred (ValidationException) when calling the CreateModelInvocationJob operation: The provided ARN is invalid for the service region
+
+
+This is the code I used
+
+
+import boto3
+
+bedrock = boto3.client(service_name="bedrock")
+
+inputDataConfig=({
+    "s3InputDataConfig": {
+        "s3Uri": "s3://test/input/test.jsonl"
+    }
+})
+
+outputDataConfig=({
+    "s3OutputDataConfig": {
+        "s3Uri": "s3://test/output/"
+    }
+})
+
+response=bedrock.create_model_invocation_job(
+    roleArn="arn:aws:iam::{accountID}:role/BedRock-Batch-Inference",
+    modelId="arn:aws:bedrock:eu-west-3:{accountID}:inference-profile/eu.anthropic.claude-3-5-sonnet-20240620-v1:0",
+    jobName="test",
+    inputDataConfig=inputDataConfig,
+    outputDataConfig=outputDataConfig
+)
+
+jobArn = response.get('jobArn')
+
+
+
+I already added below policy to my roleArn
+
+
+
+
+
+
+Does anyone know how to resolve this problem? Thanks.

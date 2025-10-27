@@ -1,0 +1,49 @@
+{
+  "Requests": [
+    {
+      "id": "deny_e1877a28",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:iot:eu-west-3:ACCOUNT_ID:topic/CLIENT_ID/config.xml"
+    },
+    {
+      "id": "allow_486e7e12",
+      "Effect": "allow",
+      "Action": [
+        "iot:Receive",
+        "iot:Connect"
+      ],
+      "Resource": "arn:aws:iot:eu-west-3:ACCOUNT_ID:topic/$aws/things/CLIENT_ID/shadow/document.txt"
+    },
+    {
+      "id": "allow_35b04807",
+      "Effect": "allow",
+      "Action": [
+        "iot:Subscribe",
+        "iot:Publish"
+      ],
+      "Resource": [
+        "arn:aws:iot:eu-west-3:ACCOUNT_ID:topicfilter/CLIENT_ID/config.xml",
+        "arn:aws:iot:eu-west-3:ACCOUNT_ID:topic/$aws/things/CLIENT_ID/shadow/data.json"
+      ]
+    },
+    {
+      "id": "allow_5f5282a2",
+      "Effect": "allow",
+      "Action": [
+        "iot:Subscribe",
+        "iot:Receive"
+      ],
+      "Resource": [
+        "arn:aws:iot:eu-west-3:ACCOUNT_ID:topic/$aws/things/CLIENT_ID/shadow/config.xml",
+        "arn:aws:iot:eu-west-3:ACCOUNT_ID:topic/$aws/things/CLIENT_ID/shadow/data.json"
+      ]
+    },
+    {
+      "id": "deny_0fe67d14",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:iot:eu-west-3:ACCOUNT_ID:topic/CLIENT_ID/data.json"
+    }
+  ]
+}

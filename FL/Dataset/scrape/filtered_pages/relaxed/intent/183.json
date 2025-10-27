@@ -1,0 +1,44 @@
+I'm using EKS Auto with a custom Node Pool to use EC2 Spot Instances. EKS Auto fails to spin up EC2 Spot instances because the 
+AWSServiceRoleForEC2Spot
+ service-linked role does not exist. EKS Auto tries to create the 
+AWSServiceRoleForEC2Spot
+ service-linked role and fail with error "no session policy allows the iam:CreateServiceLinkedRole action". The Cluster IAM Role has the 
+iam:CreateServiceLinkedRole
+ permission, but it seems that when the EKS assume the role and create the session, a session policy is passed in and that session policy doesn't request 
+iam:CreateServiceLinkedRole
+.
+
+
+I have the following setup.
+
+
+
+
+The Cluster IAM Role: 
+CustomRoleForAmazonEKSAutoCluster
+ - Configured according to 
+https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
+
+
+The same cluster IAM Role also has the following permission attached as an in-linepolicy
+
+
+
+
+        
+
+
+
+I observed the following error in a CloudTrail event.
+
+
+"errorMessage": "User: arn:aws:sts::{ACCOUNT_ID}:assumed-role/CustomRoleForAmazonEKSAutoCluster/aws-go-sdk-1746204116907768802 is not authorized to perform: iam:CreateServiceLinkedRole on resource: arn:aws:iam::{ACCOUNT_ID}:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot because no session policy allows the iam:CreateServiceLinkedRole action"
+
+
+
+This can easily be fixed by running CLI command 
+aws iam create-service-linked-role --aws-service-name spot.amazonaws.com
+, but I managed multiple-hundred AWS accounts and would need to do this for each account. Running this script for multiple accounts and every time a new account gets provisioned is not an acceptable solution for us end EKS Auto clearly tries to provision the service-linked role already.
+
+
+What configuration can we change so that EKS Auto will have the correct permissions in the session to create the service-linked role?

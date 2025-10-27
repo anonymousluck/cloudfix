@@ -1,0 +1,72 @@
+{
+  "Requests": [
+    {
+      "id": "allow_9b149255",
+      "Effect": "allow",
+      "Action": "ssm:SendCommand",
+      "Resource": [
+        "arn:aws:ec2:*:*:instance/data.json",
+        "arn:aws:ec2:*:*:instance/config.xml"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "ssm:resourceTag/CreatedBy": [
+            "EC2 Image Builder"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_8c33b69d",
+      "Effect": "allow",
+      "Action": "ssm:SendCommand",
+      "Resource": "arn:aws:ec2:*:*:instance/data.json",
+      "Condition": {
+        "StringEquals": {
+          "ssm:resourceTag/CreatedBy": [
+            "EC2 Image Builder"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_a6689134",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:ec2:*:*:instance/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "ssm:resourceTag/CreatedBy": [
+            "EC2 Image Builder"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deny_898d0235",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:ec2:*:*:instance/data.json",
+      "Condition": {
+        "StringEquals": {
+          "ssm:resourceTag/CreatedBy": [
+            "EC2 Image Builder"
+          ]
+        }
+      }
+    },
+    {
+      "id": "allow_c3886aa3",
+      "Effect": "allow",
+      "Action": "ssm:SendCommand",
+      "Resource": "arn:aws:ec2:*:*:instance/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "ssm:resourceTag/CreatedBy": [
+            "EC2 Image Builder"
+          ]
+        }
+      }
+    }
+  ]
+}

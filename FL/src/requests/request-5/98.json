@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "deny_c1816081",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::my-test-bucketc/config.xml"
+    },
+    {
+      "id": "allow_e616e9d9",
+      "Effect": "allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_3179ea37",
+      "Effect": "allow",
+      "Action": "ssm:GetParameter",
+      "Resource": "arn:aws:ssm:us-east-1:11111111111:my-test-app/data.json"
+    },
+    {
+      "id": "deny_b6549382",
+      "Effect": "deny",
+      "Action": "logs:CreateLogGroup",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_9e3522a9",
+      "Effect": "allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "ssm:GetParameters"
+      ],
+      "Resource": "arn:aws:s3:::my-test-bucketc/config.xml"
+    }
+  ]
+}

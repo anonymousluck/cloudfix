@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "allow_42abb55c",
+      "Effect": "allow",
+      "Action": "execute-api:Invoke",
+      "Resource": [
+        "arn:aws:execute-api:ap-northeast-2:0xxxxxxxxxx2:rxxxxxx2/*/GET/user/document.txt",
+        "arn:aws:execute-api:ap-northeast-2:0xxxxxxxxxx2:rxxxxxx2/*/GET/user/data.json"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "deny_ac65f46f",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:execute-api:ap-northeast-2:0xxxxxxxxxx2:rxxxxxx2/*/GET/user/*/api/document.txt",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    },
+    {
+      "id": "allow_fb616c91",
+      "Effect": "allow",
+      "Action": "execute-api:Invoke",
+      "Resource": [
+        "arn:aws:execute-api:ap-northeast-2:0xxxxxxxxxx2:rxxxxxx2/*/GET/user/config.xml",
+        "arn:aws:execute-api:ap-northeast-2:0xxxxxxxxxx2:rxxxxxx2/*/GET/user/*/api/data.json"
+      ],
+      "Principal": "arn:aws:iam::123456789012:user/alice"
+    },
+    {
+      "id": "allow_c1319897",
+      "Effect": "allow",
+      "Action": "execute-api:Invoke",
+      "Resource": "arn:aws:execute-api:ap-northeast-2:0xxxxxxxxxx2:rxxxxxx2/*/GET/user/*/api/document.txt",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "deny_771f3f30",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:execute-api:ap-northeast-2:0xxxxxxxxxx2:rxxxxxx2/*/GET/user/*/api/config.xml",
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized"
+    }
+  ]
+}

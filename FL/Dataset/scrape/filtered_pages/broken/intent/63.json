@@ -1,0 +1,50 @@
+I'm trying to deploy Hadoop on EMR EC2 Cluster and having an issue with 
+local disk encryption error
+ on AWS Console.
+AWS doesn't provide me any deeper logs nor info about the issue (S3 bucket log is empty, CloudTrail doesn't have Error Codes).
+
+
+My Security Configuration: use KMS CMK, Encryption Local disk, IMDSv2, AuthN: Off, AuthZ: Instance Profile.
+
+
+Used Roles:
+EMR_DefaultRole (Policies : AmazonEMRServicePolicy_v2, myCustomPolicy)
+EMR_EC2_DefaultRole (Policies : AmazonElasticMapReduceforEC2Role, myCustomPolicy)
+
+
+
+myCustomPolicy:
+
+
+
+
+
+
+In addition:
+
+
+
+
+I'm using standard Amazon Linux AMI.
+
+
+In KMS CMK I pointed my EMR_DefaultRole and EMR_EC2_DefaultRole as a users and administrators of KEY.
+
+
+I've deployed cluster in subnet with Internet connection through IGW.
+
+
+
+
+Reference guides:
+
+
+
+
+https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html
+
+
+https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-security.html
+
+
+https://repost.aws/knowledge-center/emr-create-cluster-with-ebs-encryption

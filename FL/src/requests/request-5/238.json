@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_1795af5c",
+      "Effect": "deny",
+      "Action": "cognito-idp:GetIdentityProviderByIdentifier",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_64fa2a66",
+      "Effect": "allow",
+      "Action": [
+        "cognito-idp:ListUsersInGroup",
+        "cognito-idp:AdminListGroupsForUser"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_b13836b5",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:cognito-idp:eu-west-1:XXXXXXXXXX:userpool/USER_POOL_ID"
+    },
+    {
+      "id": "allow_6020369a",
+      "Effect": "allow",
+      "Action": "cognito-idp:GetUICustomization",
+      "Resource": "arn:aws:cognito-idp:eu-west-1:XXXXXXXXXX:userpool/USER_POOL_ID"
+    },
+    {
+      "id": "allow_5ffd4d48",
+      "Effect": "allow",
+      "Action": [
+        "cognito-idp:AdminDisableUser",
+        "cognito-idp:GetIdentityProviderByIdentifier"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    }
+  ]
+}

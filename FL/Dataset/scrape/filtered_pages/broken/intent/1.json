@@ -1,0 +1,150 @@
+I am trying to set up a very basic API using AWS SAM  and API Gateway.
+My API is being setup to retrieve engine hours from some machinery.
+This information is retrieved using a Lambda function (getHoursFromInflux)
+
+
+This is a broken down version of my template.yaml in my SAM-Project
+
+
+# This is the SAM template that represents the architecture of your serverless application
+# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-template-basics.html
+
+# The AWSTemplateFormatVersion identifies the capabilities of the template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  hours-api
+
+# Transform section specifies one or more macros that AWS CloudFormation uses to process your template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
+Transform:
+- AWS::Serverless-2016-10-31
+
+# Resources declares the AWS resources that you want to include in the stack
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
+Resources:
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  #Create API authentication
+  HOURSAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        DefaultAuthorizer: AWS_IAM
+  
+
+
+  getHoursFromInflux:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/telemetry/assetHours/
+      Handler: index.handler
+      Layers:
+        - !Ref apiLayer
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Retreives latest engine hours from all vessels that published engine hours in last 24hours
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the VesselIDTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VesselIDTable
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          SAMPLE_TABLE: !Ref VesselIDTable
+      Events:
+        GetRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HOURSAPI
+            Path: /assets/hours
+            Method: POST
+  # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
+
+  
+  #Lambda Layers
+  apiLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: apiLayer
+      Description: Dependencies for API
+      ContentUri: dependencies/apiDependencies
+      CompatibleRuntimes:
+        - nodejs16.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+  
+  # DynamoDB table to store item: {id: &lt;ID&gt;, name: &lt;NAME&gt;}
+  VesselIDTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: Number
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "MYURL???????"
+
+
+
+
+When I deploy this API I create a user in IAM and give it the following permissions:
+which allows this user to invoke the API and invoke the Lambda
+
+
+
+
+
+
+What I would like to understand is a two part question.
+
+
+1: Why do I need to specifically allow the invoking of the Lambda function when that is the whole intention of setting up the API. If the API has permission to be invoked then it would make sense to me that the Lambda can be invoked too.
+2: Is there another way to set permissions on this api without having to set up the user permissions to allow the invoking of the lambda function?
+
+
+I tried this in the template:
+
+
+  HOURSAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        DefaultAuthorizer: AWS_IAM
+        InvokeRole: Transdev_API_InvokeRole
+
+
+
+That invoke role (Transdev_API_InvokeRole) has the permissions to invoke the lambda however it does not work.
+
+
+
+
+The second question I had around authorisation is the ability to use one generic lambda function for multiple different users.
+
+
+example:
+
+
+my API POST requests takes an argument of "fleetOperator"
+
+
+in the 'getHoursFromInflux' lambda function this 'fleetOperator' value is used to reference a specific AWS-Secret-Manager Secret.
+
+
+I currently have to provide policies for the lambda to access this secret value. Ideally I would like to use the user policies that made the POST request when the lambda is invoked. This was I can set that userA has the permission to access AWS-Secret "fleetOperatorA" and userB has the permission to access AWS-Secret "fleetOperatorB". They cannot then access each others information.
+
+
+Is this possible to set up using the SAM Template?

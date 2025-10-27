@@ -1,0 +1,49 @@
+Hi,
+I've been learning terraform, and created a S3 bucket hosting a nuxt app and a cloudfront distribution pointing to said bucket.
+This setup is working perfectly when accessing the bucket via the Distrib url, however I want to use a custom subdomain from a domain name I own (I'm using OVH for the domain).
+I've set up the DNS record like so:
+[xxxx.yyyy.fr] CNAME [Distrib URL].
+I also created an ACM certificate pointing to said subdomain, had it validated using DNS entries, and added it to the distrib. I have the custom subdomain set up in the cloudfront Alternate Domain Names.
+
+
+To note: I have set up both the certificate and alternate domain name as "xxxx.yyyy.fr" and not "*.xxxx.yyyy.fr", I don't know if that could be the issue.
+
+
+Whenever I visit the subdomain, I'm getting a "This site can't be reached", "DNS_PROBE_FINISHED_NXDOMAIN".
+I've also checked the CNAME record propagation, and it seems to be configured properly.
+
+
+I've set up the bucket Policy like so:
+
+
+
+
+
+
+Here are the S3 CORS policy
+
+
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "POST",
+            "GET",
+            "HEAD",
+            "DELETE",
+            "PUT"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ],
+        "ExposeHeaders": [],
+        "MaxAgeSeconds": 0
+    }
+]
+
+
+
+Any ideas as to why I can use the distrib's url but not my custom subdomain ?
+Thanks.

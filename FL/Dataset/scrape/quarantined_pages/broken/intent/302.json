@@ -1,0 +1,85 @@
+Source System:
+ Aurora MySQL
+
+
+
+
+
+
+Target System:
+ Amazon Opensearch Service
+
+
+
+
+
+
+Middle man:
+ AWS Database Migration Service
+
+
+
+
+Hi,
+
+
+I have a replication instance in AWS DMS which is using Aurora MySQL as the source and Opensearch Service as the target. Test connection is working with the Aurora MySQL, but not with Opensearch Service. I get the following error:
+
+
+Test Endpoint failed: Application-Status: 1020912, Application-Message: Failed to connect to database.
+
+
+Permission Defined in the policy:
+
+
+
+
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Effect": "Allow",
+"Action": "es:
+",
+"Resource": "arn:aws:es:{REGION}:{ACCOUNT_ID}:domain/{DOMAIN_NAME}/
+"
+},
+{
+"Effect": "Allow",
+"Action": "dms:
+",
+"Resource": "
+"
+},
+{
+"Effect": "Allow",
+"Action": [
+"rds:DescribeDBInstances",
+"rds:DescribeDBClusters"
+],
+"Resource": "*"
+}
+]
+}
+
+
+
+
+Trust Relationship:
+
+
+
+
+
+
+
+
+
+Opensearch service is having public access and having Fine-grained access control enabled. So I can access opensearch dashboard with userid and password.
+
+
+Please suggest what can be done to solve the issue.
+
+
+Regards,
+Sagar

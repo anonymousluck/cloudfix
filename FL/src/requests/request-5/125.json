@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "deny_20164db5",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:dynamodb:*:<ACCOUNT>:table/<TABLE>",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "deny_a9ee0b6d",
+      "Effect": "deny",
+      "Action": "dynamodb:UpdateItem",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_2f4dbdc3",
+      "Effect": "allow",
+      "Action": "dynamodb:UpdateItem",
+      "Resource": "arn:aws:dynamodb:*:<ACCOUNT>:table/<TABLE>",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    }
+  ]
+}

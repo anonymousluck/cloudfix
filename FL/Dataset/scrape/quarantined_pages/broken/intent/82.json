@@ -1,0 +1,30 @@
+Hi,
+
+
+What about if the user assumes the role and the policy is applied on the STS trust level or the destination? For instance, I have a user who logs into the system with MFA credentials, gets the access creds + token, and then tries to assume another role that can operate on something. What is carried exactly to STS that can be used for the verification?
+
+
+I am having trouble verifying whether the user has a token assigned to it during trust verification.
+The STS policy is like:
+
+
+
+
+
+
+
+And should be enriched with:
+
+
+          "Condition": {
+                "Null": {
+                    "aws:TokenIssueTime": "false"
+                }
+            }
+
+
+
+But when I do, then it stops working. Any ideas?
+
+
+Regards

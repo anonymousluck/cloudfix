@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "deny_920e659a",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:secretsmanager:region:account-id:secret:secret-name-1"
+    },
+    {
+      "id": "allow_efe6b56b",
+      "Effect": "allow",
+      "Action": "secretsmanager:ListSecrets",
+      "Resource": "arn:aws:secretsmanager:region:account-id:secret:secret-name-1"
+    },
+    {
+      "id": "deny_8a25a03b",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:secretsmanager:region:account-id:secret:secret-name-1"
+    }
+  ]
+}

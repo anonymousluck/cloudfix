@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": [
+          "gamelift.me-south-1.amazonaws.com",
+          "gamelift.amazonaws.com",
+          "gamelift.eu-south-1.amazonaws.com",
+          "gamelift.eu-central-1.amazonaws.com",
+          "gamelift.ap-east-1.amazonaws.com",
+          "gamelift.af-south-1.amazonaws.com"
+        ]
+      },
+      "Action": "sts:AssumeRole",
+      "Sid": "statement1"
+    }
+  ]
+}

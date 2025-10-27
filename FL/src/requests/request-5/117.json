@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "allow_0a2d4054",
+      "Effect": "allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:region:account-id:secret:my-secret-name"
+    },
+    {
+      "id": "deny_0109961a",
+      "Effect": "deny",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "deny_ba0cad91",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:secretsmanager:region:account-id:secret:my-secret-name"
+    }
+  ]
+}

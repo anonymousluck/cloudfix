@@ -1,0 +1,73 @@
+{
+  "Requests": [
+    {
+      "id": "allow_fdc86c03",
+      "Effect": "allow",
+      "Action": "s3:PutObjectAcl",
+      "Resource": [
+        "arn:aws:s3:::account_b_bucket_name/document.txt",
+        "arn:aws:s3:::account_b_bucket_name/data.json"
+      ],
+      "Principal": "bedrock.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "ACCOUNT_A"
+        }
+      }
+    },
+    {
+      "id": "allow_6eb4fd2a",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketLifecycle",
+        "s3:DeleteBucketLifecycle"
+      ],
+      "Resource": [
+        "arn:aws:s3:::account_b_bucket_name",
+        "arn:aws:s3:::account_b_bucket_name/data.json"
+      ],
+      "Principal": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_87706715",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::account_b_bucket_name/config.xml",
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "deny_6ef80190",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:s3:::account_b_bucket_name/data.json",
+      "Principal": "bedrock.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "ACCOUNT_A"
+        }
+      }
+    },
+    {
+      "id": "allow_d7163727",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::account_b_bucket_name/data.json",
+      "Principal": "arn:aws:iam::ACCOUNT_A:role/lambda_execution_role",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "ACCOUNT_A"
+        }
+      }
+    }
+  ]
+}

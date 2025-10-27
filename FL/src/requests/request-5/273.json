@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_c54c8efe",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::bucket-name/prefix/AWSLogs/aws-account-id/data.json",
+        "arn:aws:s3:::bucket-name/prefix/AWSLogs/aws-account-id/document.txt"
+      ],
+      "Principal": "arn:aws:iam::elb-account-id:root"
+    },
+    {
+      "id": "deny_100d9e6f",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3:::bucket-name/prefix/AWSLogs/aws-account-id/document.txt",
+      "Principal": "arn:aws:iam::elb-account-id:root"
+    },
+    {
+      "id": "allow_ca321be0",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::bucket-name/prefix/AWSLogs/aws-account-id/document.txt",
+      "Principal": "arn:aws:iam::elb-account-id:root"
+    },
+    {
+      "id": "allow_4001ae27",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::bucket-name/prefix/AWSLogs/aws-account-id/data.json",
+      "Principal": "arn:aws:iam::elb-account-id:root"
+    },
+    {
+      "id": "deny_ea800369",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::bucket-name/prefix/AWSLogs/aws-account-id/document.txt",
+      "Principal": "arn:aws:iam::elb-account-id:root"
+    }
+  ]
+}

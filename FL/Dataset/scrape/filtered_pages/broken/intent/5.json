@@ -1,0 +1,287 @@
+Hello all, I am trying to connect to AWS Kinesis Video Streams using a webRTC tutorial. I am trying to use IoT credentials rather than the Access Key and Secret Key. I thought I followed the tutorial correctly but I get the error message "AWS_ACCESS_KEY_ID must be set"
+
+
+**More info below. **
+
+
+I created a IAM policy:
+
+
+KVSIoTCameraPolicy:
+
+
+  "Version": "2012-10-17",
+    "Statement": [
+        ,
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kinesisvideo:DescribeSignalingChannel",
+                "kinesisvideo:CreateSignalingChannel",
+                "kinesisvideo:GetSignalingChannelEndpoint",
+                "kinesisvideo:GetIceServerConfig",
+                "kinesisvideo:ConnectAsMaster"
+            ],
+            "Resource": "arn:aws:kinesisvideo:*:*:channel/${credentials-iot:ThingName}/*"
+        }
+    ]
+}
+
+
+
+Connected to KvsIotCameraIAMRole
+created a thing: rpi
+*****
+generate/download Certificates
+download RootCA1
+Added Thing to Thing Group: KvsCameraDevices
+Created Role Alias: KVSCameraIoTRoleAlias
+Generated IoT Policy: KvsIoTDevicePolicy
+*
+
+
+KvsIoTDevicePolicy
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Receive"
+      ],
+      "Resource": "arn:aws:iot:us-east-1:************:topic/${iot:Connection.Thing.ThingName}/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Subscribe",
+      "Resource": "arn:aws:iot:us-east-1:************:topicfilter/${iot:Connection.Thing.ThingName}/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:AssumeRoleWithCertificate",
+      "Resource": "arn:aws:iot:us-east-1:************:rolealias/KVSCameraIoTRoleAlias"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": "*",
+      "Condition": {
+        "Bool": {
+          "iot:Connection.Thing.IsAttached": [
+            "true"
+          ]
+        }
+      }
+    }
+  ]
+}
+
+
+
+I followed a tutorial found here 
+https://www.youtube.com/watch?v=9YI4POQVUl8&authuser=0
+ posted May 13, 2021. It matched up to current procedure fine until the editing of the Common.c file. I then switched to the instructions found at 
+https://github.com/awslabs/amazon-kinesis-video-streams-webrtc-sdk-c
+
+
+Instructions:
+
+
+
+
+With the IoT certificate, IoT credentials provider endpoint (Note: it is not the endpoint on IoT AWS Console!), public key and private key ready, you can replace the static credentials provider createStaticCredentialProvider() and freeStaticCredentialProvider() with IoT credentials provider like below, the credentials provider for samples is in createSampleConfiguration():
+
+
+
+
+createLwsIotCredentialProvider(
+            "coxxxxxxxx168.credentials.iot.us-west-2.amazonaws.com",  // IoT credentials endpoint
+            "/Users/username/Downloads/iot-signaling/certificate.pem",  // path to iot certificate
+            "/Users/username/Downloads/iot-signaling/private.pem.key", // path to iot private key
+            "/Users/username/Downloads/iot-signaling/cacert.pem", // path to CA cert
+            "KinesisVideoSignalingCameraIoTRoleAlias", // IoT role alias
+            channelName, // iot thing name, recommended to be same as your channel name
+            &pSampleConfiguration->pCredentialProvider));
+
+freeIotCredentialProvider(&pSampleConfiguration->pCredentialProvider);
+
+
+
+
+However, this is listed in the 
+Common.c
+ file for 
+createLwsIotCredentialProvider
+:
+
+
+#ifdef IOT_CORE_ENABLE_CREDENTIALS
+    CHK_STATUS(createLwsIotCredentialProvider(pIotCoreCredentialEndPoint, pIotCoreCert, pIotCorePrivateKey, pSampleConfiguration->pCaCertPath,
+                                              pIotCoreRoleAlias, channelName, &pSampleConfiguration->pCredentialProvider));
+#else
+    CHK_STATUS(
+        createStaticCredentialProvider(pAccessKey, 0, pSecretKey, 0, pSessionToken, 0, MAX_UINT64, &pSampleConfiguration->pCredentialProvider));
+
+
+
+
+And this for 
+freeIotCredentialProvider
+:
+
+
+#ifdef IOT_CORE_ENABLE_CREDENTIALS
+    freeIotCredentialProvider(&pSampleConfiguration->pCredentialProvider);
+#else
+    freeStaticCredentialProvider(&pSampleConfiguration->pCredentialProvider);
+
+
+
+
+Which I assume already does what the instructions say but I changed it to this for 
+createLwsIotCredentialProvider
+:
+
+
+#ifdef IOT_CORE_ENABLE_CREDENTIALS
+    CHK_STATUS(createLwsIotCredentialProvider(
+                           "coxxxxxxxx168.credentials.iot.us-west-2.amazonaws.com",  // IoT credentials endpoint
+                           "/Users/username/Downloads/iot-signaling/certificate.pem",  // path to iot certificate
+                           "/Users/username/Downloads/iot-signaling/private.pem.key", // path to iot private key
+                           "/Users/username/Downloads/iot-signaling/cacert.pem", // path to CA cert
+                           "KinesisVideoSignalingCameraIoTRoleAlias", // IoT role alias
+                           channelName, // iot thing name, recommended to be same as your channel name
+                           &pSampleConfiguration->pCredentialProvider));
+#else
+    CHK_STATUS(
+        createStaticCredentialProvider(pAccessKey, 0, pSecretKey, 0, pSessionToken, 0, MAX_UINT64, &pSampleConfiguration->pCredentialProvider));
+
+
+
+
+And this for 
+freeIotCredentialProvider
+:
+
+
+#ifdef IOT_CORE_ENABLE_CREDENTIALS
+    freeIotCredentialProvider(&pSampleConfiguration->pCredentialProvider);
+#else
+    freeStaticCredentialProvider(&pSampleConfiguration->pCredentialProvider);
+
+
+
+Still I get the error message: 
+AWS_ACCESS_KEY_ID must be set
+
+
+I then changed the 
+createLwsIotCredentialProvider
+ function to:
+
+
+#ifdef IOT_CORE_ENABLE_CREDENTIALS
+    CHK_STATUS(createLwsIotCredentialProvider(pIotCoreCredentialEndPoint, pIotCoreCert, pIotCorePrivateKey, pSampleConfiguration->pCaCertPath,
+                                              pIotCoreRoleAlias, channelName, &pSampleConfiguration->pCredentialProvider));
+#else
+    CHK_STATUS(createLwsIotCredentialProvider(
+                           "coxxxxxxxx168.credentials.iot.us-west-2.amazonaws.com",  // IoT credentials endpoint
+                           "/Users/username/Downloads/iot-signaling/certificate.pem",  // path to iot certificate
+                           "/Users/username/Downloads/iot-signaling/private.pem.key", // path to iot private key
+                           "/Users/username/Downloads/iot-signaling/cacert.pem", // path to CA cert
+                           "KinesisVideoSignalingCameraIoTRoleAlias", // IoT role alias
+                           channelName, // iot thing name, recommended to be same as your channel name
+                           &pSampleConfiguration->pCredentialProvider));
+
+
+
+
+And the "freeIotCredentialProvider" function to this:
+
+
+#ifdef IOT_CORE_ENABLE_CREDENTIALS
+    freeIotCredentialProvider(&pSampleConfiguration->pCredentialProvider);
+#else
+    freeIotCredentialProvider(&pSampleConfiguration->pCredentialProvider);
+
+
+
+Still I get the error message: 
+AWS_ACCESS_KEY_ID must be set
+.
+
+
+I changed everything back to the original settings and  found that in the 
+Samples.h
+ file I have to uncomment a line to enable IoT core credentials.
+**I changed it from this: **
+
+
+/* Uncomment the following line in order to enable IoT credentials checks in the provided samples */
+//#define IOT_CORE_ENABLE_CREDENTIALS  1
+
+
+
+To this:
+
+
+/* Uncomment the following line in order to enable IoT credentials checks in the provided samples */
+#define IOT_CORE_ENABLE_CREDENTIALS  1
+
+
+
+I then repeated the same steps as above and got the same error message 
+AWS_ACCESS_KEY_ID must be set
+.
+
+
+In the Common.c file in the 
+createSampleConfiguration()
+ function it does show that if IoT credentials are enabled, it should  check for the IoT credentials instead of the Access Key and Secret Key as shown here
+
+
+#ifdef IOT_CORE_ENABLE_CREDENTIALS
+    PCHAR pIotCoreCredentialEndPoint, pIotCoreCert, pIotCorePrivateKey, pIotCoreRoleAlias, pIotCoreThingName;
+    CHK_ERR((pIotCoreCredentialEndPoint = getenv(IOT_CORE_CREDENTIAL_ENDPOINT)) != NULL, STATUS_INVALID_OPERATION,
+            "AWS_IOT_CORE_CREDENTIAL_ENDPOINT must be set");
+    CHK_ERR((pIotCoreCert = getenv(IOT_CORE_CERT)) != NULL, STATUS_INVALID_OPERATION, "AWS_IOT_CORE_CERT must be set");
+    CHK_ERR((pIotCorePrivateKey = getenv(IOT_CORE_PRIVATE_KEY)) != NULL, STATUS_INVALID_OPERATION, "AWS_IOT_CORE_PRIVATE_KEY must be set");
+    CHK_ERR((pIotCoreRoleAlias = getenv(IOT_CORE_ROLE_ALIAS)) != NULL, STATUS_INVALID_OPERATION, "AWS_IOT_CORE_ROLE_ALIAS must be set");
+
+
+
+I am using a script to run the 
+kvsWebRTCClientMasterGstreamerSample
+ sample
+
+
+Script:
+
+
+#!/bin/bash
+
+set +x
+
+export AWS_IOT_CORE_THING_NAME=rpi******
+
+export CERTS_DIR=$HOME/
+export AWS_DEFAULT_REGION=us-east-1
+export AWS_IOT_CORE_CREDENTIAL_ENDPOINT=**************.credentials.iot.us-east-1.amazonaws.com
+export AWS_IOT_CORE_ROLE_ALIAS=KVSCameraIoTRoleAlias
+export AWS_IOT_CORE_CERT=$HOME/**********-certificate.pem.crt
+export AWS_IOT_CORE_PRIVATE_KEY=$HOME/**********-private.pem.key 
+export IOT_CA_CERT_PATH=$HOME/root-CA.crt
+export AWS_KVS_CACERT_PATH=$HOME/amazon-kinesis-video-streams-webrtc-sdk-c/certs/cert.pem
+export LD_LIBRARY_PATH=$HOME/amazon-kinesis-video-streams-webrtc-sdk-c/open-source/lib/ :$HOME/amazon-kinesis-video-streams-webrtc-sdk-c/build/
+
+$HOME/amazon-kinesis-video-streams-webrtc-sdk-c/build/kvsWebrtcClientMasterGstSample $AWS_IOT_CORE_THING_NAME
+
+
+
+But I still get the error message 
+AWS_ACCESS_KEY_ID must be set
+.
+Can anyone tell me what I am doing wrong?

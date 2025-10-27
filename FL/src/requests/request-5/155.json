@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_91418e5f",
+      "Effect": "deny",
+      "Action": "config:PutDeliveryChannel",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_ac925474",
+      "Effect": "allow",
+      "Action": [
+        "config:PutDeliveryChannel",
+        "config:PutConfigurationRecorder"
+      ],
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "allow_e158c80b",
+      "Effect": "allow",
+      "Action": [
+        "config:DeleteConfigurationRecorder",
+        "config:DeleteRetentionConfiguration"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_574f9937",
+      "Effect": "allow",
+      "Action": "config:DeleteDeliveryChannel",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_218303f9",
+      "Effect": "deny",
+      "Action": "config:DeleteRetentionConfiguration",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    }
+  ]
+}

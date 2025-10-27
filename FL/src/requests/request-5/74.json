@@ -1,0 +1,86 @@
+{
+  "Requests": [
+    {
+      "id": "allow_7fcd393e",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketAcl",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::qa-nlb-lo",
+      "Principal": "delivery.logs.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "account-no"
+        },
+        "ArnLike": {
+          "aws:SourceArn": "arn:aws:elasticloadbalancing:ap-south-1:account-no:*"
+        }
+      }
+    },
+    {
+      "id": "deny_06677f31",
+      "Effect": "deny",
+      "Action": "s3:GetBucketAcl",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_7e825064",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketAcl",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::qa-nlb-lo/document.txt",
+        "arn:aws:s3:::qa-nlb-lo/config.xml"
+      ],
+      "Principal": "arn:aws:iam::444555666777:user/external-user",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    },
+    {
+      "id": "deny_b491e7df",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::qa-nlb-lo/config.xml",
+      "Principal": "delivery.logs.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "account-no"
+        },
+        "ArnLike": {
+          "aws:SourceArn": "arn:aws:elasticloadbalancing:ap-south-1:account-no:*"
+        }
+      }
+    },
+    {
+      "id": "allow_8ad42d6d",
+      "Effect": "allow",
+      "Action": "s3:GetBucketAcl",
+      "Resource": [
+        "arn:aws:s3:::qa-nlb-lo/data.json",
+        "arn:aws:s3:::qa-nlb-lo"
+      ],
+      "Principal": "delivery.logs.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "account-no",
+          "s3:x-amz-acl": "bucket-owner-full-control"
+        },
+        "ArnLike": {
+          "aws:SourceArn": "arn:aws:elasticloadbalancing:ap-south-1:account-no:*"
+        }
+      }
+    }
+  ]
+}

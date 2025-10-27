@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_d5ec15cc",
+      "Effect": "deny",
+      "Action": "logs:PutLogEvents",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_35bbd425",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::*/config.xml",
+        "arn:aws:s3:::*/document.txt"
+      ]
+    },
+    {
+      "id": "allow_023559c5",
+      "Effect": "allow",
+      "Action": "logs:PutLogEvents",
+      "Resource": "arn:aws:logs:*:*:file1"
+    },
+    {
+      "id": "allow_e85fd71d",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:s3:::*/data.json",
+        "arn:aws:s3:::*/config.xml"
+      ]
+    },
+    {
+      "id": "deny_f72f6081",
+      "Effect": "deny",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:s3:::*/data.json"
+    }
+  ]
+}

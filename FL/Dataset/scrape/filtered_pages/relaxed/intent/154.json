@@ -1,0 +1,37 @@
+Hello,
+
+
+So I am trying to push an image created from ADO pipeline.
+The push is failing saying
+
+USER_X is not authorized to perform: ecr:GetAuthorizationToken on resource: * with an explicit deny in an identity-based policy
+
+
+The org is et up as the following:
+
+
+Root
+   > Accounts
+       > Org 1
+       > Org 2
+       > Org 3
+
+
+
+I am unable to change the above :(
+
+
+root has IAM setup and configured and this is were my user ("USER_X") sits, full admin access.
+
+
+I have an ECR setup in Org2 (for example), I created a policy following an example which is stated as allowing cross org. and contains the following:
+
+
+
+
+
+
+However this does not allow my to do anything.
+
+
+Any ideas or help is greatly appreciated

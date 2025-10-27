@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "allow_c1124cbd",
+      "Effect": "allow",
+      "Action": "iot:AssumeRoleWithCertificate",
+      "Resource": "arn:aws:iot:us-west-2:831490426837:rolealias/GreengrassCoreTokenExchangeRoleAlias"
+    },
+    {
+      "id": "deny_03d72586",
+      "Effect": "deny",
+      "Action": "iot:AssumeRoleWithCertificate",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "deny_0ccae3f6",
+      "Effect": "deny",
+      "Action": "iot:AssumeRoleWithCertificate",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    }
+  ]
+}

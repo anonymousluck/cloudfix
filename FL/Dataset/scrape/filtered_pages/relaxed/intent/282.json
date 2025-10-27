@@ -1,0 +1,30 @@
+The SSM Automation triggered by the pipeline throws this error during the Step "VerifySSMAgentLinux" and Action "aws:runCommand":
+
+
+Automation Step Execution fails when it is sending a command the target instance(s). Get Exception from SendCommand API of ssm Service. Exception Message from SendCommand API: [User: arn:aws:sts::xxxxxxxxx:assumed-role/AWSServiceRoleForImageBuilder/imagebuilderaed82722-3688-4722-b8ba-e4c6b293b94b is not authorized to perform: ssm:SendCommand on resource: arn:aws:ec2:eu-central-1:xxxxxxxxxxxx:instance/i-05f1445b9a1903058 because no identity-based policy allows the ssm:SendCommand action (Service: AWSSimpleSystemsManagement; Status Code: 400; Error Code: AccessDeniedException; Request ID: e40f5938-5387-4e0e-9e9b-7b7a3b346c61; Proxy: null)]. Please refer to Automation Service Troubleshooting Guide for more diagnosis details.
+
+
+
+I looked into the the ServiceRole mentioned in this Error (AWSServiceRoleForImageBuilder). In this role i looked up the ssm:SendCommand part and found this:
+
+
+
+
+
+
+As far as i understand it this action is limited to Instances that have the Tag "CreatedBy: EC2 Image Builder"
+So i looked up the instance created by the pipeline and found that the instances are tagged like this:
+
+
+CreatedBy:	imagebuilderaed82722-3688-4722-b8ba-e4c6b293b94b
+
+
+
+So the instances that are created by this automation aren't tagged correctly. But since this is a service-managed role, i can't add any policies to that role nor can i edit the existing policy.
+Furthermore i can't add the CreatedBy tag during the creation process since this tag name is blocked,
+So over all this seems to be a problem with IAM Role that the Service is using.
+But at the same time i can't find anyone with the exact same problem as mine wich is unrealistic given that everybody using this service should or is using this exact role.
+
+
+Any Help would be appreciated
+a.p.

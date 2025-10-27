@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_7b10725a",
+      "Effect": "allow",
+      "Action": [
+        "lambda:InvokeFunction",
+        "iam:CreateRole"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_828f91a7",
+      "Effect": "allow",
+      "Action": [
+        "iam:CreateRole",
+        "lambda:CreateFunction"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_d3fa45d7",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_5bd6782a",
+      "Effect": "allow",
+      "Action": "iam:CreateRole",
+      "Resource": [
+        "arn:aws:iam::123456789012:role/test-role",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ]
+    },
+    {
+      "id": "deny_e75ed0c7",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    }
+  ]
+}

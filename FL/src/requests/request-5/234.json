@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e8d1013b",
+      "Effect": "allow",
+      "Action": "s3:ListMultipartUploadParts",
+      "Resource": "arn:aws:s3:::elasticmapreduce/data.json"
+    },
+    {
+      "id": "allow_37037ee1",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucketMultipartUploads"
+      ],
+      "Resource": [
+        "arn:aws:s3:::*.elasticmapreduce/document.txt",
+        "arn:aws:s3:::*.elasticmapreduce/config.xml"
+      ]
+    },
+    {
+      "id": "deny_32b35a13",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::elasticmapreduce/document.txt"
+    },
+    {
+      "id": "deny_c3b825d2",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:s3:::elasticmapreduce/document.txt"
+    },
+    {
+      "id": "allow_9befcbac",
+      "Effect": "allow",
+      "Action": "s3:ListBucketVersions",
+      "Resource": [
+        "arn:aws:s3:::elasticmapreduce/document.txt",
+        "arn:aws:s3:::*.elasticmapreduce/config.xml"
+      ]
+    }
+  ]
+}

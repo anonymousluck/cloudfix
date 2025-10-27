@@ -1,0 +1,21 @@
+Hey folks,
+
+
+I have a customer-managed KMS key that was created to encrypt a specific CloudWatch 
+log group
+. In the key policy, I have something like:
+
+
+
+
+
+
+However, anyone in the AWS account 
+can see the decrypted logs
+. Is it possible to only allow users that have access to this KMS key via 
+kms:Decrypt*
+ to decrypt logs, like we do in S3, or is not possible to do this on CloudWatch log groups?
+
+
+S3 Example: 
+s3-bucket-access-default-encryption

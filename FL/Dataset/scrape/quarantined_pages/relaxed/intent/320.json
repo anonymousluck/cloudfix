@@ -1,0 +1,33 @@
+I have an IAM role with full access to my s3 given the permission
+
+
+"s3:*"
+
+
+
+I am trying to use the s3 batch operation to copy some files from my buckets back to them while adding encryption to the files. So first I have added the batch operations trust relationship below into my IAM role in order to run my batch operation jobs and triggered some jobs for different buckets.
+
+
+
+
+
+
+For my surprise, although I had no issues with most of my buckets, for a few buckets the batch operation failed. when I checked the report containing the error, I got this for the objects that could not be copied
+
+
+Anonymous users cannot copy objects.  Please authenticate. (Service: Amazon S3; Status Code: 403; Error Code: AccessDenied
+
+
+
+Here are some additional details about my setup:
+
+
+
+
+All buckets have ACLs disabled.
+
+
+All public access is blocked.
+
+
+The IAM role is used to trigger the batch operation jobs and it works for some buckets but not for others.

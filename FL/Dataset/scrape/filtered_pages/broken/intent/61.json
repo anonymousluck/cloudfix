@@ -1,0 +1,24 @@
+OAUTH authorization via Cognito works and we can use it if the client uses Amazon and this type of authorization.
+However, I could not configure access (get/put) to the S3 storage. When creating an Amazon API Gateway, I get the error "AWS ARN for integration contains invalid action". I tried different IAM Role settings for API Gateway, but I got the same error. I tried the following settings
+
+
+`
+
+
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Effect": "Allow",
+"Action": [
+"s3:
+"
+],
+"Resource": "
+"
+}
+]
+}`
+
+
+IAM Policy Simulator shows that all S3 permissions are allowed.

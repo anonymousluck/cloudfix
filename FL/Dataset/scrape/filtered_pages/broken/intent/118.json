@@ -1,0 +1,106 @@
+I have two roles (ECS execution role and an EC2 instance role) that I have configured to read myBucket. I have confirmed that both roles have read access via 
+the policy simulator
+. Everything is within a single account.
+
+
+However, my deploy tasks (from updating my cluster service) fail due to a 403 error, which puzzles me given the above.
+
+
+Unable to initialize s3 client for bucket myBucket, error: AccessDenied: Access Denied status code: 403, request id: <request-id>, host id: <host-id>
+
+
+
+CloudTrail seems to be suggesting that my EC2 instance role is the one initiating the rejected request, so to double check I opened a shell on the instance and successfully read the bucket contents via aws cli.
+
+
+I've done a 
+lot
+ of role and policy tweaking trying to solve this, but here's what I have for the moment:
+
+
+EC2 instance role contains:
+
+
+
+
+AmazonS3ReadOnlyAccess
+
+
+AmazonEC2ContainerServiceforEC2Role
+
+
+
+
+ECS execution task role contains:
+
+
+
+
+AmazonECSTaskExecutionRolePolicy
+
+
+Custom s3 read-only policy:
+
+
+
+
+
+
+
+
+S3 bucket policies:
+
+
+
+
+Public access is blocked
+
+
+Bucket is encrypted, but not KMS encrypted (it uses the default SSE-S3)
+
+
+Bucket policy:
+
+
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::370058150712:role/ec2InstanceRole"
+            },
+            "Action": [
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::myBucket/*",
+                "arn:aws:s3:::myBucket"
+            ]
+        }
+    ]
+}
+
+
+
+Note: Because of the CloudTrail log, earlier today I changed the Principal from my ECS execution role to my EC2 instance role (as seen above) with no effect.
+
+
+I even tried:
+
+
+
+
+Opening up a VPC endpoint
+
+
+Opening up an access point from my VPC to my bucket
+
+
+
+
+Can anyone see what is wrong?
+And can anyone explain why the deploy task (from updating my cluster service) disagrees with the policy simulator?

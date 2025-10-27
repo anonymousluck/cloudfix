@@ -1,0 +1,35 @@
+I'm facing an issue with deleting the configuration rule named "account-part-of-organizations-conformance-pack-zw3jpq3ja" in the us-east-1 region. I created from conformance pack and I deleted the entire pack from cloud formation stack(that I left one rule to select in the deletion process).Now that config rule selection is grey out as shown in the photo can neither delete nor edit it. I tried to delete it from aws cli and show me error that It's a service-linked rule, and I lack the necessary permissions to delete or edit it. This resulted in a charge of $0.31 for conformance pack evaluation and conformance pack item recorded. I'm concerned about potential future charges. I follow the steps the below link and give the permission but still having the issue.
+**
+https://repost.aws/knowledge-center/delete-config-rule
+ **
+
+
+This is my permission in json format that I add in IAM policy. I also set it in the permission boundary.
+
+
+
+
+
+
+I also enable service policies in My aws  account. The json format is as follow.
+
+
+
+
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "*",
+      "Resource": "*"
+    }
+  ]
+}
+
+
+
+Please help me it incur me charges everyday for this rule.
+Thanks!!

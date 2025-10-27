@@ -1,0 +1,39 @@
+To setup new billing, I tried to follow the steps described at 
+https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_billing.html#tutorial-billing-prereqs
+:
+
+
+
+
+
+
+Sign in to the AWS Management Console with your root user credentials (specifically, the email address and password that you used to create your AWS account).
+
+
+On the navigation bar, choose your account name, and then choose Account.
+
+
+Next to IAM User and Role Access to Billing Information, choose Edit.
+
+
+Select the Activate IAM Access check box to activate access to the Billing and Cost Management console pages.
+
+
+Choose Update.
+
+
+
+
+
+
+Unfortunately, the step 2 is the last half-successful step. The whole page is of red messages like "Ihnen fehlt die Berechtigung zum account:GetContactInformation. Bitten Sie Ihren Administrator, die Berechtigung hinzuzufügen." (en: you don't have permission account:GetContactInformation). Correspondingly, I cannot activate "IAM Access".
+
+
+Here is the policy I've attached to the root user:
+
+
+
+
+
+
+What I'm doing wrong?

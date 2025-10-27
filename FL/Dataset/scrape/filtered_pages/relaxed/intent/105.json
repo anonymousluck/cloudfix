@@ -1,0 +1,19 @@
+I'm trying to create S3 event notification to SNS topic from an existing S3 bucket. I'm receiving "Unable to validate the following destination configurations".
+
+
+Initially I thought the issue was with the SNS topic Access Policy and tried different troubleshooting suggestions, such as this video 
+https://www.youtube.com/watch?v=RjSW75YsBMM
+, but nothing worked.
+
+
+I'm using the following policy:
+
+
+  
+
+
+
+Then I decided to focus on the S3 bucket part of the equation and created brand new bucket with exactly the same configuration, switched the SourceArn in the policy with the new bucket's arn and the event notification was successfully created.
+
+
+What could be the reason for a given SNS topic with a given policy to work with one S3 bucket, but not with another?

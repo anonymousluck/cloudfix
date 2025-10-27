@@ -1,0 +1,288 @@
+Hi everyone! I'm using ec2-controller and eks-controller to provision an EKS cluster but I'm facing the NodeCreationFailure issue. I've used the AWSSupport-TroubleshootEKSWorkerNode automation and this is the output:
+
+
+[WARNING]: The default VPC Endpoint Policy is not being used. Please ensure that the worker node is able to communicate with the VPC Endpoint.
+[WARNING]: The default VPC Endpoint Policy is not being used. Please ensure that the worker node is able to communicate with the VPC Endpoint.
+[WARNING]: The default VPC Endpoint Policy is not being used. Please ensure that the worker node is able to communicate with the VPC Endpoint.
+[WARNING]: The default VPC Endpoint Policy is not being used. Please ensure that the worker node is able to communicate with the VPC Endpoint.
+[WARNING]: A private cluster requires S3 endpoint of type "Gateway". Ensure that it's created and assigned to the worker's route table. Please review this URL for further details: 
+https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway.html
+
+[WARNING]: No secondary private IP addresses are assigned to worker node i-0704cfc36e734fc17, ensure that the CNI plugin is running properly. Please review this URL for further details: 
+https://docs.aws.amazon.com/eks/latest/userguide/pod-networking.html
+
+[WARNING]: As SSM agent is not reachable on worker node, this document did not check the status of Containerd, Docker and Kubelet daemons. Ensure that required daemons (containerd, docker, kubelet) are running on the worker node using command "systemctl status 
+<daemon-name>
+".
+
+
+Does anyone have faced the same issue on found a way to fix it? Thanks for any help!
+
+
+There are my Kubernetes manifest that I'm using:
+
+
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: VPC
+          metadata:
+            name: cluster-1-32
+          spec:
+            cidrBlocks: 
+              - 10.0.0.0/16
+            enableDNSSupport: true
+            enableDNSHostnames: true
+            tags:
+              - key: Name
+                value: cluster-1-32
+              - key: kubernetes.io/cluster/cluster-1-32
+                value: shared
+
+
+
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: Subnet
+          metadata:
+            name: cluster-1-32-1
+          spec:
+            cidrBlock: 10.0.1.0/24
+            availabilityZone: eu-central-1a
+            vpcRef: 
+              from: 
+                name: cluster-1-32
+            tags:
+              - key: Name
+                value: cluster-1-32-1
+              - key: kubernetes.io/cluster/cluster-1-32
+                value: shared
+
+
+
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: Subnet
+          metadata:
+            name: cluster-1-32-2
+          spec:
+            cidrBlock: 10.0.2.0/24
+            availabilityZone: eu-central-1b
+            vpcRef: 
+              from: 
+                name: cluster-1-32
+            tags:
+              - key: Name
+                value: cluster-1-32-2
+              - key: kubernetes.io/cluster/cluster-1-32
+                value: shared
+
+
+
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: SecurityGroup
+          metadata:
+            name: cluster-1-32-vpce-sg
+          spec:
+            vpcRef:
+              from:
+                name: cluster-1-32
+            description: Security group for VPC Endpoints
+            name: cluster-1-32-vpce-sg
+            ingressRules:
+              - ipProtocol: tcp
+                fromPort: 443
+                toPort: 443
+                ipRanges:
+                  - cidrIP: 10.0.0.0/16
+                    description: Allow HTTPS from VPC CIDR
+            egressRules:
+              - ipProtocol: "-1"
+                fromPort: -1
+                toPort: -1
+                ipRanges:
+                  - cidrIP: 0.0.0.0/0
+                    description: Allow all outbound traffic
+            tags:
+              - key: Name
+                value: cluster-1-32-vpce-sg
+
+
+
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: VPCEndpoint
+          metadata:
+            name: cluster-1-32-ec2-endpoint
+          spec:
+            serviceName: com.amazonaws.eu-central-1.ec2
+            vpcRef:
+              from:
+                name: cluster-1-32
+            subnetRefs:
+              - from:
+                  name: cluster-1-32-1
+              - from:
+                  name: cluster-1-32-2
+            securityGroupRefs:
+              - from:
+                  name: cluster-1-32-vpce-sg
+            vpcEndpointType: Interface
+            privateDNSEnabled: true
+            policyDocument: |
+              
+            tags:
+              - key: Name
+                value: cluster-1-32-ec2-endpoint
+
+
+
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: VPCEndpoint
+          metadata:
+            name: cluster-1-32-ecr-api-endpoint
+          spec:
+            serviceName: com.amazonaws.eu-central-1.ecr.api
+            vpcRef:
+              from:
+                name: cluster-1-32
+            subnetRefs:
+              - from:
+                  name: cluster-1-32-1
+              - from:
+                  name: cluster-1-32-2
+            securityGroupRefs:
+              - from:
+                  name: cluster-1-32-vpce-sg
+            vpcEndpointType: Interface
+            privateDNSEnabled: true
+            policyDocument: |
+              {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "*",
+                    "Resource": "*"
+                  }
+                ]
+              }
+            tags:
+              - key: Name
+                value: cluster-1-32-ecr-api-endpoint
+
+
+
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: VPCEndpoint
+          metadata:
+            name: cluster-1-32-ecr-dkr-endpoint
+          spec:
+            serviceName: com.amazonaws.eu-central-1.ecr.dkr
+            vpcRef:
+              from:
+                name: cluster-1-32
+            subnetRefs:
+              - from:
+                  name: cluster-1-32-1
+              - from:
+                  name: cluster-1-32-2
+            securityGroupRefs:
+              - from:
+                  name: cluster-1-32-vpce-sg
+            vpcEndpointType: Interface
+            privateDNSEnabled: true
+            policyDocument: |
+              {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "*",
+                    "Resource": "*"
+                  }
+                ]
+              }
+            tags:
+              - key: Name
+                value: cluster-1-32-ecr-dkr-endpoint
+
+
+
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: VPCEndpoint
+          metadata:
+            name: cluster-1-32-sts-endpoint
+          spec:
+            serviceName: com.amazonaws.eu-central-1.sts
+            vpcRef:
+              from:
+                name: cluster-1-32
+            subnetRefs:
+              - from:
+                  name: cluster-1-32-1
+              - from:
+                  name: cluster-1-32-2
+            securityGroupRefs:
+              - from:
+                  name: cluster-1-32-vpce-sg
+            vpcEndpointType: Interface
+            privateDNSEnabled: true
+            policyDocument: |
+              {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "*",
+                    "Resource": "*"
+                  }
+                ]
+              }
+            tags:
+              - key: Name
+                value: cluster-1-32-sts-endpoint
+
+
+
+          apiVersion: eks.services.k8s.aws/v1alpha1
+          kind: Cluster
+          metadata:
+            name: cluster-1-32
+          spec:
+            name: cluster-1-32
+            roleARN: zzzzzzzzzz
+            version: "1.32"
+            resourcesVPCConfig:
+              endpointPrivateAccess: false
+              endpointPublicAccess: true
+              subnetRefs:
+              - from:
+                  name: cluster-1-32-1
+              - from:
+                  name: cluster-1-32-2
+
+
+
+          apiVersion: eks.services.k8s.aws/v1alpha1
+          kind: Nodegroup
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT
+          spec:
+            version: "1.32"
+            amiType: AL2_x86_64
+            name: cluster-1-32
+            clusterRef:
+              from:
+                name: cluster-1-32
+            nodeRole: yyyyyyyy
+            subnetRefs:
+              - from:
+                  name: cluster-1-32-1
+              - from:
+                  name: cluster-1-32-2
+            instanceTypes:
+              - t3.medium
+            diskSize: 50
+            scalingConfig:
+              minSize: 2
+              maxSize: 5
+              desiredSize: 3

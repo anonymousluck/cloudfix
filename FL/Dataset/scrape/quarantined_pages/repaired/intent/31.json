@@ -1,0 +1,52 @@
+Hi AWS, I have created an EKS cluster using AWS CDK Python, here is the link for the code repository: 
+https://github.com/arjungoel/eks-repo
+.
+
+
+Once the EKS cluster is up, I have updated the kube config file with the cluster ARN by running this command:
+
+
+aws eks update-kubeconfig --name eks-cdk-cluster --region us-east-1 --role-arn arn:aws:iam::123456789012:role/eks_service_role
+
+
+After that I ran this command just to check if I am able to connect with the EKS cluster
+kubectl get svc
+ and I got this error:
+
+
+An error occurred (AccessDenied) when calling the AssumeRole operation: User: arn:aws:iam::123456789012:user/aws-cdk-user is not authorized to perform: sts:AssumeRole on resource: arn:aws:iam::123456789012:role/eks_service_role
+
+
+E0803 19:37:00.448538  318552 memcache.go:265] couldn't get current server API group list: Get "
+https://93ED6FAE1304B8D0DB0E072FEE271148.gr7.us-east-1.eks.amazonaws.com/api?timeout=32s
+": getting credentials: exec: executable aws failed with exit code 254
+Unable to connect to the server: getting credentials: exec: executable aws failed with exit code 254
+
+
+After that I ran aws command: 
+aws sts get-caller-identity
+ and got this result:
+
+
+{
+    "UserId": "AIDAQE43KCAARCY426YUS",
+    "Account": "123456789012",
+    "Arn": "arn:aws:iam::123456789012:user/aws-cdk-user"
+}
+
+
+
+
+and I attached the inline policy to the IAM user in order to get rid of that permission issue. Here is the policy code:
+
+
+
+
+
+
+and when I ran the 
+kubectl get svc
+ command again, I got the same error I pointed above. Is there anything else I am missing from IAM permissions perspective.
+
+
+Please guide.

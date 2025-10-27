@@ -1,0 +1,119 @@
+I have two buckets in the same account. I have a user that has full access to both buckets and their respective KMS keys.
+
+
+I cannot copy directly from one bucket to the other, but I can copy from bucket A to my computer and then from my computer to bucket B. Here is an example with the local copy step with account info redacted:
+
+
+$ aws s3 cp 's3://bucketA/myobject' .
+download: s3://bucketA/myobject to ./myobject
+
+$ aws s3 cp ./myobject 's3://bucketB/'
+upload: ./myobject to s3://bucketB/myobject
+
+
+
+Now here is an example copying directly from bucket to bucket:
+
+
+$ aws s3 cp 's3://bucketA/myobject' 's3://bucketB/'
+copy failed: s3://bucketA/myobject to s3://bucketB/myobject
+An error occurred (AccessDenied) when calling the CopyObject operation: Access Denied
+
+
+
+I 
+can
+ copy directly from bucketA to bucketB when using an admin account with blanket permissions, so I know that this must be an issue with my user's permissions.
+
+
+I also know that the issue 
+must be
+ permissions related to copying directly between buckets 
+within the same account
+ as this user. This is because the user can clearly copy from one bucket and upload to another bucket.
+
+
+Here are the IAM policies attached to this user (with information about the account redacted, of course):
+
+
+kms for bucketA
+
+
+
+
+
+
+s3 for bucketA
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:s3:::<bucketA>",
+            "Sid": "ListObjectsInBucket"
+        },
+        {
+            "Action": "s3:*Object",
+            "Effect": "Allow",
+            "Resource": "arn:aws:s3:::<bucketA>/*",
+            "Sid": ""
+        }
+    ]
+}
+
+
+
+kms for bucketB
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "kms:ReEncrypt*",
+                "kms:GetKeyPolicy",
+                "kms:GenerateDataKey*",
+                "kms:Encrypt",
+                "kms:DescribeKey",
+                "kms:Decrypt",
+                "kms:CreateGrant"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:kms:us-east-1:<account id>:key/<key for bucketB>",
+            "Sid": "KMSUsage"
+        }
+    ]
+}
+
+
+
+s3 for bucketB
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:s3:::bucketB>",
+            "Sid": "ListObjectsInBucket"~
+        },
+        {
+            "Action": "s3:*Object",
+            "Effect": "Allow",
+            "Resource": "arn:aws:s3:::<bucketB>/*",
+            "Sid": ""
+        }
+    ]
+}

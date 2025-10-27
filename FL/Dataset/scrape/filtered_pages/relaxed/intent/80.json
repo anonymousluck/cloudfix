@@ -1,0 +1,52 @@
+Hello, I am trying to deploy a Lambda function using Terraform, the IAM role is created successfully and has following inline policies attached to it
+
+
+        {
+          "Sid": "VisualEditor0",
+          "Effect": "Allow",
+          "Action": [
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ],
+          "Resource": aws_cloudwatch_log_group.cloudwatch_log.arn
+        },
+        ,
+        {
+          "Sid": "VisualEditor2",
+          "Effect": "Allow",
+          "Action": "sqs:*",
+          "Resource": "arn:aws:sqs:us-east-1:012345678912:sqsqueue"
+        }
+
+
+
+The Lambda function has 
+depends_on
+ feature to ensure that the execution role is created first and then the function.
+
+
+The SQS queue is already created and has the following access policy. It is a standard queue with Amazon SQS key (SSE-SQS) encryption enabled.
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "allow-account-access",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::012345678912:root"
+      },
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:sqs:us-east-1:012345678912:sqsqueue"
+    }
+  ]
+}
+
+
+
+Applying Terraform template, shows an error message 
+CreateFunction, https response error StatusCode: 400, RequestID: e97789ca-a746-04ae-a653-ce1b45936029, InvalidParameterValueException: The provided execution role does not have permissions to call SendMessage on SQS
+
+
+Please can someone point out, what am I doing wrong?

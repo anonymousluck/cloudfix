@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_3e08f874",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_3d86beb3",
+      "Effect": "allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "ec2:AssignPrivateIpAddresses"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_88e06f33",
+      "Effect": "deny",
+      "Action": "logs:CreateLogStream",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_89a3feaf",
+      "Effect": "allow",
+      "Action": [
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:UnassignPrivateIpAddresses"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_2372894c",
+      "Effect": "allow",
+      "Action": "ec2:DeleteNetworkInterface",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    }
+  ]
+}

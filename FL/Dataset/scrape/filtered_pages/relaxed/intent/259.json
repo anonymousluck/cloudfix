@@ -1,0 +1,2 @@
+Looking for a way to subscribe to an sns topic using organization id in the following format o-##########.
+If this is possible what happens? Are all emails associated with the org subscribed? I have tried the below which works for sns:publish however i cannot find anything in the docs relating to subscribe and when this has been attempted nothing appears on the topic.

@@ -1,0 +1,16 @@
+I have configured the AWS CLI to use IAM Identity Center for authentication as recommended here 
+https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-authentication.html
+. As such I have followed the recommended guide at 
+https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html
+ to set up the CLI. For now, everything is working fine. The problem is I need to use an IAM role to perform some tasks via the CLI and I don't see how.
+
+
+The IAM role that I have to assume is defined as
+
+
+
+
+
+As you can see, I have allowed to IAM users the ability to assume this role. But I have no idea how I can let an Identity Center user to assume this role. Moreover, how do I tell the CLI to perform actions by assuming a role? I see this documentation 
+https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html#cli-role-overview
+ but this again asks for a source profile.

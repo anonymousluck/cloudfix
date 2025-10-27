@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\caption{FL Repair Success Rates Across Different LLMs (Request Size 30)}
+\label{tab:fl_llm_comparison}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Category} & \textbf{CodeLlama} & \textbf{Llama} & \textbf{DeepSeek} & \textbf{Granite} \\
+\midrule
+100\% Fix & 153 (54.3\%) & 19 (6.7\%) & 37 (13.1\%) & 39 (13.8\%) \\
+80--99\% & 99 (35.1\%) & 55 (19.5\%) & 32 (11.3\%) & 29 (10.3\%) \\
+$<$80\% & 30 (10.6\%) & 208 (73.8\%) & 213 (75.5\%) & 214 (75.9\%) \\
+\midrule
+\textbf{Total} & 282 & 282 & 282 & 282 \\
+\bottomrule
+\end{tabular}
+\end{table}

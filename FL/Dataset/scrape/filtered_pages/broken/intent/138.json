@@ -1,0 +1,73 @@
+I am trying to output session manager logs in CloudWatchLogs using a resource policy (not using IAM). However, I am unable to see any session logs in my log group streams. Below are the configurations I have made.
+
+
+Session Manager:
+
+
+
+
+CloudWatch logging is enabled for sending session logs to CloudWatch.
+
+
+The logging option set to stream session logs.
+
+
+The CloudWatch log group is set to 'session-manager'.
+
+
+Enforce CloudWatch log encryption is set to 'No'.
+
+
+
+
+CloudWatch:
+
+
+
+
+In Log group details for 'session-manager', I have not set any KMS Key ID or Data protection, and the retention is set to 'Never expire'.
+
+
+
+
+EC2:
+
+
+
+
+My instance has 'AmazonSSMRoleForInstancesQuickStep' role with the 'AmazonSSMManagedInstanceCore' policy.
+
+
+
+
+Steps I have taken:
+
+
+
+
+I used CloudShell and executed the following commands:
+・To put the resource policy:
+
+
+
+
+aws logs put-resource-policy --policy-name AllowSessionManagerLogsToCloudWatch --policy-document file://ssmpolicy.json 
+
+
+
+・To ensure that the policy has been created: (only the 'AllowSessionManagerLogsToCloudWatch' policy exist)
+
+
+aws logs describe-resource-policies --region ap-northeast-1
+
+
+
+
+
+I connected to the EC2 instance using Session Manager, executed a few commands, and terminated the session.
+-> Since I have also enabled s3 logging, the logs are successfully delivered to the specified s3 bucket. However, there are no output logs in the CloudWatch Log group.
+
+
+
+
+The policy I am using is as follows. In the policy, I also tried including "ec2.amazonaws.com" and "delivery.logs.amazonaws.com".

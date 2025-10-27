@@ -1,0 +1,124 @@
+{
+  "Requests": [
+    {
+      "id": "allow_546c455e",
+      "Effect": "allow",
+      "Action": "es:CreateElasticsearchDomain",
+      "Resource": "arn:aws:s3:::great-expectations-docs/file-28-4.txt",
+      "Principal": "arn:aws:iam::123456789012:user/test-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "deny_62153a86",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::different-great-expectations-docs/file.txt",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:sourceVpce": "vpce-0c0f4bb767f820bda"
+        }
+      }
+    },
+    {
+      "id": "deny_8699fd8c",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::completely-different-bucket/file.txt",
+      "Principal": "arn:aws:iam::123456789012:user/bob",
+      "Condition": {
+        "StringEquals": {
+          "aws:sourceVpce": "vpce-0c0f4bb767f820bda"
+        }
+      }
+    },
+    {
+      "id": "allow_a1e99a3d",
+      "Effect": "allow",
+      "Action": "s3:PutBucketTagging",
+      "Resource": "arn:aws:s3:::great-expectations-docs/file-47-15.txt",
+      "Principal": "arn:aws:iam::111222333444:user/temp-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "deny_ed13f561",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:s3:::denied-bucket-0/file-0.txt",
+      "Principal": "arn:aws:iam::987654321098:user/charlie",
+      "Condition": {
+        "StringEquals": {
+          "aws:sourceVpce": "vpce-0c0f4bb767f820bda"
+        }
+      }
+    },
+    {
+      "id": "deny_4f8f16a0",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::great-expectations-docs-forbidden/file.txt",
+      "Principal": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:sourceVpce": "vpce-0c0f4bb767f820bda"
+        }
+      }
+    },
+    {
+      "id": "allow_fca45b6b",
+      "Effect": "allow",
+      "Action": "iam:ListAccessKeys",
+      "Resource": "arn:aws:s3:::great-expectations-docs/file-37-5.txt",
+      "Principal": "arn:aws:iam::123456789012:user/test-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:sourceVpce": "not-vpce-0c0f4bb767f820bda"
+        }
+      }
+    },
+    {
+      "id": "allow_7264b577",
+      "Effect": "allow",
+      "Action": "s3:GetObjectVersion",
+      "Resource": "arn:aws:s3:::great-expectations-docs/file-3-7.txt",
+      "Principal": "arn:aws:iam::123456789012:user/test-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_a6a0fcc1",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::great-expectations-docs/file-10-5.txt",
+      "Principal": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    },
+    {
+      "id": "allow_40a3a695",
+      "Effect": "allow",
+      "Action": "route53:GetHostedZone",
+      "Resource": "arn:aws:s3:::great-expectations-docs/file-46-3.txt",
+      "Principal": "arn:aws:iam::123456789012:role/forbidden-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    }
+  ]
+}

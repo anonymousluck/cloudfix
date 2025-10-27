@@ -1,0 +1,15 @@
+{
+  "Statement": [
+    {
+      "Condition": {
+        "StringLike": {
+          "iot:Connection.Thing.Attributes[department_id]": "${aws:PrincipalTag/department}"
+        }
+      },
+      "Effect": "Allow",
+      "Action": "iot:ListNamedShadowsForThing",
+      "Resource": "arn:aws:iot:ap-southeast-2:<accountId>:*",
+      "Sid": "statement1"
+    }
+  ]
+}

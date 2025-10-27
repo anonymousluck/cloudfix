@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_82ac20c2",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_d40909ad",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_d82ba28c",
+      "Effect": "allow",
+      "Action": "aws-marketplace:Subscribe",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_f7e93870",
+      "Effect": "allow",
+      "Action": "aws-marketplace:Unsubscribe",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_75b2524b",
+      "Effect": "allow",
+      "Action": [
+        "aws-marketplace:Subscribe",
+        "aws-marketplace:ViewSubscriptions"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    }
+  ]
+}

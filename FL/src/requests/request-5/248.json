@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_f610eac3",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_2ad961ac",
+      "Effect": "allow",
+      "Action": [
+        "GetObject",
+        "kms:Decrypt"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_60c66cc3",
+      "Effect": "allow",
+      "Action": [
+        "GetObject",
+        "kms:Decrypt"
+      ],
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_c49e614f",
+      "Effect": "allow",
+      "Action": "kms:Decrypt",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_b013edf2",
+      "Effect": "deny",
+      "Action": "GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    }
+  ]
+}

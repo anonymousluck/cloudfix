@@ -1,0 +1,62 @@
+{
+  "Requests": [
+    {
+      "id": "deny_7429eea2",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "allow_044bd139",
+      "Effect": "allow",
+      "Action": "ec2:CreateVpcPeeringConnection",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::my-bucket/document.txt"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "allow_5c0d279e",
+      "Effect": "allow",
+      "Action": "ec2:CreateVpcPeeringConnection",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringNotLike": {
+          "aws:PrincipalOrgPaths": "o-abcdef/r-1234/ou-1234-abc5678/"
+        }
+      }
+    },
+    {
+      "id": "deny_6dc5ccf7",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringNotLike": {
+          "aws:PrincipalOrgPaths": "o-abcdef/r-1234/ou-1234-abc5678/"
+        }
+      }
+    },
+    {
+      "id": "allow_09183624",
+      "Effect": "allow",
+      "Action": "ec2:CreateVpcPeeringConnection",
+      "Resource": "arn:aws:s3:::data-bucket/file.json",
+      "Condition": {
+        "StringNotLike": {
+          "aws:PrincipalOrgPaths": "o-abcdef/r-1234/ou-1234-abc5678/"
+        }
+      }
+    }
+  ]
+}

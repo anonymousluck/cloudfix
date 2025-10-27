@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_00c94d44",
+      "Effect": "allow",
+      "Action": "sns:Subscribe",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_b1c782a8",
+      "Effect": "allow",
+      "Action": "s3:DeleteBucketTagging",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_6ada9307",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_7b4ca067",
+      "Effect": "allow",
+      "Action": "cloudfront:DeleteDistribution",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "deny_31ddb2da",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    }
+  ]
+}

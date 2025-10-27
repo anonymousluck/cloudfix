@@ -1,0 +1,25 @@
+I have an EFS file system policy below[2]. Using the principal of 
+AWS:*
+ allows my Fargate task to mount the file system.  I'd like to tighten up the principal but can't figure out what works. Going off some documentation 
+here
+, I've tried[1] principals similar to the examples (with my account ID substituted) but the task fails to start with errors
+like 
+unsuccessful EFS utils command execution; code: 32
+. I don't get if the error is coming from missing taskRole/taskExecutionRole policies, or rather something missing for the Fargate service/cluster/assumed role itself.
+
+
+Do I need to add a Role Session principal (since Fargate is assuming my role at some point to launch the task) and if so how do I find out what that is?
+
+
+Secondly, is there any better way to debug errors like these than just burn-and-learn? All I have in Cloudtrail is stuff like "Trying something, something failed, obscure error #"
+
+
+[1]
+
+
+"Principal": { "AWS": "arn:aws:iam::123456789012:root" }
+"Principal": { "AWS": "123456789012" }
+
+
+
+[2] EFS policy

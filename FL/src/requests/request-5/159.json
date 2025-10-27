@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_cd8c7c1c",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:execute-api:eu-central-1:012345678901:someid/prod/POST/resource",
+      "Principal": "arn:aws:iam::444555666777:user/external-user",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "deny_7c704623",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:execute-api:eu-central-1:012345678901:someid/prod/POST/resource",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceOrgPaths": "o-orgid/r-rootid/ou-firstlevel/ou-secondlevel"
+        }
+      }
+    },
+    {
+      "id": "allow_cf512d8c",
+      "Effect": "allow",
+      "Action": "execute-api:Invoke",
+      "Resource": "arn:aws:execute-api:eu-central-1:012345678901:someid/prod/POST/resource",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceOrgPaths": "o-orgid/r-rootid/ou-firstlevel/ou-secondlevel"
+        }
+      }
+    }
+  ]
+}

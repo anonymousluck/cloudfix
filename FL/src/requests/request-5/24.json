@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_cf447ad0",
+      "Effect": "allow",
+      "Action": "kms:Decrypt",
+      "Resource": "arn:aws:secretsmanager:us-east-2:<account_id>:secret:<secret_name>-<some_randomstuff>"
+    },
+    {
+      "id": "allow_9542db97",
+      "Effect": "allow",
+      "Action": [
+        "kms:Encrypt",
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:us-east-2:<account_id>:secret:<secret_name>-<some_randomstuff>"
+    },
+    {
+      "id": "deny_28819cbc",
+      "Effect": "deny",
+      "Action": "kms:Encrypt",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "deny_462d0b54",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:secretsmanager:us-east-2:<account_id>:secret:<secret_name>-<some_randomstuff>"
+    },
+    {
+      "id": "allow_3245be3f",
+      "Effect": "allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": [
+        "arn:aws:kms:us-east-2:<account_id>key/<key_id>",
+        "arn:aws:secretsmanager:us-east-2:<account_id>:secret:<secret_name>-<some_randomstuff>"
+      ]
+    }
+  ]
+}

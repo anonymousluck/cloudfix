@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "deny_22f8f3f1",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iam::89988644568:role/redshiftkinesisrole"
+    },
+    {
+      "id": "allow_44bd239b",
+      "Effect": "allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::89988644568:role/redshiftkinesisrole"
+    },
+    {
+      "id": "deny_28e9a2eb",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:iam::89988644568:role/redshiftkinesisrole"
+    }
+  ]
+}

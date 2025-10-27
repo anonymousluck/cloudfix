@@ -1,0 +1,147 @@
+I have shifted my S3 bucket to be authenticated users only, but I cannot seem to get the user's authenticated status to the AWSS3 component. All the AppSync/DynamoDB setup works properly and S3 is working in an UnAuth public setup to download files. My users login, authenticate, then are provided only data they are permitted to via various Pipeline resolvers. I am seeking to replicate this for the file download portion. Users are given a folder (String) via permissions from a DynamoDB query. They are also assigned to a User Pool Group, which I could further use to ensure they are limited to their specific folder.
+
+
+I have attempted to follow various guides that suggest a link between AppSync + DynamoDB, and S3 by using an S3ObjectInput MimeType in order to upload a file, which then seems to allow a user to download the file via an authenticated key (String) from DynamoDB. However, I can't find any code examples actually implementing this using the AWSS3 package. I also cannot figure out a way to inject the AppSync/Cognito token into any download method of the AWSS3 package.
+
+
+I understand upgrading to Amplify is recommended, however I'm trying to get things working before rolling over. The AppSync to Amplify documentation seems rough/minimal at best. I'm not against implementing an Amplify client just to handle the S3 component, if there's a direct way to implement that.
+
+
+I highly appreciate help. I've been attempting this for a number of days without any real progress and have scoured the internet for solutions.
+
+
+Error received:
+
+
+AWSCognitoIdentityErrorDomain Code=8 "(null)" UserInfo={__type=NotAuthorizedException, message=Unauthenticated access is not supported for this identity pool.}]
+
+
+
+S3 Setup:
+
+My S3 Bucket has "Block all public access" ON
+Policy:
+
+
+
+
+
+
+Cognito Setup:
+
+UserA is in MyUserPool, which belongs to MyIdentityPool.
+MyIdentityPool has my_authRole
+
+
+iOS Appsync:
+
+
+            // Initialize the AWS AppSync client
+            let serviceConfig = try AWSAppSyncServiceConfig()
+            let serviceConfigCognito = try AWSAppSyncServiceConfig(forKey: "Default")
+            let cacheConfigCognito = try AWSAppSyncCacheConfiguration(
+                useClientDatabasePrefix: true,
+                appSyncServiceConfig: serviceConfigCognito
+            )
+            let clientConfigCognito = try AWSAppSyncClientConfiguration(
+                appSyncServiceConfig: serviceConfigCognito,
+                userPoolsAuthProvider: MyCognitoUserPoolsAuthProvider(),
+                cacheConfiguration: cacheConfigCognito
+            )
+
+            appSyncClient = try AWSAppSyncClient(appSyncConfig: clientConfigCognito)
+        } catch {
+            print("Error initializing appsync client. \(error)")
+        }
+        if let userInformation = UserManager().getUserInformation() {
+            self.userID = userInformation.userID
+        }
+
+class MyCognitoUserPoolsAuthProvider : AWSCognitoUserPoolsAuthProvider {
+    func getLatestAuthToken() -> String {
+     let pool = AWSCognitoIdentityUserPool(forKey: CognitoIdentityUserPoolId)
+     let session =  pool?.currentUser()?.getSession()
+        if let token = session?.result?.idToken {
+            return token.tokenString
+        } else {
+            return ""
+        }
+    }
+}
+
+
+
+Attempt 1 (working with unauth):
+
+
+    func downloadFile(folderID: String, fileName: String, onCompletion: ((DownloadError?) -> Void)?) {
+
+        let expression = AWSS3TransferUtilityDownloadExpression()
+        expression.progressBlock = {(task, progress) in
+            })
+        }
+        
+        let resourceDocPath = (FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)).last! as URL
+        let pdfNameFromUrl = "\(fileName + ".pdf")"
+        
+        let actualPath = resourceDocPath.appendingPathComponent(pdfNameFromUrl)
+        //Create a completion handler to be called when the transfer completes
+        var completionHandler: AWSS3TransferUtilityDownloadCompletionHandlerBlock?
+        completionHandler = { (task, location, data, error) -> Void in
+            DispatchQueue.main.async(execute: {
+                if let error = error {
+                    onCompletion?(DownloadError.error)
+                    print("Download failed with error: \(error)")
+                } else{
+                    do {
+//                        print("File saved to: ", actualPath)
+                        try data?.write(to: actualPath, options: .atomic)
+                        onCompletion?(nil)
+                    } catch {
+                        onCompletion?(DownloadError.error)
+                    }
+                }
+                })
+        }
+        
+        let transferUtility = AWSS3TransferUtility.default()
+               transferUtility.downloadData(
+                   forKey: folderID + "/" + fileName + ".pdf",
+                   expression: expression,
+                   completionHandler: completionHandler).continueWith { (task) -> AnyObject? in
+                if let error = task.error {
+                    NSLog("Error: %@",error.localizedDescription);
+                    DispatchQueue.main.async(execute: {
+                        //self.statusLabel.text = "Failed"
+                    })
+                }
+        }
+    }
+
+
+
+Attempt 2 (getting file info just for starters)
+
+
+    func getS3FileDate(folderID: String, fileName: String, onCompletion: @escaping GetS3InfoResponse) -> Void {
+        
+        let credentialProvider = AWSCognitoCredentialsProvider(regionType: MyRegion, identityPoolId: MyIdentityPoolID)
+        let configuration = AWSServiceConfiguration(region: MyRegion, credentialsProvider: credentialProvider)
+        AWSServiceManager.default().defaultServiceConfiguration = configuration
+        AWSS3.register(with: configuration!, forKey: "defaultKey")
+        
+        let s3 = AWSS3.s3(forKey: "defaultKey")
+        let headObjectsRequest: AWSS3HeadObjectRequest = AWSS3HeadObjectRequest()
+        headObjectsRequest.bucket = "MyBucket"
+        headObjectsRequest.key = folderID + "/" + fileName + ".pdf"
+        headObjectsRequest.ifModifiedSince = Date()
+        
+        s3.headObject(headObjectsRequest) { ( response: AWSS3HeadObjectOutput?, error: Error?) -> Void in
+            if let responseDate = response?.lastModified {
+                onCompletion(responseDate, nil)
+            }
+            if error != nil {
+                onCompletion(nil, DownloadError.error)
+            }
+        }
+    }

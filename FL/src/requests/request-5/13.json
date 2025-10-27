@@ -1,0 +1,79 @@
+{
+  "Requests": [
+    {
+      "id": "allow_602cc905",
+      "Effect": "allow",
+      "Action": "organizations:DescribeOrganization",
+      "Resource": [
+        "arn:aws:organizations::98765432109:ou/o-ididiididi/document.txt",
+        "arn:aws:organizations::98765432109:policy/o-ididiididi/resource_control_policy/document.txt"
+      ],
+      "Principal": "arn:aws:iam::123456789012:role/admin-role",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "allow_29498820",
+      "Effect": "allow",
+      "Action": [
+        "organizations:UpdatePolicy",
+        "organizations:ListAccounts"
+      ],
+      "Resource": [
+        "arn:aws:organizations::98765432109:ou/o-ididiididi/document.txt",
+        "arn:aws:organizations::98765432109:account/o-ididiididi/data.json"
+      ],
+      "Principal": "123456789012",
+      "Condition": {
+        "StringEquals": {
+          "organizations:PolicyType": "RESOURCE_CONTROL_POLICY"
+        }
+      }
+    },
+    {
+      "id": "allow_2f7d3aad",
+      "Effect": "allow",
+      "Action": [
+        "organizations:ListAccounts",
+        "organizations:DeletePolicy"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Principal": "123456789012",
+      "Condition": {
+        "StringEquals": {
+          "organizations:PolicyType": "RESOURCE_CONTROL_POLICY"
+        }
+      }
+    },
+    {
+      "id": "deny_b79444f9",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:organizations::98765432109:account/o-ididiididi/config.xml",
+      "Principal": "123456789012",
+      "Condition": {
+        "StringEquals": {
+          "organizations:PolicyType": "RESOURCE_CONTROL_POLICY"
+        }
+      }
+    },
+    {
+      "id": "deny_5c2139d3",
+      "Effect": "deny",
+      "Action": "organizations:DeletePolicy",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    }
+  ]
+}

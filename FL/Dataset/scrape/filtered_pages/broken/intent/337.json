@@ -1,0 +1,7 @@
+Hi, I'm new to AWS and am trying to setup an s3 bucket with Transfer acceleration.
+I've created a new bucket with my account's root user through the console, I've created a policy that should allow me to turn the feature on but I get an access denied error.
+I also made sure (in permissions tab) that in the ACL I'm with the right user, and I do see: "Bucket owner (your AWS account)" which to me seems to be the right thing.
+
+
+here's my policy:
+"

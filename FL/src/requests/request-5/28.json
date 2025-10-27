@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "deny_1e36ec78",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_f94d87bb",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3:::my-bucket/config.xml"
+    },
+    {
+      "id": "allow_b6c6846e",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketWebsite",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::my-bucket/config.xml"
+      ]
+    },
+    {
+      "id": "allow_630bfa38",
+      "Effect": "allow",
+      "Action": "s3:GetBucketCors",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::my-bucket/data.json"
+      ]
+    },
+    {
+      "id": "allow_62f1f6cd",
+      "Effect": "allow",
+      "Action": "s3:DeleteObjectTagging",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::my-bucket"
+      ]
+    }
+  ]
+}

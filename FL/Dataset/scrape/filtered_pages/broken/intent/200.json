@@ -1,0 +1,10 @@
+i have created following scp to enforce tag key on certain resources. It is working fine in case of EC2,Lambda .But for RDS AWS Console donot provide a way to add tags while creating RDS instance How to accomplish this enforcement in case of RDS
+This is SCP
+
+
+
+
+
+
+Also, please check the SCP i am giving tag Name for dynamodb but not able to create it gives an error
+User: arn:aws:iam::458225596744:root is not authorized to perform: dynamodb:CreateTable on resource: arn:aws:dynamodb:us-east-1:458225596744:table/ashish0001 with an explicit deny in a service control policy

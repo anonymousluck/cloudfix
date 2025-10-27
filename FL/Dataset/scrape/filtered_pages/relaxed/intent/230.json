@@ -1,0 +1,35 @@
+I've been searching the web and mostly amazon docs all day and couldn't find an answer to this issue.
+
+
+I have (root user) several Buckets in AWS S3.
+
+
+I've assigned a new bucket to a new IAM user and I don't want him to see all the buckets names under: 
+https://s3.console.aws.amazon.com/s3/buckets
+ (He can access his bucket at: 
+https://s3.console.aws.amazon.com/s3/buckets/HISBUCKETNAME
+)
+
+
+However, I also want the user to be able to rename file in his bucket. This is impossible if I remove ListAllMyBuckets from his IAM policy.
+
+
+So in the working user IAM policy I have
+
+
+
+
+
+
+Unfortunately now the users can see all the buckets in 
+https://s3.console.aws.amazon.com/s3/buckets
+ (though he doesn't have access to them).
+
+
+Once I remove "s3:ListAllMyBuckets", the user get access denied when trying to rename a file in his bucket.
+
+
+Is there a way to allow the user to rename a file in his bucket without him having access to the list of all the bucket names (I.E. without ListAllMyBuckets)?
+
+
+Thanks

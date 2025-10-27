@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_b5e52528",
+      "Effect": "allow",
+      "Action": "iot:Connect",
+      "Resource": [
+        "arn:aws:iot:us-east-2:471112966900:topicfilter/${iot:Connection.Thing.ThingName}/config.xml",
+        "arn:aws:iot:us-east-2:471112966900:topicfilter/${iot:Connection.Thing.ThingName}/data.json"
+      ]
+    },
+    {
+      "id": "deny_3718e327",
+      "Effect": "deny",
+      "Action": "iot:Receive",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_15f707ec",
+      "Effect": "allow",
+      "Action": "iot:Receive",
+      "Resource": [
+        "arn:aws:iot:us-east-2:471112966900:topic/$aws/things/${iot:Connection.Thing.ThingName}/document.txt",
+        "arn:aws:iot:us-east-2:471112966900:topicfilter/$aws/things/${iot:Connection.Thing.ThingName}/document.txt"
+      ]
+    },
+    {
+      "id": "allow_9295816b",
+      "Effect": "allow",
+      "Action": "greengrass:GetObject",
+      "Resource": [
+        "arn:aws:iot:us-east-2:471112966900:topic/$aws/things/${iot:Connection.Thing.ThingName}/data.json",
+        "arn:aws:iot:us-east-2:471112966900:topicfilter/${iot:Connection.Thing.ThingName}/data.json"
+      ]
+    },
+    {
+      "id": "deny_73fc42a7",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:iot:us-east-2:471112966900:topicfilter/$aws/things/${iot:Connection.Thing.ThingName}/data.json"
+    }
+  ]
+}

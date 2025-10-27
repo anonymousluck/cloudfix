@@ -1,0 +1,74 @@
+I have one secret for RDS password. But I want to implement password rotation every week. For that I have tried but I have to modify all key and values which already exist and it broke the application.
+So for that I am trying to create new secret with password rotation and map that new password with old secret, So tell me how can I achieve this. I have tried using lambda function but getting an error.
+I have tried below lambda code and IAM policies, but still getting an error.
+
+
+==============================Lambda code ------
+import boto3
+import json
+
+
+def lambda_handler(event, context):
+# Initialize AWS Secrets Manager client
+secrets_manager_client = boto3.client('secretsmanager')
+
+
+# Retrieve Secret X
+secret_x_response = secrets_manager_client.get_secret_value(SecretId='arn:aws:secretsmanager:us-east-1:388429313303:secret:abc_secret-JwVdZX')
+secret_x_value = json.loads(secret_x_response['SecretString'])['password']
+
+# Perform any mapping or transformation
+# For example, you can concatenate a prefix to the password
+secret_y_value = 'mapped-prefix-' + secret_x_value
+
+# Store the mapped value in Secret Y
+secrets_manager_client.create_secret(
+    Name='arn:aws:secretsmanager:us-east-1:388429313303:secret:xyz_secret-EdyEFK',
+    SecretString=json.dumps({'password': secret_y_value})
+)
+
+return {
+    'statusCode': 200,
+    'body': json.dumps('Mapping complete!')
+}
+
+
+
+=========== IAM policy -------------
+
+
+
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Effect": "Allow",
+"Action": [
+"secretsmanager:DescribeSecret",
+"secretsmanager:GetSecretValue",
+"secretsmanager:PutSecretValue",
+"secretsmanager:UpdateSecretVersionStage"
+],
+"Resource": "arn:aws:secretsmanager:us-east-1:388429313303:secret:abc_secret-JwVdZX"
+},
+{
+"Effect": "Allow",
+"Action": [
+"secretsmanager:GetRandomPassword"
+],
+"Resource": "
+"
+},
+{
+"Action": [
+"ec2:CreateNetworkInterface",
+"ec2:DeleteNetworkInterface",
+"ec2:DescribeNetworkInterfaces",
+"ec2:DetachNetworkInterface"
+],
+"Resource": "
+",
+"Effect": "Allow"
+}
+]
+}

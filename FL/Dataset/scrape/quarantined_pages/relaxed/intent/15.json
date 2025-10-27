@@ -1,0 +1,151 @@
+Okay this is a tricky one, so I'll try and paint as good of a picture as possible.
+
+
+Given
+
+
+
+
+Multiple AWS accounts
+
+
+Using github OIDC to assume a role in account A
+
+
+The github role in account A then assumes a role in account B that allows it to perform actions in that account
+
+
+
+
+This all works well and haven't had any issues except.
+
+
+When trying to register a new ECS task definition
+ex: 
+aws ecs register-task-definition --cli-input-json file://task-definition.json
+
+
+We're receiving the following from the action 
+Role is not valid
+
+
+I can perform this action without a hitch from my administrator account using the same task-definition, so I believe the task-definition is correct.
+
+
+What I've tried
+
+
+
+
+provided the assumed role in account B with the following trusted entities
+
+
+
+
+     
+
+
+
+
+
+I've given the role in account B full access to all ECS resources
+
+
+I've given the role in account B full admin access - (just to test)
+None of this worked
+
+
+
+
+Github OIDC role - Account A (111111111111)
+
+
+// Trust relationships - standard github oidc
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "GithubOidcAuth",
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::264460841970:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": [
+                "sts:TagSession",
+                "sts:AssumeRoleWithWebIdentity"
+            ],
+            "Condition": {
+                "StringLike": {
+                    "token.actions.githubusercontent.com:sub": "repo:OUR_REPO/*:*"
+                },
+                "ForAllValues:StringEquals": {
+                    "token.actions.githubusercontent.com:iss": "http://token.actions.githubusercontent.com",
+                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                }
+            }
+        }
+    ]
+}
+// permissions
+{
+    "Statement": [
+        {
+            "Action": [
+                "sts:TagSession",
+                "sts:AssumeRole"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:iam::22222222:role/github-deployer-assumed-XXXXX",
+            ]
+        }
+    ],
+    "Version": "2012-10-17"
+}
+
+
+
+Assumed role is designated account - Account B (2222222222)
+
+
+// Trust relationships 
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::111111111111:role/github-oidc-deployer-XXXXX"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+// Permissions
+{
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Sid":"RegisterTaskDefinition",
+         "Effect":"Allow",
+         "Action":[
+            "ecs:RegisterTaskDefinition",
+            "ecs:UpdateService",
+            "ecs:DescribeServices"
+         ],
+         "Resource":"*"
+      },
+      {
+         "Sid":"PassRolesInTaskDefinition",
+         "Effect":"Allow",
+         "Action":[
+            "iam:PassRole"
+         ],
+         "Resource": "*"
+      }
+   ]
+}
+
+
+
+PS We are not using CodeDeploy

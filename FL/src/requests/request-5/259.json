@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "deny_dfbd13c0",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_e33312cc",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "allow_29a02fa8",
+      "Effect": "allow",
+      "Action": [
+        "cloudformation:ListStacks",
+        "cloudformation:UpdateStack"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_c64e2913",
+      "Effect": "allow",
+      "Action": "cloudformation:ListStacks",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "allow_6cc39311",
+      "Effect": "allow",
+      "Action": [
+        "cloudformation:ListStacks",
+        "cloudformation:DescribeChangeSet"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

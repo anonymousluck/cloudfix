@@ -1,0 +1,22 @@
+{
+  "Requests": [
+    {
+      "id": "deny_d11c0e1a",
+      "Effect": "deny",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "deny_1d325aeb",
+      "Effect": "deny",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_1708d3e6",
+      "Effect": "allow",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:rds-db:eu-west-1:11111111111:dbuser:example-db/rds-test"
+    }
+  ]
+}

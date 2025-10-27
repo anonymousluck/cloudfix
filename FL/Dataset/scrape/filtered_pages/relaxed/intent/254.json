@@ -1,0 +1,31 @@
+I am building QuickSight dashboards (for website embedding) and want to display images from S3 bucket. For this I am using Object URL in HTTPS format. However, the problem is that those images are not getting displayed in the dashboards.
+
+
+I tried the following:
+
+
+
+
+My S3 bucket is non-public, but I opened all the necessary permissions for QS role to access that bucket. Did not work.
+
+
+I made S3 bucket as public, but applied the following bucket policy to open the bucket for QS role:
+
+
+
+
+
+
+
+
+This solution did not work. It seems QuickSight is not using its role for accessing S3 bucket objects.
+
+
+
+
+I made S3 bucket as public without any bucket policies. This works, but we can't afford this solution - our bucket shouldn't be visible to the world.
+
+
+
+
+Any suggestions?

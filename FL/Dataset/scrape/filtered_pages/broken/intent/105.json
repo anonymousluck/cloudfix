@@ -1,0 +1,41 @@
+I'm trying to create a Bedrock batch job. I have been trying this through the console as well as with the python SDK. When I use the console I get an "Operation not allowed" error at the top of the screen with no additional information. When using the SDK, I always get the following error without any additional information:
+
+
+An error occurred (ValidationException) when calling the CreateModelInvocationJob operation: Operation not allowed
+
+
+I have
+
+
+
+
+defined my input and output S3 buckets and added a properly formatted JSONL file to the input bucket
+
+
+set up a role for my bedrock batch job (details below)
+
+
+given my account access to the models I want to use. I have tried this with Claude 3.5 Haiku v1, Claude 3.5 Sonnet v2, and Llama 3.1 8B Instruct v1
+
+
+double-checked my access to Bedrock by calling "bedrock.list_foundation_models()" in my python code and getting back a valid list of the model.
+
+
+double-checked that all my resources are in the same region (us-east-1) and that this region supports the models I'm trying to access
+
+
+
+
+The role I've set up for my Bedrock batch job is as follows:
+
+
+"Version": "2012-10-17", 	"Statement": [ 		, 		{ 			"Sid": "2", 			"Effect": "Allow", 			"Action": [ 				"bedrock:InvokeModel" 			], 			"Resource": [ 				"arn:aws:bedrock:us-east-1:[account-number]:inference-profile/us.anthropic.claude-3-5-haiku-20241022-v1:0",                                 "arn:aws:bedrock:us-east-1:[account-number]:inference-profile/us.anthropic.claude-3-5-sonnet-20240620-v1:0",                                 "arn:aws:bedrock:us-east-1:[account-number]:inference-profile/meta.llama3-1-8b-instruct-v1:0", 				"arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-haiku-20241022-v1:0",                                 "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0", 				"arn:aws:bedrock:us-east-1::foundation-model/meta.llama3-1-8b-instruct-v1:0" 			] 		} 	] }
+
+
+I have set up my trust relationship policy for this role as follows:
+
+
+{     "Version": "2012-10-17",     "Statement": [         {             "Effect": "Allow",             "Principal": {                 "Service": "bedrock.amazonaws.com"             },             "Action": "sts:AssumeRole",             "Condition": {                 "StringEquals": {                     "aws:SourceAccount": "[account-number]"                 },                 "ArnEquals": {                     "aws:SourceArn": "arn:aws:bedrock:us-east-1:[account-number]:model-invocation-job/*"                 }             }         }     ] }
+
+
+What might still be the problem with my setup and how can I diagnose it?

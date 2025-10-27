@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_467b6a87",
+      "Effect": "allow",
+      "Action": "mediapackage:GetObject",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_874c4571",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt"
+    },
+    {
+      "id": "deny_d931031e",
+      "Effect": "deny",
+      "Action": "mediapackage:GetObject",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_47dc28d9",
+      "Effect": "allow",
+      "Action": "mediapackage:GetObject",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    },
+    {
+      "id": "allow_493903a4",
+      "Effect": "allow",
+      "Action": "mediapackage:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    }
+  ]
+}

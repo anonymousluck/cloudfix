@@ -1,0 +1,42 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e78b1383",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::prerendered-routes/document.txt",
+      "Principal": "arn:aws:iam::111222333444:user/david"
+    },
+    {
+      "id": "deny_bfedb17a",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:s3:::prerendered-routes/document.txt",
+      "Principal": "arn:aws:iam::cloudfront:user"
+    },
+    {
+      "id": "deny_aab8eafb",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:s3:::prerendered-routes/config.xml",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    },
+    {
+      "id": "allow_31f92c0f",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::prerendered-routes/data.json",
+      "Principal": "arn:aws:iam::cloudfront:user"
+    },
+    {
+      "id": "allow_84dbed60",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::prerendered-routes/data.json",
+        "arn:aws:s3:::prerendered-routes/config.xml"
+      ],
+      "Principal": "arn:aws:iam::cloudfront:user"
+    }
+  ]
+}

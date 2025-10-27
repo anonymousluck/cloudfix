@@ -1,0 +1,47 @@
+I am trying to figure where my issue is, but I have account A and account B.   I have a server in account B that needs access to an S3 bucket in account A via an IAM role and can't get it to work, but this is what I have.
+
+
+**Account A:  **
+
+
+
+
+S3 bucket setup
+
+
+Role setup with a Policy to access that bucket.
+
+
+
+
+Account A Role Trust relationship;
+
+
+
+
+
+
+Account B Trust relationship;
+
+Server Role setup.
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ec2.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+
+
+So, from Account A, I stuck that role on a server and since the trust is allowed using the ec2.service, it works (so I know the policy is correct as well), however from Account B server, I get the list denied.  I think I am just missing something that says from the Account B role/trust that hey your allowed, but not sure that is the case.
+
+
+Thanks for all reads/help.

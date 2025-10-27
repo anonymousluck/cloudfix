@@ -1,0 +1,21 @@
+Hi,
+
+
+I would like to have a simple homepage check that checks Grafana that we use for alerting.
+Grafana is only accessible from inside the VPC or specif external ip adresses.
+IAM Policy used by the Role:
+
+
+
+
+
+
+But in the logs it says it can't find the bucket.
+
+
+Failed to get the S3 bucket name.: Os { code: 2, kind: NotFound, message: "No such file or directory" } 
+
+
+
+Can't find anything on google about this, tried to have vpc endpoint to cloudwatch but according to the documentation it should not be needed.
+The bucket is in the same region as the cloudwatch canarie.

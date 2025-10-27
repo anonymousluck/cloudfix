@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_4d0dd3d3",
+      "Effect": "allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:kms:ca-central-1:xxxx:key/zzzz"
+    },
+    {
+      "id": "allow_701f56fe",
+      "Effect": "allow",
+      "Action": [
+        "secretsmanager:GetSecretValue",
+        "kms:DescribeKey"
+      ],
+      "Resource": [
+        "arn:aws:kms:ca-central-1:xxxx:key/zzzz",
+        "arn:aws:secretsmanager:ca-central-1:xxxx:secret:yyyy"
+      ]
+    },
+    {
+      "id": "deny_f1f4313b",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:kms:ca-central-1:xxxx:key/zzzz"
+    },
+    {
+      "id": "allow_201318c6",
+      "Effect": "allow",
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+      ],
+      "Resource": "arn:aws:kms:ca-central-1:xxxx:key/zzzz"
+    },
+    {
+      "id": "deny_6234a492",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:secretsmanager:ca-central-1:xxxx:secret:yyyy"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "Requests": [
+    {
+      "id": "allow_d28b72cd",
+      "Effect": "allow",
+      "Action": [
+        "kms:PutKeyPolicy",
+        "kms:DisableKey"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user"
+    },
+    {
+      "id": "deny_b52f57aa",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "arn:aws:iam::444555666777:user/external-user"
+    },
+    {
+      "id": "allow_08c38ab3",
+      "Effect": "allow",
+      "Action": [
+        "kms:ScheduleKeyDeletion",
+        "kms:EnableKey"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "arn:aws:iam::[account-id]:root"
+    },
+    {
+      "id": "deny_71cbe941",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Principal": "arn:aws:iam::444555666777:user/external-user"
+    },
+    {
+      "id": "allow_9997f0ad",
+      "Effect": "allow",
+      "Action": [
+        "kms:PutKeyPolicy",
+        "kms:ScheduleKeyDeletion"
+      ],
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    }
+  ]
+}

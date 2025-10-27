@@ -1,0 +1,28 @@
+Hello,
+
+
+I'm trying to run from Athena a command to generate an Iceberg table like below (main purpose: register S3 table bucket catalogs in Athena)
+
+
+CREATE TABLE default.temp_table (id bigint, data string, category string)
+PARTITIONED BY (category, bucket(16, id))
+LOCATION '<warehouse location e.g. s3://<uid>--table-s3>'
+TBLPROPERTIES ( 'table_type' = 'ICEBERG' )
+
+
+
+but I got an S3 access error: 
+Access to the specified S3 resource is denied, please check your IAM/S3 bucket policies and any relevant KMS permissions
+
+
+I've tried the below policy on the S3 bucket, but I have same error:
+
+
+
+
+
+
+Could you please specify how should look the S3 permission for such access ?
+
+
+Thank you,

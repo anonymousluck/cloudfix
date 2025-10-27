@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "allow_be2c1896",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::$BucketName/config.xml",
+      "Principal": "arn:aws:iam::$AccountID:user/$username"
+    },
+    {
+      "id": "allow_c8df672b",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::$BucketName",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    },
+    {
+      "id": "allow_2721a1c3",
+      "Effect": "allow",
+      "Action": "s3:GetBucketLocation",
+      "Resource": "arn:aws:s3:::$BucketName/config.xml",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "deny_207362ae",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::$BucketName",
+      "Principal": "arn:aws:iam::444555666777:user/external-user"
+    },
+    {
+      "id": "deny_8b4a5e10",
+      "Effect": "deny",
+      "Action": "dynamodb:GetItem",
+      "Resource": "arn:aws:s3:::$BucketName",
+      "Principal": "arn:aws:iam::123456789012:role/service-role"
+    }
+  ]
+}

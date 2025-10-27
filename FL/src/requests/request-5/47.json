@@ -1,0 +1,73 @@
+{
+  "Requests": [
+    {
+      "id": "deny_f593f929",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::777888999000:user/temp-user",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "deny_edd63a2c",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:s3:::bucket-name",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:iam::1234567890:user/dev"
+        }
+      }
+    },
+    {
+      "id": "allow_2a7c694e",
+      "Effect": "allow",
+      "Action": "s3:DeleteObject",
+      "Resource": "arn:aws:s3:::bucket-name/config.xml",
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::1234567890:distribution/asdf"
+        }
+      }
+    },
+    {
+      "id": "allow_8acdc50f",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::bucket-name/document.txt",
+        "arn:aws:s3:::bucket-name/config.xml"
+      ],
+      "Principal": "*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::1234567890:distribution/asdf"
+        }
+      }
+    },
+    {
+      "id": "allow_1b210640",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::bucket-name/data.json",
+        "arn:aws:s3:::bucket-name/document.txt"
+      ],
+      "Principal": "arn:aws:iam::123456789012:role/admin-role",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    }
+  ]
+}

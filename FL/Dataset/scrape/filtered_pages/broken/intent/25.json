@@ -1,0 +1,62 @@
+data source -> web crawler
+
+
+Regex include pattern -> none
+
+
+content chunking and parsing -> default
+
+
+embeddings model -> Embed english v3
+
+
+vector database -> quick create a new vector store
+
+
+policies attached to user:
+
+
+
+
+
+
+AmazonBedrockFullAccess
+
+
+
+
+
+
+Custom policies:
+
+
+
+
+
+
+A.
+
+
+
+
+B.
+
+
+{     "Version": "2012-10-17",     "Statement": [         {             "Effect": "Allow",             "Action": [                 "bedrock:ListFoundationModels",                 "bedrock:ListCustomModels"             ],             "Resource": "*"         },         {             "Effect": "Allow",             "Action": [                 "bedrock:InvokeModel"             ],             "Resource": [                 "arn:aws:bedrock:ap-southeast-1::foundation-model/amazon.titan-embed-text-v1",                 "arn:aws:bedrock:ap-southeast-1::foundation-model/cohere.embed-english-v3",                 "arn:aws:bedrock:ap-southeast-1::foundation-model/cohere.embed-multilingual-v3"             ]         }     ] }
+
+
+C.  
+{     "Version": "2012-10-17",     "Statement": [         {             "Sid": "MarketplaceBedrock",             "Effect": "Allow",             "Action": [                 "aws-marketplace:ViewSubscriptions",                 "aws-marketplace:Unsubscribe",                 "aws-marketplace:Subscribe"             ],             "Resource": "*"         }     ] }
+
+
+Please, badly need help from expert. I'm stuck on this one i don't know what to do anymore.
+what i'm missing with policies ?
+
+
+'Preparing vector database in Amazon Opensearch Serverless. This process may take several minutes to complete.'
+then: 'Failed to create the Amazon Opensearch Serverless collection. Failed to fetch'
+
+
+but upon checking collections in opensearch service, it was there, the only thing is the creation of knowledge base is not successful.
+just following a video -> 
+https://www.youtube.com/watch?v=oSnFZhHuIgg

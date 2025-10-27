@@ -1,0 +1,37 @@
+{
+  "Requests": [
+    {
+      "id": "allow_772d9338",
+      "Effect": "allow",
+      "Action": "bedrock:InvokeModelGetObject",
+      "Resource": "arn:aws:bedrock:*::foundation-model/document.txt"
+    },
+    {
+      "id": "allow_c49b267d",
+      "Effect": "allow",
+      "Action": "bedrock:InvokeModelGetObject",
+      "Resource": "arn:aws:bedrock:*::foundation-model/config.xml"
+    },
+    {
+      "id": "allow_26a360ca",
+      "Effect": "allow",
+      "Action": "bedrock:InvokeModelGetObject",
+      "Resource": [
+        "arn:aws:bedrock:*::foundation-model/document.txt",
+        "arn:aws:bedrock:*:814089719562:inference-profile/data.json"
+      ]
+    },
+    {
+      "id": "deny_14ed586b",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:bedrock:*::foundation-model/data.json"
+    },
+    {
+      "id": "deny_9bac4c35",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:bedrock:*:814089719562:inference-profile/config.xml"
+    }
+  ]
+}

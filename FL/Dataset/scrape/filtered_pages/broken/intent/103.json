@@ -1,0 +1,15 @@
+I have created a crawler to insert data from redshift tables into the glue data catalog. I have created the glue connection and an IAM role with the following policies:
+
+
+AmazonRedshiftFullAccess
+AmazonS3FullAccess
+AWSGlueServiceRole
+CloudwatchLogsFullAccess
+
+
+and an inline policy with the following permissions:
+
+
+
+but when I try to run the crawler I obtain the error message:
+Crawler cannot be started. Verify the permissions in the policies attached to the IAM role defined in the crawler.

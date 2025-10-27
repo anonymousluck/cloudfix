@@ -1,0 +1,67 @@
+Hello,
+
+
+We're new to Veeam Cloud Connect sending tenant backups to S3 at AWS and we are testing currently. When the backup copy job goes to our cloud connect server which is just Veeam + the S3 repository added we see this error after some timeout job wont start without initial failure -  "Failed to preprocess target Error: Insufficient AWS permissions"
+
+
+We have in AWS configured the following:
+
+
+-Role name "VeeamVCC" which has an attached policy named "VeeamVCC" and in this policy we have the following configuration:
+
+
+
+
+
+
+The error logging on Veeam side says:
+
+
+<20>   Error (1)    Insufficient AWS permissions (System.Exception)
+<20>   Error (1)    Server stack trace: 
+<20>   Error (1)       at Veeam.Backup.AmazonAPI.SAmazonWebServiceExt.<>c__DisplayClass1_0`1.b__0()
+<20>   Error (1)       at Veeam.Backup.AmazonAPI.SAmazonWebServiceExt.<>c__DisplayClass2_0`1.b__0()
+<20>   Error (1)       at Veeam.Backup.Common.SFunctionExtensions.TryInvoke[TResult](Func`1 action, Int32 retryCount, TimeSpan timeout, Func`2 excFilter)
+<20>   Error (1)    --- End of stack trace from previous location where exception was thrown ---
+<20>   Error (1)       at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+<20>   Error (1)       at Veeam.Backup.Common.SExceptionExtensions.Rethrow(Exception exception)
+<20>   Error (1)       at Veeam.Backup.Common.SFunctionExtensions.TryInvoke[TResult](Func`1 action, Int32 retryCount, TimeSpan timeout, Func`2 excFilter)
+<20>   Error (1)       at Veeam.Backup.AmazonAPI.SAwsInfrastructureExtensions.InternalTryInvokeAws[T](Func`1 func, Func`2 exceptionFilter)
+<20>   Error (1)       at Veeam.Backup.AmazonAPI.CDefaultAwsUserManager.CreateUser(String userName, CAwsTagInfo[] tags)
+<20>   Error (1)       at Veeam.Backup.PublicCloud.CAmazonS3BlobRepositoryLimitedCredentialsProvider.CreateNewLimitedCredentials(CObjectRepositoryClientId clientId, String accountDescription, Boolean readOnlyAccess)
+<20>   Error (1)       at Veeam.Backup.PublicCloud.CAmazonS3BlobRepositoryLimitedCredentialsProvider.GetOrCreateLongTermInternal(CObjectRepositoryClientId clientId, String accountDescription, DateTime expiresOnUtc, Boolean readOnlyAccess)
+<20>   Error (1)       at Veeam.Backup.PublicCloud.CAmazonS3BlobRepositoryLimitedCredentialsProvider.GetOrCreateCredentials(CObjectRepositoryClientId clientId, String accountDescription, DateTime expiresOnUtc, Boolean readOnlyAccess)
+<20>   Error (1)       at Veeam.Backup.PublicCloud.CObjectStorageLimitedCredentialsResolver.GetCredentialsForAmazonS3Repository(IAmazonS3BlobRepository repository, CObjectRepositoryClientId clientId, String accountDescription, Boolean readOnlyAccess)
+<20>   Error (1)       at Veeam.Backup.PublicCloud.CObjectStorageLimitedCredentialsResolver.GetCredentials(CObjectRepositoryClientId clientId, String accountName, Boolean readonlyAccess)
+<20>   Error (1)       at Veeam.Backup.PublicCloud.SDirectRemoteObjectRepositoryHelper.GetDirectCredentials(IBackupRepository repository, CObjectRepositoryClientId clientId, String accountName, Boolean readonlyAccess)
+<20>   Error (1)       at Veeam.Backup.PublicCloud.SDirectRemoteObjectRepositoryHelper.GetConnectionInfo(IBackupRepository repository, CObjectRepositoryClientId clientId, CPublicCloudClientDescription clientDescription, String accountName, Boolean readonlyAccess)
+<20>   Error (1)       at Veeam.Backup.CloudService.CCloudServerSpecServiceInvoker.SessionExecuter.GetDirectObjectRepositoryConnectionInfo(CCloudServiceGetDirectObjectRepositoryConnectionInfo task)
+<20>   Error (1)       at Veeam.Backup.CloudService.CCloudServerSpecServiceInvoker.GetDirectObjectRepositoryConnectionInfo()
+<20>   Error (1)       at Veeam.Backup.CloudService.CCloudServerSpecServiceInvoker.Invoke(Int32 rawMethod)
+<20>   Error (1)       at Veeam.Backup.CloudConnect.Components.CVccBackgroundRequestHandlingOperation.DoInternal()
+
+
+
+
+We thought we have enough permissions on the policy and perhaps too much!
+But nevertheless enough for recommended in the Veeam KB:
+
+https://www.veeam.com/kb3151
+
+Note: Non-immutable, we may do this later but testing with Immutability off for now.
+
+
+The repo configured inside of Veeam for the S3 bucket is using a user we made called "veeam-vcc"
+Which has the policy mentioned earlier attached to it along with "AmazonS3FullAccess"
+
+
+The user we created then had access key generated from it to be used with Veeam.
+
+
+The customer's backup server - in case you are familiar with Veeam in your response is in "Direct Mode" so their backup server gets this config/assigned repo from our provider server "Cloud Connect Server" but transports directly between them and the S3 repo (not to us first then to S3).
+
+
+Veeam is on the latest 12.3 if necessary to know both Veeam Cloud Connect server and Tenant's backup server.
+
+
+We are waiting for an onboarding with a partner which can perhaps schedule us some support soon, just hoping someone can shed some light sooner while we are in testing. Thanks!

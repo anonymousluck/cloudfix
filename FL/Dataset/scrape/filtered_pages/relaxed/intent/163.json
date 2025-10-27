@@ -1,0 +1,54 @@
+I am trying to do the most basic Proof of Concept api but every time I call my lambda function URL from Postman, I get
+
+
+com.amazonaws.serverless.exceptions.InvalidRequestEventException: 
+    The incoming event is not a valid request from Amazon API Gateway or an Application Load Balancer
+
+
+
+I have the Auth type: NONE, CORS: "*", Allow methods: "*"
+
+
+Policy:
+
+
+
+
+
+
+I found 
+this issue
+ which says that "the framework expects an event that is shaped like an API Gateway or ALB proxy event." and links to 
+this doc
+ However, how would I do this in Postman?
+
+
+This AWS Doc
+ suggests that I don't need to do that though:
+
+
+
+
+If your function URL uses the NONE auth type, you don't have to sign your requests using SigV4. You can invoke your function using a web browser, curl, Postman, or any HTTP client.
+
+
+
+
+However, perhaps the problem is the conversion of the request into the Amazon API Gateway payload schema? From the same document:
+
+
+
+
+When a client calls your function URL, Lambda maps the request to an event object before passing it to your function. Your function's response is then mapped to an HTTP response that Lambda sends back to the client through the function URL.
+
+
+
+
+
+
+The request and response event formats follow the same schema as the Amazon API Gateway payload format version 2.0.
+
+
+
+
+Anyone know what I need to change to be able to call a simple GET request from a browser/Postman?

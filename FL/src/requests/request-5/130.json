@@ -1,0 +1,70 @@
+{
+  "Requests": [
+    {
+      "id": "deny_83c98c84",
+      "Effect": "deny",
+      "Action": "rds:DeleteDBInstance",
+      "Resource": "arn:aws:s3:::mywebsite.com/config.xml",
+      "Principal": "arn:aws:iam::123456789012:role/service-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "deny_716485b9",
+      "Effect": "deny",
+      "Action": "lambda:DeleteFunction",
+      "Resource": "arn:aws:s3:::mywebsite.com/config.xml",
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "allow_427b6941",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::mywebsite.com/data.json",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::123456789012:distribution/ABCDEF12345"
+        }
+      }
+    },
+    {
+      "id": "allow_3b81402a",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::mywebsite.com/data.json",
+        "arn:aws:s3:::mywebsite.com/config.xml"
+      ],
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "allow_91da6849",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::mywebsite.com/document.txt",
+        "arn:aws:s3:::mywebsite.com/config.xml"
+      ],
+      "Principal": "arn:aws:iam::123456789012:user/alice",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    }
+  ]
+}

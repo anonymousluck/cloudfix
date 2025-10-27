@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e875af4f",
+      "Effect": "allow",
+      "Action": "s3:PutObjectAcl",
+      "Resource": "arn:aws:s3:::document"
+    },
+    {
+      "id": "allow_5dd5e533",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutBucketLifecycle",
+        "s3:ListAllMyBuckets"
+      ],
+      "Resource": [
+        "arn:aws:s3:::bucket-name/document.txt",
+        "arn:aws:s3:::document"
+      ]
+    },
+    {
+      "id": "deny_49180d16",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::file1"
+    },
+    {
+      "id": "allow_83096d9f",
+      "Effect": "allow",
+      "Action": "s3:PutBucketTagging",
+      "Resource": "arn:aws:s3:::bucket-name"
+    },
+    {
+      "id": "deny_29756a85",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::bucket-name"
+    }
+  ]
+}

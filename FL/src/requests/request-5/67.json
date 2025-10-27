@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_64bfaebd",
+      "Effect": "allow",
+      "Action": "iot:Subscribe",
+      "Resource": [
+        "arn:aws:iot:us-east-1:1234567890:topicfilter/esp826/sub",
+        "arn:aws:iot:us-east-1:1234567890:topic/esp8266/sub"
+      ]
+    },
+    {
+      "id": "allow_b4361680",
+      "Effect": "allow",
+      "Action": [
+        "iot:Subscribe",
+        "iot:Connect"
+      ],
+      "Resource": "arn:aws:iot:us-east-1:1234567890:client/testESP8266"
+    },
+    {
+      "id": "deny_458abc0d",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:iot:us-east-1:1234567890:topic/esp8266/sub"
+    },
+    {
+      "id": "allow_d200a841",
+      "Effect": "allow",
+      "Action": [
+        "iot:Connect",
+        "iot:Receive"
+      ],
+      "Resource": "arn:aws:iot:us-east-1:1234567890:client/testESP8266"
+    },
+    {
+      "id": "deny_2acfce4f",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:iot:us-east-1:1234567890:topic/esp8266/pub"
+    }
+  ]
+}

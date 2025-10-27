@@ -1,0 +1,62 @@
+{
+  "Requests": [
+    {
+      "id": "deny_a72d1402",
+      "Effect": "deny",
+      "Action": "GetObject",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/env": "prod"
+        }
+      }
+    },
+    {
+      "id": "allow_d1332e6f",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/env": "prod"
+        }
+      }
+    },
+    {
+      "id": "deny_bf2f82d8",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/env": "prod"
+        }
+      }
+    },
+    {
+      "id": "allow_5cad7483",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:iam::123456789012:role/test-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/env": "prod"
+        }
+      }
+    },
+    {
+      "id": "allow_ff54bda1",
+      "Effect": "allow",
+      "Action": "GetObject",
+      "Resource": "arn:aws:s3:::my-bucket/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/env": "prod"
+        }
+      }
+    }
+  ]
+}

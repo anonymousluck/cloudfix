@@ -1,0 +1,23 @@
+Hello,
+
+
+I have an NLB in which I want to enable an access log and for that, I have assigned a S3 bucket.
+But I'm having this error 
+"Access Denied for bucket: qa-nlb-lo. Please check S3bucket permission"
+ despite making policy based on AWS official documentation
+
+https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html
+
+
+The policy is below -
+
+
+
+
+
+
+
+In place of an account-no I have added my aws account number, but still facing this issue. I will be grateful if someone can point out my mistake and help me resolve this issue.
+
+
+Thanks

@@ -1,0 +1,56 @@
+I created the role needed to connect the services but i'm getting these two errors:
+
+
+
+
+Could not access Kinesis Firehose Stream using IAM role
+
+
+Could not assume IAM role
+
+
+
+
+Permission Policy:
+
+
+
+
+
+
+Trust Policy:
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ses.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceAccount": "111122223333",
+          "AWS:SourceArn": "arn:aws:ses:delivery-region:111122223333:configuration-set/configuration-set-name"
+        }
+      }
+    }
+  ]
+}
+
+
+
+Link that i used to guide me:
+
+
+
+
+https://docs.aws.amazon.com/ses/latest/dg/event-publishing-add-event-destination-firehose.html#event-publishing-add-event-destination-firehose-role
+
+
+
+
+Can someone help me ?

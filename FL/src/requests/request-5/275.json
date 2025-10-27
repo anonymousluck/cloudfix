@@ -1,0 +1,62 @@
+{
+  "Requests": [
+    {
+      "id": "deny_aa1fd8d3",
+      "Effect": "deny",
+      "Action": "ec2:ImportKeyPair",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalArn": "arn:aws:sts::1234567890:assumed-role/accounting-role-name/kalmesh@xyz.com"
+        }
+      }
+    },
+    {
+      "id": "allow_5773c7eb",
+      "Effect": "allow",
+      "Action": "ec2:DescribeKeyPairs",
+      "Resource": "arn:aws:ec2:*:1234567890:file1",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_d826b8a2",
+      "Effect": "allow",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:ec2:*:1234567890:data123",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalArn": "arn:aws:sts::1234567890:assumed-role/accounting-role-name/kalmesh@xyz.com"
+        }
+      }
+    },
+    {
+      "id": "deny_d1e0dd58",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:ec2:*:1234567890:document",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    },
+    {
+      "id": "allow_a70f2a3b",
+      "Effect": "allow",
+      "Action": "ec2:CreateVolume",
+      "Resource": [
+        "arn:aws:ec2:*:1234567890:data123",
+        "arn:aws:ec2:*:1234567890:file1"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalArn": "arn:aws:sts::1234567890:assumed-role/accounting-role-name/kalmesh@xyz.com"
+        }
+      }
+    }
+  ]
+}

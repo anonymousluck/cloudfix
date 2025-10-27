@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_19de03af",
+      "Effect": "allow",
+      "Action": "s3:GetBucketTagging",
+      "Resource": "arn:aws:s3:::dining-images/document.txt"
+    },
+    {
+      "id": "deny_e6e9d696",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:kinesisvideo:*:*:stream/${credentials-iot:ThingName}/document.txt"
+    },
+    {
+      "id": "allow_5bc60394",
+      "Effect": "allow",
+      "Action": "s3:GetBucketLifecycle",
+      "Resource": "arn:aws:kinesisvideo:*:*:stream/${credentials-iot:ThingName}/config.xml"
+    },
+    {
+      "id": "deny_63f58509",
+      "Effect": "deny",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "arn:aws:kinesisvideo:*:*:stream/${credentials-iot:ThingName}/config.xml"
+    },
+    {
+      "id": "allow_4ea858cc",
+      "Effect": "allow",
+      "Action": [
+        "kinesisvideo:PutMedia",
+        "s3:PutBucketCors"
+      ],
+      "Resource": [
+        "arn:aws:kinesisvideo:*:*:stream/${credentials-iot:ThingName}/data.json",
+        "arn:aws:kinesisvideo:*:*:stream/${credentials-iot:ThingName}/config.xml"
+      ]
+    }
+  ]
+}

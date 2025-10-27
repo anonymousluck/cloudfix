@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_d08fcdc7",
+      "Effect": "allow",
+      "Action": "config:DeleteConfigRule",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "deny_4cd33f78",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::data-bucket/file.json"
+    },
+    {
+      "id": "deny_6cb50258",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    },
+    {
+      "id": "allow_5cdc3361",
+      "Effect": "allow",
+      "Action": "config:DeleteConfigRule",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:s3:::data-bucket/file.json"
+      ]
+    },
+    {
+      "id": "allow_242b3d00",
+      "Effect": "allow",
+      "Action": "config:DeleteConfigRule",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/document.txt",
+        "arn:aws:iam::123456789012:role/test-role"
+      ]
+    }
+  ]
+}

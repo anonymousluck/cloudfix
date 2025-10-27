@@ -1,0 +1,91 @@
+From CloudWatch logs:
+
+
+[Worker-08b99ad5f119f02cd] org.apache.kafka.common.errors.TimeoutException: Call(callName=fetchMetadata, deadlineMs=1683595748944, tries=1, nextAllowedTryMs=1683595749045) timed out at 1683595748945 after 1 attempt(s)
+
+
+
+Security Group
+
+The MSK Connector uses the same security group as the MSK Cluster and accepts 
+All Traffic
+ from all ports inbound from itself.
+
+
+IAM Role
+
+The MSK Connector uses an IAM role with the following trust relationship:
+
+
+
+
+
+
+The same role has the following policy:
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:Connect",
+                "kafka-cluster:DescribeCluster"
+            ],
+            "Resource": [
+                "cluster-arn"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:ReadData",
+                "kafka-cluster:DescribeTopic"
+            ],
+            "Resource": [
+                "ARN of the topic that you want a sink connector to read from"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:WriteData",
+                "kafka-cluster:DescribeTopic"
+            ],
+            "Resource": [
+                "ARN of the topic that you want a source connector to write to"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:CreateTopic",
+                "kafka-cluster:WriteData",
+                "kafka-cluster:ReadData",
+                "kafka-cluster:DescribeTopic"
+            ],
+            "Resource": [
+                "arn:aws:kafka:region:account-id:topic/cluster-name/cluster-uuid/__amazon_msk_connect_*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:AlterGroup",
+                "kafka-cluster:DescribeGroup"
+            ],
+            "Resource": [
+                "arn:aws:kafka:region:account-id:group/cluster-name/cluster-uuid/__amazon_msk_connect_*",
+                "arn:aws:kafka:region:account-id:group/cluster-name/cluster-uuid/connect-*"
+            ]
+        }
+    ]
+}
+
+
+
+This seems to cover everything I can find in docs / other re:Post threads.
+
+
+Any help would be appreciated!

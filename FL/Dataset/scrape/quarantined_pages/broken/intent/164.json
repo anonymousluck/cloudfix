@@ -1,0 +1,224 @@
+Cognito Identity Pool "InvalidParameterException" with Developer Authenticated Identities - IAM Role Trust Issue?
+
+
+I'm encountering a persistent "InvalidParameterException: Please provide a valid public provider" error when trying to retrieve AWS credentials in my frontend application using Cognito Identity Pool with developer authenticated identities.  I've thoroughly investigated the configuration and am seeking assistance in identifying the root cause.
+
+
+Setup:
+
+
+I have a Cognito Identity Pool configured with a custom developer authentication provider
+My backend (NestJS) generates OpenID Connect (OIDC) tokens using GetOpenIdTokenForDeveloperIdentityCommand and returns the Identity ID and Token to the frontend.
+My frontend (Nuxt 3) uses @aws-sdk/client-cognito-identity to call GetCredentialsForIdentityCommand with the received Identity ID and Token.
+I have an IAM role associated with my Cognito Identity Pool that should grant access to an S3 bucket.
+Problem:
+
+
+Despite the seemingly correct configuration, I receive the "InvalidParameterException" when calling GetCredentialsForIdentityCommand in my frontend.
+
+
+Debugging Steps Taken:
+
+
+Provider Name Verification: I've meticulously confirmed that the provider name is consistent across my Cognito Identity Pool configuration, backend code, and frontend code.
+
+
+Token Verification: I've verified that my backend is generating valid JWT tokens using a JWT decoder (jwt.io). The aud (audience) claim in the token matches my Cognito Identity Pool ID.
+
+
+Request Payload Inspection: I've inspected the request payload being sent to cognito-identity.eu-central-1.amazonaws.com in my browser's Network tab. The Logins object is correctly structured:
+
+
+{
+  "yomu.michi.dev.api": "THE_RAW_TOKEN_FROM_BACKEND"
+}
+
+
+
+The IdentityId and IdentityPoolId are also present and correct in the request.
+
+
+IAM Role Trust Relationship Review: I've carefully reviewed the trust relationship of my IAM role. It is set to allow cognito-identity.amazonaws.com to assume the role and includes the necessary conditions:
+
+
+JSON
+
+
+
+
+
+
+I've also used a JSON validator to ensure there are no syntax errors or hidden characters in the trust policy.
+
+
+Region and ID Consistency: I've ensured that the AWS region and Cognito Identity Pool ID are consistent across my Cognito configuration, IAM role, AWS CLI commands, and frontend code.
+
+
+Question:
+
+
+Is there something I'm missing in the interaction between Cognito, IAM, and my developer authenticated identities?  Any insights or suggestions for further debugging would be greatly appreciated.
+
+
+Additional Information:
+
+
+I'm using the latest versions of the AWS SDKs in both my frontend and backend.
+
+
+Backend code:
+
+
+import { Injectable } from '@nestjs/common'
+import { CognitoIdentityClient, GetOpenIdTokenForDeveloperIdentityCommand } from '@aws-sdk/client-cognito-identity'
+
+@Injectable()
+export class AwsS3Service {
+  private readonly cognitoClient: CognitoIdentityClient
+  private readonly COGNITO_IDENTITY_POOL_ID = process.env.AWS_COGNITO_IDENTITY_POOL_ID
+  private readonly COGNITO_DEVELOPER_PROVIDER_NAME = process.env.AWS_COGNITO_DEVELOPER_PROVIDER_NAME
+
+  constructor() {
+    this.cognitoClient = new CognitoIdentityClient({
+      region: process.env.AWS_REGION,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+      }
+    })
+  }
+
+  async getOpenIdToken(userId?: string) {
+    const providerName = userId || 'readerAppMvp'
+    console.log('providerName', providerName)
+    console.log('cognito developer provider', this.COGNITO_DEVELOPER_PROVIDER_NAME)
+
+    const command = new GetOpenIdTokenForDeveloperIdentityCommand({
+      IdentityPoolId: this.COGNITO_IDENTITY_POOL_ID,
+      Logins: {
+        [this.COGNITO_DEVELOPER_PROVIDER_NAME]: providerName
+      },
+      TokenDuration: 3600 // 1 hour
+    })
+
+    const response = await this.cognitoClient.send(command)
+
+    if (!response.IdentityId || !response.Token) {
+      throw new Error('Failed to get Cognito credentials')
+    }
+
+    return {
+      identityId: response.IdentityId,
+      token: response.Token
+    }
+  }
+}
+
+
+
+
+frontend Code:
+
+
+<template>
+  <div>
+    <file-pond
+      ref="pond"
+      name="filepond"
+      label-idle="Drag & Drop your EPUB files or <span class='filepond--label-action'>Browse</span>"
+      allow-multiple="false"
+      accepted-file-types="application/epub+zip"
+      :server="serverOptions"
+      :credits="false"
+    />
+  </div>
+</template>
+
+<script setup>
+import { CognitoIdentityClient, GetCredentialsForIdentityCommand } from '@aws-sdk/client-cognito-identity'
+import { S3Client } from '@aws-sdk/client-s3'
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
+import 'filepond/dist/filepond.min.css'
+import vueFilePond from 'vue-filepond'
+
+const config = useRuntimeConfig()
+const FilePond = vueFilePond(FilePondPluginFileValidateType)
+// Server options for file upload
+const serverOptions = {
+  url: '/api/upload',
+  process: {
+    url: './process',
+    method: 'POST',
+    withCredentials: false,
+    headers: {},
+    timeout: 7000,
+    onload: (response) => response.key,
+    onerror: (response) => response.data,
+    ondata: (formData) => {
+      formData.append('hello', 'world')
+      return formData
+    }
+  }
+}
+
+onMounted(async () => {
+  console.log(config.public)
+  const credentials = await getAwsCognitoCredentials()
+  console.log('getting credentials', credentials)
+  // const s3Service = await createS3Service()
+  // console.log(s3Service.config.credentials)
+})
+
+async function getAwsCognitoCredentials() {
+  try {
+    const { identityId, token } = await $fetch('/api/auth/upload-credentials')
+    console.log('Identity ID:', identityId)
+    console.log('Token received:', token)
+    console.log('AWS Region:', config.public.awsRegion)
+    console.log('AWS Cognito Developer Provider Name:', config.public.awsCognitoDeveloperProviderName)
+    console.log('AWS Cognito Identity Pool ID:', config.public.awsCognitoIdentityPoolId)
+
+    const params = {
+      IdentityId: identityId,
+      IdentityPoolId: config.public.awsCognitoIdentityPoolId,
+      Logins: {
+        [config.public.awsCognitoDeveloperProviderName]: token
+      }
+    }
+
+    console.log('Logins:', params)
+
+    const cognitoIdentity = new CognitoIdentityClient({
+      region: config.public.awsRegion
+    })
+
+    const credentialsResponse = await cognitoIdentity.send(new GetCredentialsForIdentityCommand(params))
+    console.log('Cognito credentials received:', credentialsResponse.Credentials)
+    return credentialsResponse.Credentials
+  } catch (error) {
+    console.error('Error fetching AWS credentials:', error)
+    console.log('Error:', error.message)
+    throw error
+  }
+}
+
+async function createS3Service() {
+  const cognitoCredentials = await getAwsCognitoCredentials()
+  if (
+    !cognitoCredentials ||
+    !cognitoCredentials.AccessKeyId ||
+    !cognitoCredentials.SecretKey ||
+    !cognitoCredentials.SessionToken
+  ) {
+    throw new Error('AWS credentials not available')
+  }
+  return new S3Client({
+    region: config.public.awsRegion,
+    credentials: {
+      accessKeyId: cognitoCredentials.AccessKeyId,
+      secretAccessKey: cognitoCredentials.SecretKey,
+      sessionToken: cognitoCredentials.SessionToken
+    }
+  })
+}
+</script>

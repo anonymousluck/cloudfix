@@ -1,0 +1,62 @@
+I’m working with AWS IoT Core and trying to connect an MQTT client (MQTT Explorer) with a specific policy. When I use a broad policy (such as iot:* on Resource: *), everything works perfectly, and the connection remains stable. However, when I apply a more restrictive policy, the connection is immediately disconnected.
+
+
+Here’s the refined policy I’m using:
+
+
+
+
+
+
+
+Setup Details:
+
+
+Region: eu-west-3
+MQTT Client: MQTT Explorer
+Certificates: Root CA, device certificate, and private key are properly configured.
+Endpoint: 
+<account-specific-endpoint>
+.iot.eu-west-3.amazonaws.com
+Client ID: 1122CCDDEEFF
+
+
+With this policy, I’m trying to:
+
+
+Subscribe to: /lite/command/#
+Publish to: /lite/data/test
+As soon as I connect using MQTT Explorer, the connection is immediately disconnected. This issue does not occur when I use a broader policy like this:
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "iot:*",
+      "Resource": "*"
+    }
+  ]
+}
+
+
+
+
+What I’ve Checked:
+
+
+Certificates: Certificates are active and attached to the policy.
+Logs: IoT Core logs are enabled, but I don’t see any clear errors.
+Keepalive: Set to 60 seconds in MQTT Explorer.
+Other Clients: The same issue occurs when testing with Mosquitto.
+Topic Path: The topic /lite/command/# should match the policy definition.
+My Questions:
+
+
+Why does the connection immediately disconnect when using the stricter policy?
+Are there specific nuances with wildcards (# vs *) or topic configurations in the policy that I need to address?
+How can I fix this issue so that the policy works without relying on overly broad permissions?
+
+
+Thanks in advance for your help!

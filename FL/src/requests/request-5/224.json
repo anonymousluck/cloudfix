@@ -1,0 +1,70 @@
+{
+  "Requests": [
+    {
+      "id": "deny_734c4edb",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::xxxx-bucket-name-xxxx/document.txt",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "id": "allow_168d3da8",
+      "Effect": "allow",
+      "Action": "s3:PutBucketLifecycle",
+      "Resource": "arn:aws:s3::: xxxx-bucket-name-xxxx/config.xml",
+      "Principal": "arn:aws:iam::111222333444:user/david",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "id": "allow_d72ad69c",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetBucketTagging",
+        "s3:PutBucketPolicy"
+      ],
+      "Resource": "arn:aws:s3:::xxxx-bucket-name-xxxx/document.txt",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::xxxxxx:distribution/something"
+        }
+      }
+    },
+    {
+      "id": "deny_e4e4de2e",
+      "Effect": "deny",
+      "Action": "s3:GetBucketAcl",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::xxxxxx:distribution/something"
+        }
+      }
+    },
+    {
+      "id": "allow_cc1ccf70",
+      "Effect": "allow",
+      "Action": "s3:PutBucketTagging",
+      "Resource": [
+        "arn:aws:s3::: xxxx-bucket-name-xxxx/config.xml",
+        "arn:aws:s3:::xxxx-bucket-name-xxxx/config.xml"
+      ],
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::xxxxxx:distribution/something"
+        }
+      }
+    }
+  ]
+}

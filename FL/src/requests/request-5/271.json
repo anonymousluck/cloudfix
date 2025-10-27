@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_f6ef8a9c",
+      "Effect": "deny",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key"
+    },
+    {
+      "id": "allow_87f010db",
+      "Effect": "allow",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:rds-db:eu-west-2:myclientid:dbuser:*/data.json"
+    },
+    {
+      "id": "deny_d7d8c5d0",
+      "Effect": "deny",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_156cdb8c",
+      "Effect": "allow",
+      "Action": "rds-db:connect",
+      "Resource": [
+        "arn:aws:rds-db:eu-west-2:myclientid:dbuser:*/data.json",
+        "arn:aws:rds-db:eu-west-2:myclientid:dbuser:*/document.txt"
+      ]
+    },
+    {
+      "id": "allow_cae9dab1",
+      "Effect": "allow",
+      "Action": "rds-db:connect",
+      "Resource": [
+        "arn:aws:rds-db:eu-west-2:myclientid:dbuser:*/config.xml",
+        "arn:aws:rds-db:eu-west-2:myclientid:dbuser:db-instancestring/myIAMuser"
+      ]
+    }
+  ]
+}

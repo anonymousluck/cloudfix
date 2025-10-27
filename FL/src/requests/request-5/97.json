@@ -1,0 +1,25 @@
+{
+  "Requests": [
+    {
+      "id": "deny_ef072efa",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:s3-outposts:us-west-2:593793065716:outpost/op-06d594d204174c310/accesspoint/a207804-ci-outpost-bucket1-access-point",
+      "Principal": "arn:aws:iam::111222333444:role/developer-role"
+    },
+    {
+      "id": "allow_55d73587",
+      "Effect": "allow",
+      "Action": "s3-outposts:GetObject",
+      "Resource": "arn:aws:s3-outposts:us-west-2:593793065716:outpost/op-06d594d204174c310/accesspoint/a207804-ci-outpost-bucket1-access-point",
+      "Principal": "arn:aws:iam::555666777888:role/cross-account-role"
+    },
+    {
+      "id": "deny_59157cda",
+      "Effect": "deny",
+      "Action": "s3-outposts:GetObject",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::123456789012:user/bob"
+    }
+  ]
+}

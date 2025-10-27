@@ -1,0 +1,25 @@
+Hi Team,
+Need help, was looking for a way to modify S3 bucket policy with Lambda (Python3.10) trigger. Since there is no update bucket policy is possible I was looking for option by which I can fetch existing bucket policy then modify that and put the bucket policy back. I was trying the below code but that did not help...
+
+
+`#s3_client = boto3.client('s3')
+
+
+bucket_name = 'vpc-flow-log-sudsark'
+
+
+def lambda_handler(event, context):
+
+
+# Or use client to get Bucket policy
+s3_client = boto3.client('s3')
+policy = s3_client.get_bucket_policy(Bucket='vpc-flow-log-sudsark')
+
+# assign policy using s3 resource 
+user_policy = 
+new_policy =  policy['Statement'].append(user_policy)
+s3_client.put_bucket_policy(Policy=new_policy)
+
+
+
+`

@@ -1,0 +1,46 @@
+I am running an AWS Glue Job, and the job is doing what it should, it takes the records from Kinesis stream and is putting it into the data lake. But it ends with a failure and error is as given below:
+
+
+ StreamingQueryException: com.amazon.ws.emr.hadoop.fs.shaded.com.amazonaws.services.s3.model.AmazonS3Exception: Access Denied (Service: Amazon S3; Status Code: 403; Error Code: AccessDenied;
+
+
+
+Logs from cloudwatch:
+
+
+23/11/06 16:05:59 ERROR GlueExceptionAnalysisListener: [Glue Exception Analysis] {     "Event": "GlueETLJobExceptionEvent",     "Timestamp": 1699286759755,     "Failure Reason": "Traceback (most recent call last):\n  File \"/tmp/azure-activity-to-ocsf-pyspark2.py\", line 300, in <module>\n    \"checkpointLocation\": args[\"TempDir\"] + \"/\" + args[\"JOB_NAME\"] + \"/checkpoint/\",\n  File \"/opt/amazon/lib/python3.6/site-packages/awsglue/context.py\", line 678, in forEachBatch\n    raise e\n  File \"/opt/amazon/lib/python3.6/site-packages/awsglue/context.py\", line 668, in forEachBatch\n    query.start().awaitTermination()\n  File \"/opt/amazon/spark/python/lib/pyspark.zip/pyspark/sql/streaming.py\", line 101, in awaitTermination\n    return self._jsq.awaitTermination()\n  File \"/opt/amazon/spark/python/lib/py4j-0.10.9-src.zip/py4j/java_gateway.py\", line 1305, in __call__\n    answer, self.gateway_client, self.target_id, self.name)\n  File \"/opt/amazon/spark/python/lib/pyspark.zip/pyspark/sql/utils.py\", line 117, in deco\n    raise converted from None\npyspark.sql.utils.StreamingQueryException: com.amazon.ws.emr.hadoop.fs.shaded.com.amazonaws.services.s3.model.AmazonS3Exception: Access Denied (Service: Amazon S3; Status Code: 403; Error Code: AccessDenied; Request ID: KKMW0JW7VXKSRCCJ; S3 Extended Request ID: K+qiigS/kCTXbG9A7Tc/I7QtLBpsVSfUxzCApZZAtOwkLjYZgoZPFIiHi7+DlHvYwed9syWsx78=; Proxy: null), S3 Extended Request ID: K+qiigS/kCTXbG9A7Tc/I7QtLBpsVSfUxzCApZZAtOwkLjYZgoZPFIiHi7+DlHvYwed9syWsx78=\n=== Streaming Query ===\nIdentifier: [id = b3618842-c4c3-4b21-be2e-679f15677208, runId = 68cf2099-0c14-4fbd-a976-51c9e91d6506]\nCurrent Committed Offsets: {KinesisSource[securityLakeAzureActivityStream]: {\"shardId-000000000002\":{\"iteratorType\":\"TRIM_HORIZON\",\"iteratorPosition\":\"\"},\"metadata\":{\"streamName\":\"securityLakeAzureActivityStream\",\"batchId\":\"2\"},\"shardId-000000000001\":{\"iteratorType\":\"TRIM_HORIZON\",\"iteratorPosition\":\"\"},\"shardId-000000000000\":{\"iteratorType\":\"AFTER_SEQUENCE_NUMBER\",\"iteratorPosition\":\"49645809341923458802793491468334882006293674050208137218\"}}}\nCurrent Available Offsets: {KinesisSource[securityLakeAzureActivityStream]: {\"shardId-000000000002\":{\"iteratorType\":\"TRIM_HORIZON\",\"iteratorPosition\":\"\"},\"metadata\":{\"streamName\":\"securityLakeAzureActivityStream\",\"batchId\":\"3\"},\"shardId-000000000001\":{\"iteratorType\":\"TRIM_HORIZON\",\"iteratorPosition\":\"\"},\"shardId-000000000000\":{\"iteratorType\":\"AFTER_SEQUENCE_NUMBER\",\"iteratorPosition\":\"49645809341923458802793546272532794821692601702159482882\"}}}\n\nCurrent State: ACTIVE\nThread State: RUNNABLE\n\nLogical Plan:\nProject [cast(data#18 as string) AS $json$data_infer_schema$_temporary$#27]\n+- Project [UDF(data#5) AS data#18, streamName#6, partitionKey#7, sequenceNumber#8, approximateArrivalTimestamp#9]\n   +- StreamingExecutionRelation KinesisSource[securityLakeAzureActivityStream], [data#5, streamName#6, partitionKey#7, sequenceNumber#8, approximateArrivalTimestamp#9]\n",     "Stack Trace": [         {             "Declaring Class": "deco",             "Method Name": "raise converted from None",             "File Name": "/opt/amazon/spark/python/lib/pyspark.zip/pyspark/sql/utils.py",             "Line Number": 117         },         {             "Declaring Class": "__call__",             "Method Name": "answer, self.gateway_client, self.target_id, self.name)",             "File Name": "/opt/amazon/spark/python/lib/py4j-0.10.9-src.zip/py4j/java_gateway.py",             "Line Number": 1305         },         {             "Declaring Class": "awaitTermination",             "Method Name": "return self._jsq.awaitTermination()",             "File Name": "/opt/amazon/spark/python/lib/pyspark.zip/pyspark/sql/streaming.py",             "Line Number": 101         },         {             "Declaring Class": "forEachBatch",             "Method Name": "query.start().awaitTermination()",             "File Name": "/opt/amazon/lib/python3.6/site-packages/awsglue/context.py",             "Line Number": 668         },         {             "Declaring Class": "forEachBatch",             "Method Name": "raise e",             "File Name": "/opt/amazon/lib/python3.6/site-packages/awsglue/context.py",             "Line Number": 678         },         {             "Declaring Class": "<module>",             "Method Name": "\"checkpointLocation\": args[\"TempDir\"] + \"/\" + args[\"JOB_NAME\"] + \"/checkpoint/\",",             "File Name": "/tmp/azure-activity-to-ocsf-pyspark2.py",             "Line Number": 300         }     ],     "Last Executed Line number": 300,     "script": "azure-activity-to-ocsf-pyspark2.py" }
+
+
+The line 300 is this:
+
+
+glueContext.forEachBatch(     frame=dataframe_KinesisStream_node1,     batch_function=processBatch,     options={         "windowSize": "100 seconds",         **"checkpointLocation": args["TempDir"] + "/" + args["JOB_NAME"] + "/checkpoint/",**     },
+
+
+The checkpoint folder is created in S3, I can see that. Temporary folder given in the job settings, is being accessed just fine, i can see the files created by the job there.
+
+
+This here is the code in the Glue Job: Github Link
+
+
+Access Role policy:
+
+
+
+
+
+Why this error might be happening? Which bucket is the error for?
+
+
+No problem with ACL, SCP etc.
+
+
+Bucket (Glue script, temporary bucket) Policy:
+
+ {     "Version": "2008-10-17",     "Statement": [         {             "Sid": "Stmt1683139153218",             "Effect": "Allow",             "Principal": "*",             "Action": [                 "s3:GetObject",                 "s3:PutObject"             ],             "Resource": "arn:aws:s3:::securitylake-glue-assets-123456789-us-east-1/*",             "Condition": {                 "Bool": {                     "aws:SecureTransport": "true"                 },                 "ArnEquals": {                     "aws:PrincipalArn": "arn:aws:iam::123456789:role/securityLakeGlueStreamingRole"                 }             }         }     ] }
+
+
+Security Lake Bucket policy (Where Glue Job writes to. I can see new files here)
+
+
+{     "Version": "2012-10-17",     "Statement": [         {             "Effect": "Deny",             "Principal": {                 "AWS": "*"             },             "Action": "s3:*",             "Resource": [                 "arn:aws:s3:::aws-security-data-lake-us-east-1-ogt1oa9bot0jmeduqbjxzmxzvu9eij/*",                 "arn:aws:s3:::aws-security-data-lake-us-east-1-ogt1oa9bot0jmeduqbjxzmxzvu9eij"             ],             "Condition": {                 "Bool": {                     "aws:SecureTransport": "false"                 }             }         },         {             "Sid": "PutSecurityLakeObject",             "Effect": "Allow",             "Principal": {                 "Service": "securitylake.amazonaws.com"             },             "Action": "s3:PutObject",             "Resource": [                 "arn:aws:s3:::aws-security-data-lake-us-east-1-ogt1oa9bot0jmeduqbjxzmxzvu9eij/*",                 "arn:aws:s3:::aws-security-data-lake-us-east-1-ogt1oa9bot0jmeduqbjxzmxzvu9eij"             ],             "Condition": {                 "StringEquals": {                     "aws:SourceAccount": "123456789",                     "s3:x-amz-acl": "bucket-owner-full-control"                 },                 "ArnLike": {                     "aws:SourceArn": "arn:aws:securitylake:us-east-1:123456789:*"                 }             }         }     ] }

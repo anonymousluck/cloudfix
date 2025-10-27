@@ -1,0 +1,46 @@
+{
+  "Requests": [
+    {
+      "id": "allow_67c3ad9f",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::<bucketname>/config.xml",
+        "arn:aws:s3:::<bucketname>/data.json"
+      ]
+    },
+    {
+      "id": "allow_2fb30719",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::<bucketname>/document.txt",
+        "arn:aws:s3:::<bucketname>/data.json"
+      ]
+    },
+    {
+      "id": "deny_8ef43e92",
+      "Effect": "deny",
+      "Action": "iam:AttachUserPolicy",
+      "Resource": "arn:aws:s3:::<bucketname>/data.json"
+    },
+    {
+      "id": "allow_07e650d9",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::<bucketname>/document.txt",
+        "arn:aws:s3:::<bucketname>/data.json"
+      ]
+    },
+    {
+      "id": "deny_7900ea18",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::<bucketname>/config.xml"
+    }
+  ]
+}

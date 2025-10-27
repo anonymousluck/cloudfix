@@ -1,0 +1,48 @@
+{
+  "Requests": [
+    {
+      "id": "deny_ff54ee59",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::engagement-uat-sfmc-snowflake-dpp/document.txt",
+      "Principal": "appflow.amazonaws.com"
+    },
+    {
+      "id": "allow_c4d8dab3",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::engagement-uat-sfmc-snowflake-dpp/document.txt",
+        "arn:aws:s3:::engagement-uat-sfmc-snowflake-dpp/data.json"
+      ],
+      "Principal": "arn:aws:iam::999888777666:user/unauthorized"
+    },
+    {
+      "id": "allow_e099167e",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListMultipartUploadParts",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::engagement-uat-sfmc-snowflake-dpp/data.json",
+      "Principal": "appflow.amazonaws.com"
+    },
+    {
+      "id": "deny_8c31a187",
+      "Effect": "deny",
+      "Action": "s3:PutObjectAcl",
+      "Resource": "arn:aws:kms:us-east-1:999888777666:key/forbidden-key",
+      "Principal": "arn:aws:iam::987654321098:user/charlie"
+    },
+    {
+      "id": "allow_15606ea2",
+      "Effect": "allow",
+      "Action": [
+        "s3:ListBucketMultipartUploads",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::engagement-uat-sfmc-snowflake-dpp",
+      "Principal": "appflow.amazonaws.com"
+    }
+  ]
+}

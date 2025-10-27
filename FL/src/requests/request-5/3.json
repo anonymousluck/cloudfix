@@ -1,0 +1,64 @@
+{
+  "Requests": [
+    {
+      "id": "allow_01abda1c",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::bucket-3/document.txt",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront:0949494939883874:distribution/EDFDVBD632BHDS5"
+        }
+      }
+    },
+    {
+      "id": "deny_e9aca739",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::bucket-3/data.json",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront:0949494939883874:distribution/EDFDVBD632BHDS5"
+        }
+      }
+    },
+    {
+      "id": "deny_fcc0f7e0",
+      "Effect": "deny",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:s3:::bucket-3/config.xml",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "allow_6fb70017",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::bucket-3/config.xml",
+      "Principal": "cloudfront.amazonaws.com",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront:0949494939883874:distribution/EDFDVBD632BHDS5"
+        }
+      }
+    },
+    {
+      "id": "allow_c9e79783",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::bucket-3/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/bob",
+      "Condition": {
+        "StringLike": {
+          "aws:userid": "AIDAI*"
+        }
+      }
+    }
+  ]
+}

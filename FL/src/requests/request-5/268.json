@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_37d4d9f7",
+      "Effect": "deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:s3:::image.k-sale.com"
+    },
+    {
+      "id": "allow_43d96c00",
+      "Effect": "allow",
+      "Action": "s3:GetBucketLocation",
+      "Resource": "arn:aws:s3:::image.k-sale.com/document.txt"
+    },
+    {
+      "id": "allow_33b84235",
+      "Effect": "allow",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": [
+        "arn:aws:s3:::image.k-sale.com",
+        "arn:aws:s3:::image.k-sale.com/document.txt"
+      ]
+    },
+    {
+      "id": "deny_56f3ef85",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::image.k-sale.com/data.json"
+    },
+    {
+      "id": "allow_80f1d8b1",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObjectAcl",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::image.k-sale.com/document.txt"
+    }
+  ]
+}

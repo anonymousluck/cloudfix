@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::<Acc_id>:root",
+        "Service": "lambda.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole",
+      "Sid": "statement1"
+    }
+  ]
+}

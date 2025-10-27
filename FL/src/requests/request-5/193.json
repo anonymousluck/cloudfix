@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e9afadb9",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "logs:CreateExportTask"
+      ],
+      "Resource": ""
+    },
+    {
+      "id": "allow_8070c4b2",
+      "Effect": "allow",
+      "Action": "logs:CreateExportTask",
+      "Resource": ""
+    },
+    {
+      "id": "allow_3d512b71",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": ""
+    },
+    {
+      "id": "deny_12e3a6fa",
+      "Effect": "deny",
+      "Action": "kms:GenerateDataKey",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "deny_81581ce6",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": ""
+    }
+  ]
+}

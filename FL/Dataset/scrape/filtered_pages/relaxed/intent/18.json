@@ -1,0 +1,41 @@
+Hi, I’m trying to launch an EKS Auto Mode cluster by following the official AWS documentation. According to the docs, attaching the following AWS-managed IAM policies should be sufficient:
+
+
+"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+"arn:aws:iam::aws:policy/AmazonEKSComputePolicy",
+"arn:aws:iam::aws:policy/AmazonEKSNetworkingPolicy",
+"arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy",
+"arn:aws:iam::aws:policy/AmazonEKSBlockStoragePolicy"
+
+
+
+However, when I attempt to launch the cluster, the EC2 nodes fail to start.
+
+
+I do have an SCP (Service Control Policy) applied at the account level, but it restricts actions only to my custom tags, which are already defined in the NodeClass. However, the SCP doesn’t account for conditions like ${aws:PrincipalTag/eks:eks-cluster-name}, as shown in the policy snippet below.
+
+
+
+
+
+
+Even though AmazonEKSComputePolicy does include the necessary EC2 permissions (ec2:RunInstances, ec2:CreateFleet, ec2:CreateLaunchTemplate), it appears insufficient for EKS Auto Mode. The EC2 nodes only launched successfully after I added this additional custom policy:
+
+
+{
+  "Effect": "Allow",
+  "Action": [
+    "ec2:CreateLaunchTemplate",
+    "ec2:CreateFleet",
+    "ec2:RunInstances"
+  ],
+  "Resource": "*"
+}
+
+
+
+My Questions:
+Is this a known issue with EKS Auto Mode? Are others facing similar problems?
+
+
+Any help or clarification would be greatly appreciated. Thank you!

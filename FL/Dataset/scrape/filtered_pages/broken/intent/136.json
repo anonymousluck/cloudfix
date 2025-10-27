@@ -1,0 +1,8 @@
+I am trying to enforce a tag InfraOwner on ASGS and resources created by it through following SCP but it is not working and ASG is getting created even without InfraOwner tag
+
+
+
+
+
+
+Can someone help here

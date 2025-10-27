@@ -1,0 +1,339 @@
+Issue Summary
+
+
+We have two AWS accounts under the same AWS Organization:
+
+
+
+
+Account A (A-ID): Holds a 
+registered Australia Sender ID (MYBRAND)
+ and can successfully send SMS messages with the correct Sender ID.
+
+
+Account B (B-ID): Runs 
+Amazon Cognito
+ for MFA SMS authentication.
+
+
+
+
+
+
+Objective
+
+
+Ensure that 
+Amazon Cognito in Account B
+ correctly 
+uses the Sender ID registered in Account A
+ when sending MFA SMS messages.
+
+
+
+
+Current Configuration
+
+
+Account A (Sender ID Owner)
+
+
+
+
+
+
+Sender ID Registered
+
+
+
+
+Account A has registered 
+Australia Sender ID (MYBRAND)
+.
+
+
+When sending SMS 
+directly from Account A
+, the Sender ID is displayed correctly.
+
+
+
+
+
+
+
+
+Shared Sender ID with Account B following this AWS tutorial: 
+https://docs.aws.amazon.com/sms-voice/latest/userguide/shared-resources.html#sharing-policy-example-sender-id
+
+
+
+
+Using 
+AWS Resource Access Manager (RAM)
+ to share the Sender ID with Account B.
+
+
+A policy was attached to the Sender ID:
+
+
+
+
+
+
+
+
+
+
+
+Account B
+
+
+
+
+
+
+Without the shared Sender ID:
+
+
+
+
+SMS delivers successfully, but the Sender ID is 
+UNVERIFIED
+.
+
+
+
+
+
+
+
+
+After accepting the shared Sender ID and set it as the default Sender ID in SNS:
+
+
+
+
+Still UNVERIFIED
+.
+
+
+
+
+
+
+
+
+Publishing SMS directly from SNS Console in Account B with the shared Sender ID:
+
+
+
+
+The SMS 
+still shows UNVERIFIED
+.
+
+
+
+
+
+
+
+
+
+
+Alternative Approaches Tried (Failed)
+
+
+1. Modifying the Sender ID Policy in Account A
+
+
+Attempted to allow SNS service access directly using a policy:
+
+
+{
+
+
+    
+"Effect"
+:
+ 
+"Allow"
+,
+
+
+    
+"Principal"
+:
+ 
+{
+
+
+        
+"Service"
+:
+ 
+"sns.amazonaws.com"
+
+
+    
+}
+,
+
+
+    
+"Action"
+:
+ 
+"sms-voice:SendTextMessage"
+,
+
+
+    
+"Resource"
+:
+ 
+"arn:aws:sms-voice:Region:A-ID:sender-id/SenderID/ISO"
+,
+
+
+    
+"Condition"
+:
+ 
+{
+
+
+        
+"StringEquals"
+:
+ 
+{
+
+
+            
+"aws:SourceAccount"
+:
+ 
+"B-ID"
+
+
+        
+}
+
+
+    
+}
+
+
+}
+
+
+Issue:
+
+
+
+
+This 
+policy is invalid
+, as AWS 
+does not allow
+ 
+aws:SourceAccount
+ to reference a 
+non-owner account
+.
+
+
+
+
+
+
+2. Adding IAM Policy in Cognito's IAM Role (Account B)
+
+
+Added the following permissions to the 
+Cognito SMS IAM Role
+ in Account B:
+
+
+{
+
+
+    
+"Effect"
+:
+ 
+"Allow"
+,
+
+
+    
+"Action"
+:
+ 
+[
+"sms-voice:SendTextMessage"
+,
+ 
+"sms-voice:SendVoiceMessage"
+,
+ 
+"sms-voice:SendMediaMessage"
+,
+ 
+"sms-voice:DescribeSenderIds"
+]
+,
+
+
+    
+"Resource"
+:
+ 
+"arn:aws:sms-voice:ap-southeast-2:B-ID:sender-id/SenderID/ISO"
+
+
+}
+
+
+Issue:
+
+
+
+
+Cognito 
+still sends SMS messages with an UNVERIFIED Sender ID
+.
+
+
+
+
+
+
+3. Creating an IAM Role in Account A for Cognito to Assume
+
+
+
+
+Created an 
+IAM Role in Account A
+, allowing 
+Account B's Cognito to assume it
+ and send SMS messages.
+
+
+Attempted to configure Cognito in Account B to assume this role 
+before sending SMS
+.
+
+
+
+
+Issue:
+
+
+
+
+Cognito does not assume IAM roles
+ when sending SMS.

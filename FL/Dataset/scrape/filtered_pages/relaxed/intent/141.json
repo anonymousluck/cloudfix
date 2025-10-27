@@ -1,0 +1,77 @@
+Hi,
+
+
+I have a dynamodb table with the following attributes:
+
+
+
+
+mykey: partition key
+
+
+myversion: a mutable number
+
+
+mymap: a mutable map
+
+
+several other attributes
+
+
+
+
+I have an application that should call the following dynamodb UpdateItem request:
+
+
+
+
+a conditional update expression that verifies the existing value of myversion attribute: 
+myversion = 123
+
+
+an update expression that modifies mymap attribute: 
+SET mymap = {...}
+
+
+
+
+I am trying to write a fine-grained iam policy that allows an application to perform this UpdateItem with minimal permissions:
+
+
+
+
+the partition key must be equal to a predefined value, e.g. "part123"
+
+
+only "mymap" attribute must be modifiable by the application
+
+
+all attributes can be read by the application
+
+
+
+
+Tried this policy:
+
+
+
+
+
+
+It does work if the UpdateItem is called without a conditional expression on myversion. But once I add the conditional expression it fails with the following error:
+
+
+
+
+AccessDeniedException: User: [...] is not authorized to perform: dynamodb:UpdateItem on resource: [arn:aws:dynamodb:...] because no identity-based policy allows the dynamodb:UpdateItem action
+
+
+
+
+Adding the conditional expression attribute myversion under "dynamodb:Attributes" section in the policy makes it work but I'm afraid this also allows updating myvesion itself, which is unwanted.
+
+
+How can I define a policy that allows dynamodb UpdateItem to modify only a specific field while referencing other fields in the conditional expression?
+
+
+thanks

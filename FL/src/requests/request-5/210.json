@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "allow_5b6f8544",
+      "Effect": "allow",
+      "Action": "ec2:DescribeVolumes",
+      "Resource": [
+        "arn:aws:s3:::data-bucket/file.json",
+        "arn:aws:s3:::import-to-ec2-file1"
+      ]
+    },
+    {
+      "id": "deny_7195b66f",
+      "Effect": "deny",
+      "Action": "ec2:RegisterImage",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role"
+    },
+    {
+      "id": "allow_380dcad5",
+      "Effect": "allow",
+      "Action": [
+        "ec2:RunInstances",
+        "ec2:ModifySnapshotAttribute"
+      ],
+      "Resource": "arn:aws:s3:::import-to-ec2-data123"
+    },
+    {
+      "id": "deny_c51e9a93",
+      "Effect": "deny",
+      "Action": "ec2:CreateVolume",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_6155c338",
+      "Effect": "allow",
+      "Action": "ec2:DeleteKeyPair",
+      "Resource": "arn:aws:iam::123456789012:role/test-role"
+    }
+  ]
+}

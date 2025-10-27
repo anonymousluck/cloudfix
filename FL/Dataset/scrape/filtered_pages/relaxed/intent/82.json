@@ -1,0 +1,12 @@
+Hello,
+
+
+when I open the carbon footprint usage on the billing page the values are zero. I think this is not very realistic, because we were running big virtual machines.
+I added the sustainability rule to my IAM Role:
+
+
+
+
+
+
+My user has Billing and Adminrights as well. Our account is using start-up credits. Any idea why it shows values of 0? The account exists for over two years now, so the time horizont should be fine?

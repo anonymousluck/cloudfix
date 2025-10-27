@@ -1,0 +1,10 @@
+The following is an example of a trust relationship of one IAM policy.
+
+
+
+
+
+I'm getting the error 'Cannot exceed quota for ACLSizePerRole: 2048'. According to the document, we request the quota to increase to 4096. Still, It won't be sufficient. I need to add more roles to the above trust policy. Can anyone suggest a resolution?
+
+
+There is a pattern in the name of roles. Is there any possibility of using regular expressions or Wildcards?

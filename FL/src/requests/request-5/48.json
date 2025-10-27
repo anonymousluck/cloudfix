@@ -1,0 +1,40 @@
+{
+  "Requests": [
+    {
+      "id": "deny_8e3ff170",
+      "Effect": "deny",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:s3:::my-bucketname/document.txt"
+    },
+    {
+      "id": "allow_b151442d",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucketname/document.txt",
+        "arn:aws:s3:::my-bucketname/data.json"
+      ]
+    },
+    {
+      "id": "deny_41a4fbe4",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3:::my-bucketname/config.xml"
+    },
+    {
+      "id": "allow_7c9ee310",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::my-bucketname/config.xml",
+        "arn:aws:s3:::my-bucketname/document.txt"
+      ]
+    },
+    {
+      "id": "allow_4b56532a",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::my-bucketname/document.txt"
+    }
+  ]
+}

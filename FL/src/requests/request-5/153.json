@@ -1,0 +1,73 @@
+{
+  "Requests": [
+    {
+      "id": "allow_e87ff209",
+      "Effect": "allow",
+      "Action": [
+        "s3tables:GetTableData",
+        "s3tables:GetTableMetadataLocation"
+      ],
+      "Resource": [
+        "arn:aws:s3tables:us-west-2:123:table-bucket/tabletest/table/config.xml",
+        "arn:aws:s3tables:us-west-2:123:table-bucket/tabletest/table/document.txt"
+      ],
+      "Principal": "arn:aws:iam::123:role/roletest1",
+      "Condition": {
+        "StringLike": {
+          "s3tables:TableNamespace": "namesptest"
+        }
+      }
+    },
+    {
+      "id": "deny_9690ca1d",
+      "Effect": "deny",
+      "Action": "iam:DeleteUser",
+      "Resource": "arn:aws:s3tables:us-west-2:123:table-bucket/tabletest/table/document.txt",
+      "Principal": "arn:aws:iam::123:role/roletest1",
+      "Condition": {
+        "StringLike": {
+          "s3tables:TableNamespace": "namesptest"
+        }
+      }
+    },
+    {
+      "id": "allow_e725fddf",
+      "Effect": "allow",
+      "Action": [
+        "s3tables:GetTableData",
+        "s3tables:GetTableMetadataLocation"
+      ],
+      "Resource": "arn:aws:s3tables:us-west-2:123:table-bucket/tabletest/table/document.txt",
+      "Principal": "arn:aws:iam::987654321098:user/charlie",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "id": "allow_8b763765",
+      "Effect": "allow",
+      "Action": "s3tables:GetTableMetadataLocation",
+      "Resource": "arn:aws:s3tables:us-west-2:123:table-bucket/tabletest/table/document.txt",
+      "Principal": "arn:aws:iam::123:role/roletest1",
+      "Condition": {
+        "StringLike": {
+          "s3tables:TableNamespace": "namesptest"
+        }
+      }
+    },
+    {
+      "id": "deny_7066f2f4",
+      "Effect": "deny",
+      "Action": "iam:CreateUser",
+      "Resource": "arn:aws:s3tables:us-west-2:123:table-bucket/tabletest/table/data.json",
+      "Principal": "arn:aws:iam::123456789012:user/blocked-user",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:max-keys": "10"
+        }
+      }
+    }
+  ]
+}

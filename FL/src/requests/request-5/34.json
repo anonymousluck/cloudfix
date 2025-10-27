@@ -1,0 +1,45 @@
+{
+  "Requests": [
+    {
+      "id": "allow_8c1f1378",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::bucketname/data.json",
+        "arn:aws:s3:::bucketname/document.txt"
+      ],
+      "Principal": "arn:aws:iam::777888999000:user/temp-user"
+    },
+    {
+      "id": "deny_b8db80bf",
+      "Effect": "deny",
+      "Action": "rds:CreateDBInstance",
+      "Resource": "arn:aws:s3:::bucketname/document.txt",
+      "Principal": "*"
+    },
+    {
+      "id": "allow_e29e4975",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::bucketname/config.xml",
+        "arn:aws:s3:::bucketname/document.txt"
+      ],
+      "Principal": "*"
+    },
+    {
+      "id": "deny_a2bbbba4",
+      "Effect": "deny",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:iam::999888777666:role/unauthorized-role",
+      "Principal": "arn:aws:iam::123456789012:role/admin-role"
+    },
+    {
+      "id": "allow_2fc29c26",
+      "Effect": "allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::bucketname/document.txt",
+      "Principal": "*"
+    }
+  ]
+}

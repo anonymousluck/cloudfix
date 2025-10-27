@@ -1,0 +1,41 @@
+Steps taken:
+
+
+
+
+Created the IAM user rds-user which has the rds-db:connect permissions for the cluster.
+
+
+
+
+
+
+
+
+
+
+Enabled RDS IAM Authentication on the Cluster.
+
+
+Created the rds-test user inside postgres and granted the rds_iam role.
+
+
+Generated an AWS authentication token
+
+
+
+
+export RDSHOST="example-db.eu-west-1.rds.amazonaws.com"
+export PGPASSWORD="$(aws rds generate-db-auth-token --hostname $RDSHOST --port 5432 --region us-west-1 --username rds-test)"
+psql "host=$RDSHOST port=5432 sslmode=verify-full sslrootcert=eu-west-1-bundle.pem dbname=postgres user=rds-test password=$PGPASSWORD"
+
+
+
+Output:
+
+
+FATAL:  password authentication failed for user "rds-test"
+
+
+
+The SSL certificate is not expired.

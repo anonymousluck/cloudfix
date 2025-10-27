@@ -1,0 +1,229 @@
+I'm attempting to run a docker container on an arm linux device using greengrass v2 and so far the container comes up and interfaces with the hardware just fine, however, I'm not able to access ANY AWS services using boto.  I've added TES to the deployment and as a hard dependency on the container component. In addition I've added S3 access to the token exchange role access policy and to the iot security policy.  I've additionally added the following environment variables to the container when deploying 
+AWS_CONTAINER_AUTHORIZATION_TOKEN
+, 
+AWS_CONTAINER_CREDENTIALS_FULL_URI
+, 
+AWS_REGION
+, 
+SVCUID
+
+
+We're also using shadow manager and access to and from that using python works just fine - granted this is through the IPC socket.
+
+
+The test and error we get is:
+
+
+Python 3.10.10 (main, Feb 10 2023, 04:23:49) [GCC 10.2.1 20210110] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import boto3
+>>> s3=boto3.client("s3")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/botocore/credentials.py", line 1929, in fetch_creds
+    response = self._fetcher.retrieve_full_uri(
+  File "/usr/local/lib/python3.10/site-packages/botocore/utils.py", line 2862, in retrieve_full_uri
+    return self._retrieve_credentials(full_url, headers)
+  File "/usr/local/lib/python3.10/site-packages/botocore/utils.py", line 2898, in _retrieve_credentials
+    return self._get_response(
+  File "/usr/local/lib/python3.10/site-packages/botocore/utils.py", line 2920, in _get_response
+    raise MetadataRetrievalError(
+botocore.exceptions.MetadataRetrievalError: Error retrieving metadata: Received non 200 response (403) from ECS metadata: TES responded with status code: 403. Caching response. {"message":"Access Denied"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/local/lib/python3.10/site-packages/boto3/__init__.py", line 92, in client
+    return _get_default_session().client(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/boto3/session.py", line 299, in client
+    return self._session.create_client(
+  File "/usr/local/lib/python3.10/site-packages/botocore/session.py", line 951, in create_client
+    credentials = self.get_credentials()
+  File "/usr/local/lib/python3.10/site-packages/botocore/session.py", line 509, in get_credentials
+    ).load_credentials()
+  File "/usr/local/lib/python3.10/site-packages/botocore/credentials.py", line 2039, in load_credentials
+    creds = provider.load()
+  File "/usr/local/lib/python3.10/site-packages/botocore/credentials.py", line 1902, in load
+    return self._retrieve_or_fail()
+  File "/usr/local/lib/python3.10/site-packages/botocore/credentials.py", line 1911, in _retrieve_or_fail
+    creds = fetcher()
+  File "/usr/local/lib/python3.10/site-packages/botocore/credentials.py", line 1936, in fetch_creds
+    raise CredentialRetrievalError(
+botocore.exceptions.CredentialRetrievalError: Error when retrieving credentials from container-role: Error retrieving metadata: Received non 200 response (403) from ECS metadata: TES responded with status code: 403. Caching response. {"message":"Access Denied"}
+>>>
+
+
+
+The output in the greengrass.log file
+
+
+greengrass_2023_03_01_09_0.log:2023-03-01T14:55:41.376Z [ERROR] (pool-2-thread-27) com.aws.greengrass.tes.CredentialRequestHandler: TES responded with status code: 403. Caching response. {"message":"Access Denied"}. {iotCredentialsPath=/role-aliases/GreengrassV2TokenExchangeRole/credentials}
+
+
+
+Here is the component recipe:
+
+
+{
+  "RecipeFormatVersion": "2020-01-25",
+  "ComponentName": "com.mycompany.testapp",
+  "ComponentVersion": "1.0.30",
+  "ComponentType": "aws.greengrass.generic",
+  "ComponentDescription": "Executes Test Monitor App",
+  "ComponentPublisher": "MyCompany",
+  "ComponentConfiguration": {
+    "DefaultConfiguration": {
+      "accessControl": {
+        "aws.greengrass.ShadowManager": {
+          "com.mycompany.testapp:shadow:1": {
+            "policyDescription": "Allows access to shadows",
+            "operations": [
+              "aws.greengrass#GetThingShadow",
+              "aws.greengrass#UpdateThingShadow",
+              "aws.greengrass#DeleteThingShadow"
+            ],
+            "resources": [
+              "$aws/things/{iot:thingName}/shadow",
+              "$aws/things/{iot:thingName}/shadow/name/testing"
+            ]
+          },
+          "com.mycompany.testapp:shadow:2": {
+            "policyDescription": "Allows access to things with shadows",
+            "operations": [
+              "aws.greengrass#ListNamedShadowsForThing"
+            ],
+            "resources": [
+              "{iot:thingName}"
+            ]
+          }
+        },
+        "aws.greengrass.ipc.pubsub": {
+          "com.mycompany.testapp:pubsub:1": {
+            "policyDescription": "Allows access to shadow pubsub topics",
+            "operations": [
+              "aws.greengrass#SubscribeToTopic"
+            ],
+            "resources": [
+              "$aws/things/{iot:thingName}/shadow/get/accepted",
+              "$aws/things/{iot:thingName}/shadow/name/testing/get/accepted"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "ComponentDependencies": {
+    "aws.greengrass.DockerApplicationManager": {
+      "VersionRequirement": ">=2.0.0 <2.1.0",
+      "DependencyType": "HARD"
+    },
+    "aws.greengrass.Nucleus": {
+      "VersionRequirement": ">=2.9.3 <2.10.0",
+      "DependencyType": "HARD"
+    },
+    "aws.greengrass.ShadowManager": {
+      "VersionRequirement": ">=2.3.1 <2.4.0",
+      "DependencyType": "HARD"
+    },
+    "aws.greengrass.TokenExchangeService": {
+      "VersionRequirement": ">=2.0.0 <3.0.0",
+      "DependencyType": "HARD"
+    }
+  },
+  "Manifests": [
+    {
+      "Platform": {
+        "os": "all"
+      },
+      "Lifecycle": {
+        "Run": "docker run -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_IOT_THING_NAME -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e AWS_CONTAINER_CREDENTIALS_FULL_URI --net host --privileged --restart=always --name testing-app --mount type=bind,src=/etc/armbian-release,dst=/etc/armbian-release python:3.10-bullseye",
+        "Shutdown": {
+          "Script": "docker stop testing-app && docker rm testing-app",
+          "Timeout": "30"
+        }
+      },
+      "Artifacts": [
+        {
+          "Uri": "docker:python:3.10-bullseye",
+          "Unarchive": "NONE",
+          "Permission": {
+            "Read": "OWNER",
+            "Execute": "NONE"
+          }
+        }
+      ]
+    }
+  ],
+  "Lifecycle": {}
+}
+
+
+
+IAM Role Policy for 
+GreengrassV2TokenExchangeRoleAccess
+
+
+
+
+
+
+Here is the deployment json:
+
+
+{
+    "targetArn": "arn:aws:iot:us-east-1:111111111111:thinggroup/testgroup",
+    "revisionId": "35",
+    "deploymentId": "c3fcca46-ee3b-4573-bb4d-1602b87be997",
+    "deploymentName": "Test Deploy",
+    "deploymentStatus": "ACTIVE",
+    "iotJobId": "408b7c77-514c-425c-b3dd-fa828f3c3e9d",
+    "iotJobArn": "arn:aws:iot:us-east-1:111111111111:job/408b7c77-514c-425c-b3dd-fa828f3c3e9d",
+    "components": {
+        "aws.greengrass.DockerApplicationManager": {
+            "componentVersion": "2.0.8"
+        },
+        "aws.greengrass.Nucleus": {
+            "componentVersion": "2.9.4",
+            "configurationUpdate": {
+                "merge": "{\"interpolateComponentConfiguration\":true,\"iotRoleAlias\":\"GreengrassV2TokenExchangeRole\",\"awsRegion\":\"us-east-1\"}"
+            },
+            "runWith": {}
+        },
+        "aws.greengrass.ShadowManager": {
+            "componentVersion": "2.3.1",
+            "configurationUpdate": {
+                "merge": "{\"synchronize\":{\"coreThing\":{\"classic\":false,\"namedShadows\":[\"test-app\"]},\"direction\":\"betweenDeviceAndCloud\",\"shadowDocuments\":[]},\"rateLimits\":{\"maxOutboundSyncUpdatesPerSecond\":100,\"maxTotalLocalRequestsRate\":200,\"maxLocalRequestsPerSecondPerThing\":20}}"
+            },
+            "runWith": {}
+        },
+        "aws.greengrass.TokenExchangeService": {
+            "componentVersion": "2.0.3"
+        },
+        "com.mycompany.testapp": {
+            "componentVersion": "1.0.30",
+            "runWith": {}
+        }
+    },
+    "deploymentPolicies": {
+        "failureHandlingPolicy": "ROLLBACK",
+        "componentUpdatePolicy": {
+            "timeoutInSeconds": 60,
+            "action": "NOTIFY_COMPONENTS"
+        }
+    },
+    "iotJobConfiguration": {
+        "jobExecutionsRolloutConfig": {
+            "maximumPerMinute": 1000
+        }
+    },
+    "creationTimestamp": "2023-03-01T03:51:38.108Z",
+    "isLatestForTarget": true,
+    "tags": {}
+}
+
+
+
+Is this a bug or what could we be missing?
+
+
+Thanks!

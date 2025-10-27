@@ -1,0 +1,67 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "cognito-identity.amazonaws.com"
+      },
+      "Action": [
+        "sts:AssumeRoleWithWebIdentity",
+        "sts:TagSession"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "cognito-identity.amazonaws.com:aud": "us-east-1:f82cb590-f4d4-441d-9643-75c2a65a4b5d"
+        },
+        "ForAnyValue:StringLike": {
+          "cognito-identity.amazonaws.com:amr": "authenticated"
+        }
+      },
+      "Sid": "statement1"
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "qbusiness.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "cognito-identity.amazonaws.com:aud": "us-east-1:f82cb590-f4d4-441d-9643-75c2a65a4b5d"
+        },
+        "ForAnyValue:StringLike": {
+          "cognito-identity.amazonaws.com:amr": "authenticated"
+        }
+      },
+      "Sid": "statement2"
+    },
+    {
+      "Sid": "QBusinessTrustPolicy",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "integrations.qbusiness.amazonaws.com"
+      },
+      "Action": [
+        "sts:AssumeRole",
+        "sts:SetContext"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "373612751264"
+        },
+        "ArnLike": {
+          "aws:SourceArn": "arn:aws:qbusiness:us-east-1:373612751264:application/f765527c-d33f-4342-81e1-5b3bb9d4c4c3"
+        }
+      }
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "qbusiness.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "Requests": [
+    {
+      "id": "allow_68593707",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": [
+        "arn:aws:ec2:*:*:volume/config.xml",
+        "arn:aws:ec2:*:*:instance/data.json"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Project": "true"
+        }
+      }
+    },
+    {
+      "id": "allow_47d12923",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": [
+        "arn:aws:ec2:*:*:volume/document.txt",
+        "arn:aws:ec2:*:*:instance/data.json"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Project": "true"
+        }
+      }
+    },
+    {
+      "id": "deny_e5d8b2ca",
+      "Effect": "deny",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:ec2:*:*:instance/config.xml",
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Project": "true"
+        }
+      }
+    },
+    {
+      "id": "deny_b14c0c3c",
+      "Effect": "deny",
+      "Action": "lambda:CreateFunction",
+      "Resource": "arn:aws:ec2:*:*:instance/document.txt",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/Department": "Finance"
+        }
+      }
+    },
+    {
+      "id": "allow_5b6f38d8",
+      "Effect": "allow",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:ec2:*:*:volume/config.xml",
+      "Condition": {
+        "DateGreaterThan": {
+          "aws:CurrentTime": "2024-01-01T00:00:00Z"
+        }
+      }
+    }
+  ]
+}

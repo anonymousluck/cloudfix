@@ -1,0 +1,3 @@
+I have setup this policy, and while the session works, the condition isn't restricting to that one host. Using the policy generator,
+I found I had to add the sts:getcalleridentity, but the policy generator also included the ssm:StartSession. If ssm:StartSession in the bottom is removed, or the sts:getcalleridentity is moved elsewhere in the policy, the session won't connect.
+I tried restricting the resource in the bottom part but it also doesn't work.

@@ -1,0 +1,43 @@
+{
+  "Requests": [
+    {
+      "id": "allow_0c00bf11",
+      "Effect": "allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::nsphotobackup/data.json"
+    },
+    {
+      "id": "deny_b31204f8",
+      "Effect": "deny",
+      "Action": "s3:DeleteObjectVersion",
+      "Resource": "arn:aws:s3:::forbidden-bucket/file.txt"
+    },
+    {
+      "id": "allow_d2073afc",
+      "Effect": "allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::nsphotobackup/config.xml"
+    },
+    {
+      "id": "allow_51601352",
+      "Effect": "allow",
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::nsphotobackup/config.xml",
+        "arn:aws:s3:::nsphotobackup/data.json"
+      ]
+    },
+    {
+      "id": "deny_ac51a0e6",
+      "Effect": "deny",
+      "Action": "dynamodb:DeleteItem",
+      "Resource": "arn:aws:s3:::nsphotobackup/data.json"
+    }
+  ]
+}

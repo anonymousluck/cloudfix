@@ -1,0 +1,11 @@
+Hello. I was changing user rights (IAM) and broke something. Now my site is not uploading images to S3.
+
+
+I use CloudFront ..
+
+
+Error executing "PutObject" on "https://s3.eu-central-1.amazonaws.com/.../iblocks/31001/img/31001.png"; AWS HTTP error: Client error: `PUT https://s3.eu-central-1.amazonaws.com/.../iblocks/31001/img/31001.png` resulted in a `403 Forbidden` response: <?xml version="1.0" encoding="UTF-8"?> <Error><Code>InvalidAccessKeyId</Code><Message>The AWS Access Key Id you provided (truncated...) InvalidAccessKeyId (client): The AWS Access Key Id you provided does not exist in our records. - <?xml version="1.0" encoding="UTF-8"?> <Error><Code>InvalidAccessKeyId</Code><Message>The AWS Access Key Id you provided does not exist in our records.</Message><AWSAccessKeyId>AKIAQ2UKU7ZBF5ATGKPA</AWSAccessKeyId><RequestId>YSJ3RF5Z0GZ0ZR88</RequestId>
+
+
+
+Bucket policy:
