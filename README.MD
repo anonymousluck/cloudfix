@@ -7,7 +7,6 @@ The system identifies faulty IAM policy statements, generates candidate repairs 
 
 This repository contains the complete experimental pipeline, from dataset preparation to evaluation and visualization, used to support our research results.
 
----
 
 
 CloudFix implements:
@@ -24,20 +23,19 @@ The framework supports:
 
 ---
 
-## 🧱 Repository Structure:
 FL/
-├── original_policy/ # Original (unrepaired) IAM policies
-├── figures/ # Figures and visualizations from experiments
+├── original_policy/         # Original (unrepaired) IAM policies
+├── figures/                 # Figures and visualizations from experiments
 └── src/
+    ├── requests/            # Access-request specifications
+    ├── result/              # Outputs from Baseline and FL repair experiments
+    ├── baseline_model.py    # Baseline (unguided) LLM repair pipeline
+    ├── fl_model.py          # Fault-Localization-guided repair pipeline
+    ├── evaluate.py          # Evaluation and validation script
+    ├── req_checker.py       # Access-request compliance checker
+    ├── request_augment.py   # Request augmentation utilities
+    ├── request_generate.py  # Request generation script
+    └── viz.ipynb            # Visualization notebook
 
-  ├── requests/ # Access-request specifications
-  ├── result/ # Outputs from Baseline and FL repair experiments
-  ├── baseline_model.py # Baseline (unguided) LLM repair pipeline
-  ├── fl_model.py # Fault-Localization-guided repair pipeline
-  ├── evaluate.py # Evaluation and validation script
-  ├── req_checker.py # Access-request compliance checker
-  ├── request_augment.py # Request augmentation utilities
-  ├── request_generate.py # Request generation script
-  └── viz.ipynb # Visualization notebook
 
 
