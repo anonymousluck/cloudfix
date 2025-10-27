@@ -1,4 +1,4 @@
-# CloudFix: Fault-Localization Guided Access Control Policy Repair
+# CloudFix: Automated Policy Repair for Cloud Access Control Policies Using Large Language Models
 
 
 **CloudFix** is a research framework for the **automatic repair of misconfigured AWS IAM policies** using **Large Language Models (LLMs)** guided by **Fault Localization (FL)** and **symbolic validation**.
