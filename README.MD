@@ -16,11 +16,6 @@ CloudFix implements:
 3. **Validation** — Verify repaired policies against access-request specifications.  
 4. **Iteration** — Repeat until all requests are satisfied or the iteration limit is reached. 
 
-The framework supports:
-- **Baseline (unguided) repair**
-- **Fault-Localization-guided repair (FL)**
-- **Evaluation and visualization of repair success**
-
 ## Repository Structure
 
 ```text
