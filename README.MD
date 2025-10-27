@@ -21,7 +21,6 @@ The framework supports:
 - **Fault-Localization-guided repair (FL)**
 - **Evaluation and visualization of repair success**
 
----
 ## Repository Structure
 
 ```text
