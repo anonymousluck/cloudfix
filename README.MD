@@ -5,8 +5,6 @@
 
 The system identifies faulty IAM policy statements, generates candidate repairs using LLMs, and validates repaired policies using an SMT-based verifier to ensure both **security** and **functionality**.
 
-This repository contains the complete experimental pipeline, from dataset preparation to evaluation and visualization, used to support our research results.
-
 
 
 CloudFix implements:
@@ -33,6 +31,8 @@ FL/
     ├── request_generate.py  # Request generation script
     └── viz.ipynb            # Visualization notebook
 
+Validation Setup (Quacky + Z3)
 
-
+1. To setup Quacky, see: https://github.com/vlab-cs-ucsb/quacky
+2. To seup Z3, see: https://github.com/Z3Prover/z3
 
