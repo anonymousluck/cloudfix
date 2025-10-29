@@ -14,6 +14,12 @@ CloudFix implements:
 3. **Validation** — Verify repaired policies against access-request specifications.  
 4. **Iteration** — Repeat until all requests are satisfied or the iteration limit is reached. 
 
+Validation Setup (Quacky + Z3)
+
+1. To setup Quacky, see: https://github.com/vlab-cs-ucsb/quacky
+2. To seup Z3, see: https://github.com/Z3Prover/z3
+
+
 ## Repository Structure
 
 ```text
@@ -31,8 +37,4 @@ FL/
     ├── request_generate.py  # Request generation script
     └── viz.ipynb            # Visualization notebook
 
-Validation Setup (Quacky + Z3)
-
-1. To setup Quacky, see: https://github.com/vlab-cs-ucsb/quacky
-2. To seup Z3, see: https://github.com/Z3Prover/z3
 
