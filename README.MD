@@ -17,7 +17,7 @@ CloudFix implements:
 Validation Setup (Quacky + Z3)
 
 1. To setup Quacky, see: https://github.com/vlab-cs-ucsb/quacky
-2. To seup Z3, see: https://github.com/Z3Prover/z3
+2. To setup Z3, see: https://github.com/Z3Prover/z3
 
 
 ## Repository Structure
