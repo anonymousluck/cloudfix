@@ -136,7 +136,6 @@ def call_ollama(prompt, system_prompt=""):
 def create_requirements_only_repair_prompt(current_policy, requirements, iteration):
 
     prompt = f"""You are an AWS IAM policy expert. You must use security best practices to repair the following policy so that the provided tests sets are allowed and denied.
-    CRITICAL OUTPUT REQUIREMENTS:
 
         
 CURRENT POLICY TO REVIEW:
@@ -227,7 +226,6 @@ def extract_and_validate_json(response_text: str) -> dict:
 
 @retry()
 def repair_policy_with_requirements_only(policy: dict, requirements: dict, iteration: int = 1, policy_idx: int = None) -> dict:
-    """Repair policy using ONLY requirements and security best practices (no counter-examples or fault localization)"""
     
     # Use requirements-only prompt generation
     prompt = create_requirements_only_repair_prompt(policy, requirements, iteration)
