@@ -43,6 +43,48 @@ SMT_VALIDATOR_SCRIPT = Path("/home/your_username/your_project/quacky/src/validat
 FAULT_LOCALIZATION_DIR = Path(f"/home/your_username/your_project/FL/Experiment-2/results/result-{req}-ollama/Quacky_output")
 
 
+
+import re
+import subprocess
+import tempfile
+import shutil
+from functools import wraps
+from datetime import datetime
+import pandas as pd 
+from tqdm import tqdm
+from ollama import chat, ChatResponse 
+import os
+import sys
+import time
+import json
+import tempfile
+from functools import wraps
+from datetime import datetime, timedelta
+from pathlib import Path
+import signal
+import threading
+from timeout_decorator import timeout
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
+from ollama import chat
+import logging
+import openai
+
+from dotenv import load_dotenv
+load_dotenv()
+import os
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+req = 10
+TOTAL_POLICIES = 282
+MAX_ITERATIONS = 5
+MAX_ATTEMPT = 1
+DELAY = 1
+TARGET_ACCURACY = 100.0
+OLLAMA_MODEL = "gpt-oss"
+# LLAMA_MODEL = "ibm-granite/granite-3.3-8b-instruct"
+# LLAMA_MODEL = "codellama/CodeLlama-7b-Instruct-hf"
+
 def parse_smt_timing_from_output(output_content: str) -> dict:
     """Parse SMT solver timing information from validator output"""
     smt_data = {
@@ -57,6 +99,7 @@ def parse_smt_timing_from_output(output_content: str) -> dict:
     try:
         lines = output_content.split('\n')
         
+        # Extract solver call times
         call_times = []
         for line in lines:
             if 'Solver time:' in line:
@@ -66,6 +109,7 @@ def parse_smt_timing_from_output(output_content: str) -> dict:
                     call_time = float(time_match.group(1))
                     call_times.append(call_time)
         
+        # Extract total solver calls
         for line in lines:
             if 'Total Solver Calls:' in line:
                 calls_match = re.search(r'Total Solver Calls:\s*(\d+)', line)
@@ -80,6 +124,7 @@ def parse_smt_timing_from_output(output_content: str) -> dict:
             smt_data['min_call_time'] = min(call_times)
             smt_data['max_call_time'] = max(call_times)
         
+        # If we didn't find individual times but have total calls, estimate
         if not call_times and smt_data['total_solver_calls'] > 0:
             logging.warning("Could not extract individual solver times, but found total calls")
         
@@ -120,40 +165,92 @@ def retry(max_attempts=MAX_ATTEMPT, delay=DELAY):
     return decorator
 
 
-def call_ollama(prompt, system_prompt=""):
-    def _call_ollama():
-        messages = [{'role': 'system', 'content': system_prompt}] if system_prompt else []
-        messages.append({'role': 'user', 'content': prompt})
-        response = chat(model=OLLAMA_MODEL, messages=messages)
-        return response['message']['content']
-    
+# LLAMA_MODEL = "meta-llama/Llama-3.2-3B"
+LLAMA_MODEL = "codellama/CodeLlama-7b-Instruct-hf"
+# LLAMA_MODEL = "meta-llama/Llama-3.2-3B-Instruct"
+# LLAMA_MODEL = "ibm-granite/granite-3.3-8b-instruct"
+# LLAMA_MODEL = "deepseek-ai/deepseek-coder-7b-instruct-v1.5"
+
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+import torch
+import logging
+# Load once globally
+
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+
+# Load once globally with memory optimizations
+tokenizer = AutoTokenizer.from_pretrained(LLAMA_MODEL,trust_remote_code=True
+)
+
+# Add padding token if missing
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
+
+model = AutoModelForCausalLM.from_pretrained(
+    LLAMA_MODEL,
+    device_map="auto",       
+    torch_dtype=torch.float16    )
+
+if hasattr(model, 'gradient_checkpointing_enable'):
+    model.gradient_checkpointing_enable()
+
+generator = pipeline(
+    "text-generation", 
+    model=model, 
+    tokenizer=tokenizer)
+
+def call_ollama(prompt: str, system_prompt: str = "") -> str:
     try:
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(_call_ollama)
-            return future.result(timeout=120)
-    except TimeoutError as e:
-        logging.error(f"Ollama call timed out: {e}")
-        raise Exception(f"Ollama call timed out after 2 minutes")
+        # Clear cache before generation
+        torch.cuda.empty_cache()
+        
+        if system_prompt:
+            full_prompt = f"<|system|>\n{system_prompt}\n<|user|>\n{prompt}"
+        else:
+            full_prompt = prompt
+
+        outputs = generator(
+            full_prompt,    
+            temperature=0.1,
+            top_p=0.3,
+            top_k=40,
+            repetition_penalty=1.1,
+            do_sample=True,
+            eos_token_id=tokenizer.eos_token_id,
+            return_full_text=False,
+            max_new_tokens=4800,
+            pad_token_id=tokenizer.eos_token_id
+        )
+
+        return outputs[0]["generated_text"]
+
+    except torch.cuda.OutOfMemoryError as e:
+        logging.error(f"CUDA out of memory: {e}")
+        torch.cuda.empty_cache()  # Clear cache on OOM
+        raise Exception(f"CUDA out of memory: {e}")
     except Exception as e:
-        logging.error(f"Ollama chat error: {e}")
-        raise Exception(f"Ollama chat error: {e}")
-    
-def create_simple_repair_prompt(original_policy: dict, requirements: dict, fault_localization_report: str) -> str:
+        logging.error(f"Model generation error: {e}")
+        raise Exception(f"Model generation error: {e}")
+
+
+
+def create_simple_repair_prompt(original_policy: dict, requirements: dict, fault_localization_report: str, iteration: int = 1, previous_accuracy: float = 0.0) -> str:
     """
     """
-    prompt = f"""You are an AWS IAM policy expert. You must use security best practices to repair the following policy so that the provided tests sets are allowed and denied. You must use the fault localization report to help you repair the policy.
-ORIGINAL POLICY:
-{json.dumps(original_policy, indent=2)}
+    prompt = f"""You are an AWS IAM policy expert. You must use security best practices to repair the following policy so that the provided tests sets are allowed and denied. Use an optimal number of statements.
 
-REQUIREMENTS:
-{json.dumps(requirements, indent=2)}
+        ORIGINAL POLICY:    
+        {json.dumps(original_policy, indent=2)}
 
-FAULT LOCALIZATION REPORT:
-{fault_localization_report}
+        REQUIREMENTS to SATISFY:
+        {json.dumps(requirements, indent=2)}
 
-Return ONLY the complete corrected policy as valid JSON. No explanations, no markdown formatting.
+        Your TasK IS TO LOOK AT THIS FAULT LOCALIZATION REPORT TO CHECK WHICH REQUIREMENTS ARE BEING INCORRECTLY ALLOWED/DENIED AND FIX the policy accordingly.:
+        {fault_localization_report}
 
-CORRECTED POLICY:"""
+        Return ONLY the complete corrected policy as valid JSON. No explanations, no markdown formatting.
+
+        CORRECTED POLICY:"""
 
     return prompt
 
@@ -167,21 +264,6 @@ CRITICAL OUTPUT REQUIREMENTS:
 - Do NOT include any explanations, comments, or text before or after the JSON
 - Do NOT use markdown formatting or code blocks
 - The JSON must be syntactically correct and complete
-
-REQUIRED JSON STRUCTURE:
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "...",
-      "Effect": "Allow" or "Deny",
-      "Action": "..." or [...],
-      "Resource": "..." or [...],
-      "Principal": "..." (optional),
-      "Condition": {...} (optional)
-    }
-  ]
-}
 
 Return ONLY the JSON policy, nothing else."""
 
@@ -250,11 +332,31 @@ def extract_and_validate_json(response_text: str) -> dict:
         
         raise ValueError(f"LLM generated invalid JSON: {e}")
 
+def extract_failing_requests(validator_output: str, original_reqs: dict) -> dict:
+    """
+    Parse SMT validator output and return only the failing requests
+    in the same JSON schema as original requirements.
+    """
+    failing_ids = set()
+    lines = validator_output.splitlines()
+
+    for line in lines:
+        if line.startswith("Request:"):
+            # Example: "Request: deny_08f8eeec ..."
+            parts = line.split()
+            if len(parts) >= 2:
+                failing_ids.add(parts[1].strip())
+
+    # Filter the original requirements by these IDs
+    failing_reqs = [r for r in original_reqs.get("Requests", []) if r.get("id") in failing_ids]
+    return {"Requests": failing_reqs}
+
 @retry()
-def repair_policy_simple(policy: dict, requirements: dict, fault_localization_report: str, iteration: int = 1) -> dict:
+def repair_policy_simple(policy: dict, requirements: dict, fault_localization_report: str, iteration: int = 1, policy_idx: int = None) -> dict:
     """Simplified policy repair using three inputs"""
-    
-    prompt = create_simple_repair_prompt(policy, requirements, fault_localization_report)
+    # requirements = simplify_requirements(requirements)
+    prompt = create_simple_repair_prompt(policy, requirements, fault_localization_report, iteration)
+
     system_prompt = create_simple_system_prompt()
 
     logging.info(f"{'='*80}")
@@ -301,6 +403,14 @@ def repair_policy_simple(policy: dict, requirements: dict, fault_localization_re
     
     # Call LLM
     response_text = call_ollama(prompt, system_prompt)
+    # Save raw LLM output for every iteration
+    raw_output_file = os.path.join(TEMP_DIR, f"raw_llm_output_policy_{policy_idx:03d}_iter_{iteration}.txt")
+    os.makedirs(TEMP_DIR, exist_ok=True)
+    with open(raw_output_file, 'w', encoding='utf-8') as f:
+        f.write(response_text)
+    
+    logging.info(f"{'='*80}")
+    logging.info(f"LLM response - iteration {iteration}")
     
     logging.info(f"{'='*80}")
     logging.info(f"LLM response - iteration {iteration}")
@@ -342,7 +452,6 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
             # File paths for validation
             accuracy_output_path = os.path.join(policy_specific_dir, f"policy_{policy_idx:03d}_accuracy_validation.txt")
         else:
-            # Fallback naming
             quacky_output_dir = os.path.join(OUTPUT_DIR, "Quacky_output")
             os.makedirs(quacky_output_dir, exist_ok=True)
             timestamp = int(time.time())
@@ -350,7 +459,7 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
             accuracy_output_path = os.path.join(quacky_output_dir, f"temp_accuracy_{pid}_{timestamp}.txt")
         
         cmd_accuracy = [
-            'python3', 'validate_requests.py',
+            'python', 'validate_requests.py',
             '-p1', policy_file,
             '--requests', requests_file,
             '-s'
@@ -454,110 +563,95 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
         raise
 
 def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = None) -> dict:
-    """Run SMT validator - get accuracy only"""
+    """Run SMT validator - robust accuracy parsing."""
     try:
         original_dir = os.getcwd()
         os.chdir(QUACKY_SRC_DIR)
-        
-        # Create output directories
+
         if policy_idx is not None:
             policy_specific_dir = os.path.join(OUTPUT_DIR, "Quacky_output", f"policy_{policy_idx:03d}")
             os.makedirs(policy_specific_dir, exist_ok=True)
-            
-            # File paths for validation
             accuracy_output_path = os.path.join(policy_specific_dir, f"policy_{policy_idx:03d}_accuracy_validation.txt")
         else:
-            # Fallback naming
             quacky_output_dir = os.path.join(OUTPUT_DIR, "Quacky_output")
             os.makedirs(quacky_output_dir, exist_ok=True)
             timestamp = int(time.time())
             pid = os.getpid()
             accuracy_output_path = os.path.join(quacky_output_dir, f"temp_accuracy_{pid}_{timestamp}.txt")
-        
+
         cmd_accuracy = [
             'python3', 'validate_requests.py',
             '-p1', policy_file,
             '--requests', requests_file,
             '-s'
         ]
-        
         logging.debug(f"Running accuracy validation: {' '.join(cmd_accuracy)}")
-        
+
         with open(accuracy_output_path, 'w') as output_file:
-            result = subprocess.run(cmd_accuracy, stdout=output_file, stderr=subprocess.PIPE, text=True, timeout=300)
-        
+            result = subprocess.run(cmd_accuracy, stdout=output_file, stderr=subprocess.PIPE,
+                                    text=True, timeout=300)
+
         if result.returncode != 0:
             logging.error(f"Accuracy validation failed: {result.stderr}")
             raise Exception(f"Accuracy validation failed: {result.stderr}")
-        
+
         with open(accuracy_output_path, 'r') as f:
             accuracy_output_content = f.read()
-        
+
         os.chdir(original_dir)
-        
-        accuracy_lines = accuracy_output_content.split('\n')
+
+        # Default values
         accuracy = 0.0
-        total_requests = 0
-        correct_count = 0
-        incorrect_count = 0
-        misclassified_allow_to_deny = 0
-        misclassified_deny_to_allow = 0
-        
+        total_requests = correct_count = incorrect_count = 0
+        misclassified_allow_to_deny = misclassified_deny_to_allow = 0
+
         in_analysis_section = False
-        for i, line in enumerate(accuracy_lines):
+        for line in accuracy_output_content.splitlines():
             line = line.strip()
-            
+
             if "INDIVIDUAL REQUEST ANALYSIS" in line:
                 in_analysis_section = True
                 continue
-            elif line.startswith("=") and in_analysis_section and len(line) > 10:
-                if any(phrase in ''.join(accuracy_lines[i:i+5]) for phrase in ["Results saved", "saved to HOME"]):
-                    break
-            
-            if in_analysis_section:
-                if line.startswith("Total Individual Requests:"):
-                    import re
-                    total_match = re.search(r'(\d+)', line)
-                    if total_match:
-                        total_requests = int(total_match.group(1))
-                elif line.startswith("Correct Classifications:"):
-                    import re
-                    correct_match = re.search(r'(\d+)', line)
-                    if correct_match:
-                        correct_count = int(correct_match.group(1))
-                elif line.startswith("Incorrect Classifications:"):
-                    import re
-                    incorrect_match = re.search(r'(\d+)', line)
-                    if incorrect_match:
-                        incorrect_count = int(incorrect_match.group(1))
-                elif line.startswith("Overall Accuracy:"):
-                    import re
-                    accuracy_match = re.search(r'(\d+\.?\d*)%', line)
-                    if accuracy_match:
-                        accuracy = float(accuracy_match.group(1))
-                elif line.startswith("Expected Allow -> Got Deny:"):
-                    import re
-                    allow_deny_match = re.search(r'(\d+)', line)
-                    if allow_deny_match:
-                        misclassified_allow_to_deny = int(allow_deny_match.group(1))
-                elif line.startswith("Expected Deny -> Got Allow:"):
-                    import re
-                    deny_allow_match = re.search(r'(\d+)', line)
-                    if deny_allow_match:
-                        misclassified_deny_to_allow = int(deny_allow_match.group(1))
-        
-        # ===== PARSE SMT TIMING DATA =====
+            if not in_analysis_section:
+                continue
+
+            if line.startswith("Total Individual Requests:"):
+                total_requests = int(re.search(r'(\d+)', line).group(1))
+            elif line.startswith("Correct Classifications:"):
+                correct_count = int(re.search(r'(\d+)', line).group(1))
+            elif line.startswith("Incorrect Classifications:"):
+                incorrect_count = int(re.search(r'(\d+)', line).group(1))
+            elif line.startswith("Overall Accuracy:"):
+                m = re.search(r'(\d+\.?\d*)\s*%', line)
+                if m:
+                    accuracy = float(m.group(1))
+            elif line.startswith("Expected Allow -> Got Deny:"):
+                misclassified_allow_to_deny = int(re.search(r'(\d+)', line).group(1))
+            elif line.startswith("Expected Deny -> Got Allow:"):
+                misclassified_deny_to_allow = int(re.search(r'(\d+)', line).group(1))
+
+        # SMT timing
         smt_timing_data = parse_smt_timing_from_output(accuracy_output_content)
         
-        logging.info(f"Validation completed - Accuracy: {accuracy}%, Total: {total_requests}, Correct: {correct_count}, Incorrect: {incorrect_count}")
-        logging.info(f"SMT Timing - Calls: {smt_timing_data['total_solver_calls']}, Total Time: {smt_timing_data['total_solver_time']:.3f}s, Avg: {smt_timing_data['average_call_time']:.4f}s")
+        # Debug if accuracy is zero
+        if accuracy == 0.0 and total_requests > 0:
+            logging.warning("⚠️ Accuracy parsed as 0. Dumping raw Quacky output for debugging.")
+            dump_path = accuracy_output_path.replace("_accuracy_validation.txt", "_debug_dump.txt")
+            with open(dump_path, 'w') as df:
+                df.write(accuracy_output_content)
+            logging.warning(f"Raw validator output dumped to {dump_path}")
         
-        # Clean up temporary files
+        logging.info(f"Validation completed - Accuracy: {accuracy:.1f}%, "
+                    f"Total: {total_requests}, Correct: {correct_count}, Incorrect: {incorrect_count}")
+        logging.info(f"SMT Timing - Calls: {smt_timing_data['total_solver_calls']}, "
+                    f"Total Time: {smt_timing_data['total_solver_time']:.3f}s, "
+                    f"Avg: {smt_timing_data['average_call_time']:.4f}s")
+
         if os.path.exists(accuracy_output_path):
             os.unlink(accuracy_output_path)
-        
+
         return {
-            'accuracy': accuracy, 
+            'accuracy': accuracy,
             'total_requests': total_requests,
             'correct': correct_count,
             'incorrect': incorrect_count,
@@ -572,21 +666,16 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
             'min_solver_time': smt_timing_data.get('min_call_time', 0.0),
             'max_solver_time': smt_timing_data.get('max_call_time', 0.0)
         }
-        
+
     except subprocess.TimeoutExpired:
-        try:
-            os.chdir(original_dir)
-        except:
-            pass
+        os.chdir(original_dir)
         logging.error("SMT validator timed out")
         raise Exception("SMT validator timed out")
     except Exception as e:
-        try:
-            os.chdir(original_dir)
-        except:
-            pass
+        os.chdir(original_dir)
         logging.error(f"Error running SMT validator: {e}")
         raise
+
 def load_json_file(path: str) -> dict:
     with open(path, 'r', encoding='utf-8') as f:
         return json.load(f)
@@ -684,7 +773,7 @@ def run_fault_localization(policy_file: str, requests_file: str, policy_idx: int
         
         # Correct command format as specified
         cmd = [
-            'python3', 'validate_requests.py',
+            'python', 'validate_requests.py',
             '-p1', policy_file,
             '--requests', requests_file,
             '-s',
@@ -715,7 +804,7 @@ def run_fault_localization(policy_file: str, requests_file: str, policy_idx: int
         # The validator saves the LLM report to a hardcoded directory structure
         # Based on the validator code, it saves to: 
         base_filename = os.path.basename(output_base)
-        validator_output_dir = Path(f"/home/bhall2/Documents/fixmypolicy/FL/Experiment-2/results/result-{req}-ollama/Quacky_output")
+        validator_output_dir = "your path"
         expected_report_path = validator_output_dir / f"{base_filename}_llm_report.txt"
         
         # Target path for our organized structure
@@ -727,9 +816,6 @@ def run_fault_localization(policy_file: str, requests_file: str, policy_idx: int
             # Copy the file to our standardized location
             shutil.copy2(expected_report_path, target_report_path)
             logging.info(f"Fault localization report saved to: {target_report_path}")
-            
-            # Optionally, clean up the original file if you want
-            # os.unlink(expected_report_path)
             
             return target_report_path
         else:
@@ -762,295 +848,143 @@ def run_fault_localization(policy_file: str, requests_file: str, policy_idx: int
             os.chdir(original_dir)
         except:
             pass
+
 def process_policy_simple(idx: int, baseline_accuracy: float = 0.0) -> dict:
-    """Process a single policy with simple repair approach"""
-    
-    # START TIME TRACKING
+    """Process a single policy with validator-driven repair loop (always pre-generates FL for next iteration)."""
     cycle_start_time = time.time()
-    
+
     policy_file = os.path.join(POLICY_DIR, f"{idx}.json")
     req_file = os.path.join(REQUIREMENTS_DIR, f"{idx}.json")
-    
+
     if not os.path.exists(policy_file) or not os.path.exists(req_file):
         raise FileNotFoundError(f"Missing files for index {idx}")
-    
+
     original_policy = load_json_file(policy_file)
     requirements = load_json_file(req_file)
-    
-    logging.info(f"Starting simple repair for policy {idx} (baseline: {baseline_accuracy:.1f}%)...")
-    
+
+    logging.info(f"Starting repair for policy {idx} (baseline: {baseline_accuracy:.1f}%)...")
+
     if baseline_accuracy >= TARGET_ACCURACY:
-        cycle_end_time = time.time()
-        cycle_duration = cycle_end_time - cycle_start_time
-        
-        logging.info(f"Policy {idx} already achieves target accuracy ({baseline_accuracy:.1f}%). Skipping repair.")
         final_output_file = os.path.join(OUTPUT_DIR, f"repaired_{idx}_already_perfect.json")
         save_json_file(original_policy, final_output_file)
-        
         return {
             'index': idx,
             'status': 'already_perfect',
             'baseline_accuracy': baseline_accuracy,
             'final_accuracy': baseline_accuracy,
-            'improvement_from_baseline': 0.0,
             'iterations_used': 0,
             'iteration_accuracies': [baseline_accuracy],
-            'iteration_results': [],
             'final_policy_file': final_output_file,
-            'cycle_duration_seconds': cycle_duration,
-            'cycle_duration_formatted': str(timedelta(seconds=int(cycle_duration))),
-            'average_accuracy': baseline_accuracy
+            'cycle_duration_seconds': 0,
+            'cycle_duration_formatted': "00:00:00"
         }
-    
+
     iteration_results = []
     current_policy = original_policy.copy()
+    current_accuracy = baseline_accuracy
     final_accuracy = baseline_accuracy
     iteration_accuracies = [baseline_accuracy]
-    
+
     for iteration in range(1, MAX_ITERATIONS + 1):
         iteration_start_time = time.time()
-        
-        logging.info(f"Policy {idx} - Iteration {iteration}/{MAX_ITERATIONS} (Previous: {final_accuracy:.1f}%)")
-        
-        iteration_success = False
-        iteration_accuracy = 0.0
-        iteration_policy_file = None
-        
+        logging.info(f"Policy {idx} - Iteration {iteration}/{MAX_ITERATIONS}")
+
         try:
-            logging.info(f"Repairing policy with simple approach (iteration {iteration})...")
-            
             fault_localization_report = load_fault_localization_report(idx, iteration, FAULT_LOCALIZATION_DIR)
-            
-            if fault_localization_report:
-                logging.info(f"Using fault localization report for policy {idx} iteration {iteration}: {len(fault_localization_report)} characters")
-            else: 
-                logging.warning(f"No fault localization report found for policy {idx} iteration {iteration}. Generating it now.")
-                fl_policy_file = save_policy_for_fault_localization(current_policy, idx, iteration, TEMP_DIR)
-                run_fault_localization(fl_policy_file, req_file, idx, iteration, FAULT_LOCALIZATION_DIR)
-                fault_localization_report = load_fault_localization_report(idx, iteration, FAULT_LOCALIZATION_DIR)
-                if fault_localization_report:
-                    logging.info(f"Generated fault localization report for policy {idx} iteration {iteration}: {len(fault_localization_report)} characters")
-                else:
-                    raise RuntimeError(f"Failed to generate fault localization report for policy {idx} iteration {iteration}")
-            # Use simple repair approach with iteration-specific fault localization
+
+            #LLM Repair
             repaired_policy = repair_policy_simple(
-                current_policy, requirements, fault_localization_report, iteration
-            )
-            
+                current_policy, requirements, fault_localization_report, iteration, policy_idx=idx)
+        
+
             temp_policy_file = os.path.join(TEMP_DIR, f"policy_{idx}_iter_{iteration}.json")
-            os.makedirs(TEMP_DIR, exist_ok=True)
             save_json_file(repaired_policy, temp_policy_file)
-            
-            logging.info(f"Validating with SMT solver (iteration {iteration})...")
+
             validation_results = run_smt_validator(temp_policy_file, req_file, policy_idx=idx)
-            
             accuracy = validation_results['accuracy']
-            iteration_accuracy = accuracy
-            iteration_policy_file = temp_policy_file
-            
-            # Generate fault localization for the NEXT iteration (if not the last iteration)
-            if iteration < MAX_ITERATIONS and accuracy < TARGET_ACCURACY:
-                logging.info(f"Generating fault localization for next iteration...")
-                
-                # Save the repaired policy for fault localization
-                fl_policy_file = save_policy_for_fault_localization(repaired_policy, idx, iteration, TEMP_DIR)
-                
-                # Run fault localization on the repaired policy for the next iteration
-                next_iteration = iteration + 1
-                fl_report_path = run_fault_localization(
-                    fl_policy_file, req_file, idx, next_iteration, FAULT_LOCALIZATION_DIR
-                )
-                
-                if fl_report_path:
-                    logging.info(f"Generated fault localization for iteration {next_iteration}: {fl_report_path}")
-                else:
-                    logging.warning(f"Failed to generate fault localization for iteration {next_iteration}")
-            
-            # ALWAYS append iteration accuracy before any potential exceptions
             iteration_accuracies.append(accuracy)
-            improvement = accuracy - baseline_accuracy
-            
-            iteration_end_time = time.time()
-            iteration_duration = iteration_end_time - iteration_start_time
-            
-            logging.info(f"Iteration {iteration} Results:")
-            logging.info(f"  Accuracy: {accuracy:.1f}% (Baseline: {baseline_accuracy:.1f}%, Improvement: {improvement:+.1f}%)")
-            logging.info(f"  Duration: {iteration_duration:.1f} seconds")
-            
-            # Create iteration record BEFORE success check
-            # Create iteration record BEFORE success check
-            iteration_record = {
+            final_accuracy = accuracy
+
+            iteration_results.append({
                 'policy_idx': idx,
                 'iteration': iteration,
-                'validation_type': 'simple_repair',
                 'accuracy': accuracy,
                 'baseline_accuracy': baseline_accuracy,
-                'improvement_from_baseline': improvement,
                 'total_requests': validation_results['total_requests'],
                 'correct': validation_results['correct'],
                 'incorrect': validation_results['incorrect'],
                 'misclassified_allow_to_deny': validation_results['misclassified_allow_to_deny'],
                 'misclassified_deny_to_allow': validation_results['misclassified_deny_to_allow'],
                 'policy_file': temp_policy_file,
-                'iteration_duration_seconds': iteration_duration,
+                'iteration_duration_seconds': time.time() - iteration_start_time,
                 'total_solver_calls': validation_results.get('total_solver_calls', 0),
                 'total_solver_time': validation_results.get('total_solver_time', 0.0),
                 'average_solver_time': validation_results.get('average_solver_time', 0.0),
                 'min_solver_time': validation_results.get('min_solver_time', 0.0),
                 'max_solver_time': validation_results.get('max_solver_time', 0.0)
-            }
-            
-            iteration_results.append(iteration_record)
-            
-            final_accuracy = accuracy
-            
-            # Check if we achieved target accuracy
+            })
+
             if accuracy >= TARGET_ACCURACY:
-                cycle_end_time = time.time()
-                cycle_duration = cycle_end_time - cycle_start_time
-                repair_accuracies = iteration_accuracies[1:] if len(iteration_accuracies) > 1 else []
-                average_accuracy = sum(repair_accuracies) / len(repair_accuracies) if repair_accuracies else accuracy
-
-                logging.info(f"Target accuracy achieved for policy {idx} in {iteration} iterations!")
-                logging.info(f"Final accuracy: {accuracy:.1f}% (Improvement from baseline: {improvement:+.1f}%)")
-                logging.info(f"Total cycle time: {cycle_duration:.1f} seconds ({str(timedelta(seconds=int(cycle_duration)))})")
-                logging.info(f"Average accuracy across all iterations: {average_accuracy:.1f}%")
-                
-                # Try to save final policy with error handling
-                try:
-                    final_output_file = os.path.join(OUTPUT_DIR, f"repaired_{idx}_final.json")
-                    save_json_file(repaired_policy, final_output_file)
-                    iteration_success = True
-                    
-                    return {
-                        'index': idx,
-                        'status': 'success',
-                        'baseline_accuracy': baseline_accuracy,
-                        'final_accuracy': accuracy,
-                        'improvement_from_baseline': improvement,
-                        'iterations_used': iteration,
-                        'iteration_accuracies': iteration_accuracies,
-                        'iteration_results': iteration_results,
-                        'final_policy_file': final_output_file,
-                        'cycle_duration_seconds': cycle_duration,
-                        'cycle_duration_formatted': str(timedelta(seconds=int(cycle_duration))),
-                        'average_accuracy': average_accuracy
-                    }
-                except Exception as save_error:
-                    logging.error(f"Error saving final policy for {idx}: {save_error}")
-                    iteration_success = True  # We still achieved target accuracy
-            
-            # Update for next iteration
-            current_policy = repaired_policy.copy()
-            
-        except Exception as e:
-            iteration_end_time = time.time()
-            iteration_duration = iteration_end_time - iteration_start_time
-            
-            logging.error(f"Error in iteration {iteration} for policy {idx}: {e}")
-            
-            # If we haven't recorded the iteration yet, add an error record
-            if not any(record.get('iteration') == iteration for record in iteration_results):
-                iteration_record = {
-                    'policy_idx': idx,
-                    'iteration': iteration,
-                    'validation_type': 'simple_repair',
-                    'accuracy': iteration_accuracy,
+                final_output_file = os.path.join(OUTPUT_DIR, f"repaired_{idx}_final.json")
+                save_json_file(repaired_policy, final_output_file)
+                cycle_time = time.time() - cycle_start_time
+                return {
+                    'index': idx,
+                    'status': 'success',
                     'baseline_accuracy': baseline_accuracy,
-                    'improvement_from_baseline': iteration_accuracy - baseline_accuracy,
-                    'error': str(e),
-                    'policy_file': iteration_policy_file,
-                    'iteration_duration_seconds': iteration_duration
+                    'final_accuracy': accuracy,
+                    'iterations_used': iteration,
+                    'iteration_accuracies': iteration_accuracies,
+                    'iteration_results': iteration_results,
+                    'final_policy_file': final_output_file,
+                    'cycle_duration_seconds': cycle_time,
+                    'cycle_duration_formatted': str(timedelta(seconds=int(cycle_time)))
                 }
-                iteration_results.append(iteration_record)
+
+            failing_subset = extract_failing_requests(validation_results['raw_output'],
+                                                    load_json_file(req_file))
+            if failing_subset["Requests"]:
+                logging.info(f"Iteration {iteration}: {len(failing_subset['Requests'])} failing requests found")
+                requirements = failing_subset
+
+            if iteration < MAX_ITERATIONS:
+                logging.info(f"Pre-generating fault localization for next iteration {iteration+1}...")
+                fl_policy_file = save_policy_for_fault_localization(repaired_policy, idx, iteration, TEMP_DIR)
+                run_fault_localization(fl_policy_file, req_file, idx, iteration+1, FAULT_LOCALIZATION_DIR)
+
+            if current_accuracy <= accuracy:
                 
-                # Only append to iteration_accuracies if we got a real accuracy
-                if iteration_accuracy > 0:
-                    iteration_accuracies.append(iteration_accuracy)
-            
-            # If we achieved target accuracy but had a save error, try to save as best
-            if iteration_success and iteration_accuracy >= TARGET_ACCURACY:
-                try:
-                    cycle_end_time = time.time()
-                    cycle_duration = cycle_end_time - cycle_start_time
-                    average_accuracy = sum(iteration_accuracies) / len(iteration_accuracies)
-                    
-                    final_output_file = os.path.join(OUTPUT_DIR, f"repaired_{idx}_final.json")
-                    if iteration_policy_file and os.path.exists(iteration_policy_file):
-                        shutil.copy2(iteration_policy_file, final_output_file)
-                        
-                        return {
-                            'index': idx,
-                            'status': 'success',
-                            'baseline_accuracy': baseline_accuracy,
-                            'final_accuracy': iteration_accuracy,
-                            'improvement_from_baseline': iteration_accuracy - baseline_accuracy,
-                            'iterations_used': iteration,
-                            'iteration_accuracies': iteration_accuracies,
-                            'iteration_results': iteration_results,
-                            'final_policy_file': final_output_file,
-                            'cycle_duration_seconds': cycle_duration,
-                            'cycle_duration_formatted': str(timedelta(seconds=int(cycle_duration))),
-                            'average_accuracy': average_accuracy
-                        }
-                except Exception as fallback_error:
-                    logging.error(f"Error in fallback save for {idx}: {fallback_error}")
+                current_policy = repaired_policy.copy()
+                current_accuracy = accuracy
 
-    # END TIME TRACKING FOR FAILED CASES
-    cycle_end_time = time.time()
-    cycle_duration = cycle_end_time - cycle_start_time
-    average_accuracy = sum(iteration_accuracies) / len(iteration_accuracies) if iteration_accuracies else baseline_accuracy
+        except Exception as e:
+            logging.error(f"Iteration {iteration} failed for policy {idx}: {e}")
 
-    # If we reach here, we didn't achieve target accuracy
-    # Find the best iteration result
-    best_accuracy = baseline_accuracy
-    best_iteration = None
-
-    if iteration_results:
-        logging.info(f"Policy {idx}: All iteration results:")
-        for i, result in enumerate(iteration_results):
-            duration = result.get('iteration_duration_seconds', 0)
-            logging.info(f"  Iteration {result.get('iteration')}: {result.get('accuracy', 0):.1f}% ({duration:.1f}s) - File: {result.get('policy_file')}")
-        
-        best_iteration = max(iteration_results, key=lambda x: x.get('accuracy', 0))
-        best_accuracy = best_iteration.get('accuracy', baseline_accuracy)
-        best_file = best_iteration.get('policy_file')
-        best_iter_num = best_iteration.get('iteration')
-        
-        logging.info(f"Policy {idx}: Selected best iteration {best_iter_num} with accuracy {best_accuracy:.1f}%")
-        
-        if ('policy_file' in best_iteration and best_iteration['policy_file'] is not None and os.path.exists(best_iteration['policy_file'])):
-            final_output_file = os.path.join(OUTPUT_DIR, f"repaired_{idx}_best.json")
-            shutil.copy2(best_iteration['policy_file'], final_output_file)
+    #End of loop (failed case)
+    cycle_time = time.time() - cycle_start_time
+    best_iter = max(iteration_results, key=lambda r: r['accuracy'], default=None)
+    if best_iter:
+        best_file = best_iter['policy_file']
+        final_output_file = os.path.join(OUTPUT_DIR, f"repaired_{idx}_best.json")
+        if best_file and os.path.exists(best_file):
+            shutil.copy2(best_file, final_output_file)
         else:
-            final_output_file = os.path.join(OUTPUT_DIR, f"repaired_{idx}_original.json")
             save_json_file(original_policy, final_output_file)
-            best_accuracy = baseline_accuracy
-            logging.warning(f"Policy {idx}: No valid best iteration file found, saving original policy")
     else:
         final_output_file = os.path.join(OUTPUT_DIR, f"repaired_{idx}_original.json")
         save_json_file(original_policy, final_output_file)
-        logging.warning(f"Policy {idx}: No iteration results found, saving original policy")
-
-    improvement = best_accuracy - baseline_accuracy
-    logging.warning(f"Failed to achieve target accuracy for policy {idx} after {MAX_ITERATIONS} iterations.")
-    logging.warning(f"Best accuracy: {best_accuracy:.1f}% (Baseline: {baseline_accuracy:.1f}%, Improvement: {improvement:+.1f}%)")
-    logging.warning(f"Total cycle time: {cycle_duration:.1f} seconds ({str(timedelta(seconds=int(cycle_duration)))})")
-    logging.warning(f"Average accuracy across all iterations: {average_accuracy:.1f}%")
 
     return {
         'index': idx,
         'status': 'failed',
         'baseline_accuracy': baseline_accuracy,
-        'final_accuracy': best_accuracy,
-        'improvement_from_baseline': improvement,
+        'final_accuracy': final_accuracy,
         'iterations_used': MAX_ITERATIONS,
         'iteration_accuracies': iteration_accuracies,
         'iteration_results': iteration_results,
         'final_policy_file': final_output_file,
-        'cycle_duration_seconds': cycle_duration,
-        'cycle_duration_formatted': str(timedelta(seconds=int(cycle_duration))),
-        'average_accuracy': average_accuracy
+        'cycle_duration_seconds': cycle_time,
+        'cycle_duration_formatted': str(timedelta(seconds=int(cycle_time)))
     }
 
 class SimpleProgressTracker:
@@ -1247,7 +1181,7 @@ def run_baseline_validation(idx: int) -> dict:
             'max_solver_time': 0.0,
             'error': str(e)
         }
-        
+
 def main():
     """Main function - Simple guided repair"""
     log_file = setup_logging()
@@ -1256,26 +1190,6 @@ def main():
     print("=" * 60)
     print("Simple Guided Policy Repair System")
     print("=" * 60)
-    
-    # Test Ollama connection first
-    print("Testing Ollama connection...")
-    ollama_ok, ollama_msg = test_ollama_connection()
-    if not ollama_ok:
-        logging.error(f"Ollama connection failed: {ollama_msg}")
-        print(f"Ollama connection failed: {ollama_msg}")
-        print("\nPlease ensure:")
-        print("1. Ollama is running (ollama serve)")
-        print(f"2. Model '{OLLAMA_MODEL}' is installed (ollama pull {OLLAMA_MODEL})")
-        print("3. Ollama is accessible")
-        sys.exit(1)
-    
-    logging.info(f"Ollama connection successful: {ollama_msg}")
-    print(f"{ollama_msg}")
-    print(f"Using model: {OLLAMA_MODEL}")
-    print("\nKey approach:")
-    print("- Simple repair using three inputs: requirements, fault localization output, and original policy")
-    print("- Iterative fault localization per iteration")
-    print("- Clean and straightforward repair methodology")
     
     # Ensure required directories exist
     for directory in [POLICY_DIR, REQUIREMENTS_DIR]:
@@ -1383,10 +1297,10 @@ def main():
     
     # Process each policy with simple repair
     for idx in tqdm(to_process, desc="Processing policies with simple repair"):
+        baseline_acc = baseline_accuracy_map.get(idx, 0.0)
+        
+        # Step A: Generate initial fault localization (separate try-except)
         try:
-            baseline_acc = baseline_accuracy_map.get(idx, 0.0)
-            
-            # Generate initial fault localization for iteration 1 using the ORIGINAL policy
             logging.info(f"Generating initial fault localization for policy {idx}...")
             original_policy_file = os.path.join(POLICY_DIR, f"{idx}.json")
             requests_file = os.path.join(REQUIREMENTS_DIR, f"{idx}.json")
@@ -1401,16 +1315,27 @@ def main():
                 logging.info(f"Generated initial fault localization: {initial_fl_path}")
             else:
                 logging.warning(f"Failed to generate initial fault localization for policy {idx}")
-                # Create an empty report so the process can continue
                 policy_iteration_dir = os.path.join(FAULT_LOCALIZATION_DIR, f"policy_{idx:03d}", f"iteration_1")
                 os.makedirs(policy_iteration_dir, exist_ok=True)
                 empty_report_path = os.path.join(policy_iteration_dir, f"fault_localization_report.txt")
                 with open(empty_report_path, 'w') as f:
                     f.write("No fault localization report available for this iteration.\n")
                 logging.info(f"Created empty fault localization report: {empty_report_path}")
-            
-            # Now run the actual repair process
+        
+        except Exception as fl_error:
+            logging.error(f"Initial fault localization failed for policy {idx}: {fl_error}")
+            # Create empty report and continue
+            policy_iteration_dir = os.path.join(FAULT_LOCALIZATION_DIR, f"policy_{idx:03d}", f"iteration_1")
+            os.makedirs(policy_iteration_dir, exist_ok=True)
+            empty_report_path = os.path.join(policy_iteration_dir, f"fault_localization_report.txt")
+            with open(empty_report_path, 'w') as f:
+                f.write("No fault localization report available for this iteration.\n")
+        
+        # Step B & C: Process policy and save results (separate try-except)
+        try:
             result = process_policy_simple(idx, baseline_acc)
+            
+            logging.info(f"Policy {idx} completed: status={result['status']}, final_accuracy={result['final_accuracy']:.1f}%")
             
             # Track completion/failure
             if result['status'] in ['success', 'already_perfect']:
@@ -1439,8 +1364,7 @@ def main():
                 all_iteration_data.append(iter_data)
             
         except Exception as e:
-            logging.error(f"Policy {idx} failed completely: {e}")
-            baseline_acc = baseline_accuracy_map.get(idx, 0.0)
+            logging.error(f"Policy {idx} processing failed: {e}", exc_info=True)
             tracker.mark_failed(idx, baseline_acc, 0.0, 0, [])
             all_results.append({
                 'index': idx,
@@ -1484,11 +1408,9 @@ def main():
         baseline_perfect = len([r for r in all_results if r.get('baseline_accuracy', 0) >= TARGET_ACCURACY])
         final_perfect = len([r for r in all_results if r.get('final_accuracy', 0) >= TARGET_ACCURACY])
         improvement_count = final_perfect - baseline_perfect
-         # Baseline SMT stats
         baseline_solver_calls = sum(r.get('total_solver_calls', 0) for r in baseline_results if 'error' not in r)
         baseline_solver_time = sum(r.get('total_solver_time', 0.0) for r in baseline_results if 'error' not in r)
         
-        # Repair iteration SMT stats  
         repair_solver_calls = sum(r.get('total_solver_calls', 0) for r in all_iteration_data if r.get('validation_type') == 'simple_repair')
         repair_solver_time = sum(r.get('total_solver_time', 0.0) for r in all_iteration_data if r.get('validation_type') == 'simple_repair')
         
@@ -1507,7 +1429,7 @@ def main():
     print("SIMPLE GUIDED REPAIR - FINAL SUMMARY")
     print(f"{'='*60}")
     print(f"Total policies processed: {len(all_results)}")
-    print(f"Model used: {OLLAMA_MODEL}")
+    # print(f"Model used: {OLLAMA_MODEL}")
     print(f"")
     print(f"BASELINE PERFORMANCE:")
     print(f"  Average baseline accuracy: {avg_baseline:.1f}%")
