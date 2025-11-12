@@ -82,8 +82,7 @@ MAX_ATTEMPT = 1
 DELAY = 1
 TARGET_ACCURACY = 100.0
 OLLAMA_MODEL = "gpt-oss"
-# LLAMA_MODEL = "ibm-granite/granite-3.3-8b-instruct"
-# LLAMA_MODEL = "codellama/CodeLlama-7b-Instruct-hf"
+LLAMA_MODEL = "codellama/CodeLlama-7b-Instruct-hf"
 
 def parse_smt_timing_from_output(output_content: str) -> dict:
     """Parse SMT solver timing information from validator output"""
