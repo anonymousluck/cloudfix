@@ -1,13 +1,3 @@
-# """
-# requirements_only_policy_repair.py
-# Requirements-only guided policy repair using security best practices.
-# Key changes from counter-example version:
-# 1. Remove counter-examples/failed examples from LLM input
-# 2. Use only original policy and requirements for repair guidance
-# 3. Focus on security best practices and requirement compliance
-# 4. Clean, minimal approach without any validation feedback
-
-
 import os
 import sys
 import time
@@ -38,6 +28,8 @@ LOG_DIR = f"/home/your_username/your_project/FL/Experiment-2/logs/log-{req}-requ
 TEMP_DIR = f"/home/your_username/your_project/FL/Experiment-2/temp_validation/val-{req}-baseline-gpt"
 QUACKY_SRC_DIR = "/home/your_username/your_project/quacky/src"
 SMT_VALIDATOR_SCRIPT = "/home/your_username/your_project/quacky/src/validate_requests.py"
+
+
 
 
 def setup_logging(log_dir: str = LOG_DIR):  
@@ -78,28 +70,11 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def call_huggingface(prompt, system_prompt=""):
-    def _call_ollama():
-        messages = [{'role': 'system', 'content': system_prompt}] if system_prompt else []
-        messages.append({'role': 'user', 'content': prompt})
-        response = chat(model=OLLAMA_MODEL, messages=messages)
-        return response['message']['content']
-    
-    try:
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(_call_ollama)
-            return future.result(timeout=120)
-    except TimeoutError as e:
-        logging.error(f"Hugging Face call timed out: {e}")
-        raise Exception(f"Hugging Face call timed out after 2 minutes")
-    except Exception as e:
-        logging.error(f"Hugging Face chat error: {e}")
-        raise Exception(f"Hugging Face chat error: {e}")
 
 def setup_logging(log_dir: str = LOG_DIR):  
     """Configure logging"""
     os.makedirs(log_dir, exist_ok=True)
-    log_file = os.path.join(log_dir, f'requirements_only_repair_{HUGGING_FACE_MODEL}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
+    log_file = os.path.join(log_dir, f'requirements_only_repair_{OLLAMA_MODEL}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -128,18 +103,46 @@ def retry(max_attempts=MAX_ATTEMPT, delay=DELAY):
         return wrapper
     return decorator
 
+import os
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
 
+
+def call_ollama(prompt, system_prompt=""):
+
+        client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))        
+        messages = []
+
+        if system_prompt:
+            messages.append({
+                'role': 'system',
+                'content': system_prompt
+            })
+        
+        messages.append({
+            'role': 'user',
+            'content': prompt
+        })
+        
+        response = client.chat.completions.create(
+            model="gpt-4.1",
+            messages=messages,
+            top_p=0.3,
+            stop=['\n```', '```\n'],
+            frequency_penalty=0.1
+        )
+        
+        return response.choices[0].message.content
 
 def create_requirements_only_repair_prompt(current_policy, requirements, iteration):
-    """
-    """
-    
-    prompt = f"""Repair the policy given the requests.
 
+    prompt = f"""You are an AWS IAM policy expert. You must use security best practices to repair the following policy so that the provided tests sets are allowed and denied.
+    CRITICAL OUTPUT REQUIREMENTS:
+
+        
 CURRENT POLICY TO REVIEW:
 {json.dumps(current_policy, indent=2)}
 
-REQUIREMENTS TO SATISFY:
+REQUIREMENTS:
 {requirements}
 
 OUTPUT INSTRUCTIONS:
@@ -152,7 +155,8 @@ CORRECTED POLICY:"""
 
 def create_security_focused_system_prompt():
     """Security-focused system prompt for requirements-only repair"""
-    return """Your task is to repair the policy using the given request sets.
+    return """Reapir the policy given the requirement. 
+
 
 REMEMBER: Return ONLY the secure, compliant JSON policy, nothing else."""
 
@@ -222,7 +226,7 @@ def extract_and_validate_json(response_text: str) -> dict:
         raise ValueError(f"LLM generated invalid JSON: {e}")
 
 @retry()
-def repair_policy_with_requirements_only(policy: dict, requirements: dict, iteration: int = 1) -> dict:
+def repair_policy_with_requirements_only(policy: dict, requirements: dict, iteration: int = 1, policy_idx: int = None) -> dict:
     """Repair policy using ONLY requirements and security best practices (no counter-examples or fault localization)"""
     
     # Use requirements-only prompt generation
@@ -255,6 +259,15 @@ def repair_policy_with_requirements_only(policy: dict, requirements: dict, itera
     logging.info(f"{'='*80}")
     
     response_text = call_ollama(prompt, system_prompt)
+    # Save raw LLM output for every iteration
+    raw_output_file = os.path.join(TEMP_DIR, f"raw_llm_output_policy_{policy_idx:03d}_iter_{iteration}.txt")
+    os.makedirs(TEMP_DIR, exist_ok=True)
+    with open(raw_output_file, 'w', encoding='utf-8') as f:
+        f.write(response_text)
+    
+    # Enhanced response logging
+    logging.info(f"{'='*80}")
+    logging.info(f"LLM RESPONSE - ITERATION {iteration}")
     
     # Enhanced response logging
     logging.info(f"{'='*80}")
@@ -308,8 +321,9 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
             pid = os.getpid()
             accuracy_output_path = os.path.join(quacky_output_dir, f"temp_accuracy_{pid}_{timestamp}.txt")
         
+        # ===== VALIDATION: Complete Policy (for accuracy measurement only) =====
         cmd_accuracy = [
-            'python3', 'validate_requests.py',
+            'python', 'validate_requests.py',
             '-p1', policy_file,
             '--requests', requests_file,
             '-s'
@@ -329,6 +343,7 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
         
         os.chdir(original_dir)
         
+        # ===== PARSE ACCURACY RESULTS ONLY =====
         accuracy_lines = accuracy_output_content.split('\n')
         accuracy = 0.0
         total_requests = 0
@@ -380,6 +395,7 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
                     if deny_allow_match:
                         misclassified_deny_to_allow = int(deny_allow_match.group(1))
                         
+        # Parse SMT timing data
         smt_call_times = []
         import re
         timing_pattern = r"'solver_call_time':\s*([0-9.]+)"
@@ -393,6 +409,7 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
             except ValueError as e:
                 logging.warning(f"Failed to parse timing value: {match} - Error: {e}")
 
+        # Alternative: if the above doesn't work, try looking for the actual printed timing
         if not smt_call_times:
             lines = accuracy_output_content.split('\n')
             for line in lines:
@@ -406,6 +423,7 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
                     except (IndexError, ValueError) as e:
                         logging.debug(f"Failed to parse timing from console: {line.strip()}")
 
+        # Parse solver call count from individual validation results
         solver_calls = 0
         for line in lines:
             # Look for various possible patterns
@@ -429,6 +447,7 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
         else:
             logging.info(f"SMT Solver calls: {solver_calls}, No timing data found in output")
     
+        # Clean up temporary files
         if os.path.exists(accuracy_output_path):
             os.unlink(accuracy_output_path)
         
@@ -441,7 +460,7 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
             'misclassified_deny_to_allow': misclassified_deny_to_allow,
             'raw_output': accuracy_output_content,
             'output_file': accuracy_output_path,
-            'solver_calls': solver_calls, 
+            'solver_calls': solver_calls,  # Added solver call count
             'smt_call_times': smt_call_times,
             'total_smt_time': sum(smt_call_times) if smt_call_times else 0,
             'avg_smt_time': sum(smt_call_times) / len(smt_call_times) if smt_call_times else 0
@@ -462,6 +481,7 @@ def run_smt_validator(policy_file: str, requests_file: str, policy_idx: int = No
         logging.error(f"Error running SMT validator: {e}")
         raise
 
+
 def load_json_file(path: str) -> dict:
     with open(path, 'r', encoding='utf-8') as f:
         return json.load(f)
@@ -474,6 +494,7 @@ def save_json_file(data: dict, path: str):
 def process_policy_with_requirements_only(idx: int, baseline_accuracy: float = 0.0) -> dict:
     """Process a single policy with requirements-only approach (no counter-examples or fault localization)"""
     
+    # START TIME TRACKING
     cycle_start_time = time.time()
     
     policy_file = os.path.join(POLICY_DIR, f"{idx}.json")
@@ -487,6 +508,7 @@ def process_policy_with_requirements_only(idx: int, baseline_accuracy: float = 0
     
     logging.info(f"Starting requirements-only repair for policy {idx} (baseline: {baseline_accuracy:.1f}%)...")
     
+    # Count requirements for logging
     allow_count = deny_count = 0
     if "Requests" in requirements:
         for req in requirements["Requests"]:
@@ -540,7 +562,8 @@ def process_policy_with_requirements_only(idx: int, baseline_accuracy: float = 0
             logging.info(f"Repairing policy with requirements-only approach (iteration {iteration})...")
             logging.info(f"Using {allow_count + deny_count} requests")
             
-            repaired_policy = repair_policy_with_requirements_only(current_policy, requirements, iteration)
+            # Use ONLY requirements and security best practices for repair
+            repaired_policy = repair_policy_with_requirements_only(current_policy, requirements, iteration, policy_idx=idx)
             
             temp_policy_file = os.path.join(TEMP_DIR, f"policy_{idx}_iter_{iteration}.json")
             os.makedirs(TEMP_DIR, exist_ok=True)
@@ -557,6 +580,7 @@ def process_policy_with_requirements_only(idx: int, baseline_accuracy: float = 0
             iteration_accuracy = accuracy
             iteration_policy_file = temp_policy_file
             
+            # ALWAYS append iteration accuracy before any potential exceptions
             iteration_accuracies.append(accuracy)
             improvement = accuracy - baseline_accuracy
             
@@ -568,6 +592,7 @@ def process_policy_with_requirements_only(idx: int, baseline_accuracy: float = 0
             logging.info(f"  Duration: {iteration_duration:.1f} seconds")
             logging.info(f"  Approach: Requirements-only with security best practices")
             
+            # Create iteration record BEFORE success check
             iteration_record = {
                 'policy_idx': idx,
                 'iteration': iteration,
@@ -585,9 +610,10 @@ def process_policy_with_requirements_only(idx: int, baseline_accuracy: float = 0
                 'deny_requirements': deny_count,
                 'policy_file': temp_policy_file,
                 'iteration_duration_seconds': iteration_duration,
-                'smt_validation_duration_seconds': smt_duration, 
-                'smt_solver_calls': validation_results.get('solver_calls', 0),  
+                'smt_validation_duration_seconds': smt_duration,  # Add this line,
+                'smt_solver_calls': validation_results.get('solver_calls', 0),  # Add this line,
 
+                # NEW: Add SMT timing data
                 'smt_call_times': validation_results.get('smt_call_times', []),
                 'total_smt_time': validation_results.get('total_smt_time', 0),
                 'avg_smt_time': validation_results.get('avg_smt_time', 0),
@@ -597,6 +623,7 @@ def process_policy_with_requirements_only(idx: int, baseline_accuracy: float = 0
             
             final_accuracy = accuracy
             
+            # Check if we achieved target accuracy
             if accuracy >= TARGET_ACCURACY:
                 cycle_end_time = time.time()
                 cycle_duration = cycle_end_time - cycle_start_time
@@ -608,6 +635,7 @@ def process_policy_with_requirements_only(idx: int, baseline_accuracy: float = 0
                 logging.info(f"Total cycle time: {cycle_duration:.1f} seconds ({str(timedelta(seconds=int(cycle_duration)))})")
                 logging.info(f"Average accuracy across all iterations: {average_accuracy:.1f}%")
                 
+                # Try to save final policy with error handling
                 try:
                     final_output_file = os.path.join(OUTPUT_DIR, f"repaired_{idx}_final.json")
                     save_json_file(repaired_policy, final_output_file)
@@ -922,27 +950,18 @@ def main():
     print("Requirements-Only Guided Policy Repair System")
     print("=" * 60)
     
-    # Test Ollama connection first
-    print("Testing Ollama connection...")
-    ollama_ok, ollama_msg = test_ollama_connection()
-    if not ollama_ok:
-        logging.error(f"Ollama connection failed: {ollama_msg}")
-        print(f"Ollama connection failed: {ollama_msg}")
-        print("\nPlease ensure:")
-        print("1. Ollama is running (ollama serve)")
-        print(f"2. Model '{OLLAMA_MODEL}' is installed (ollama pull {OLLAMA_MODEL})")
-        print("3. Ollama is accessible")
-        sys.exit(1)
-    
-    logging.info(f"Ollama connection successful: {ollama_msg}")
-    print(f"{ollama_msg}")
-    print(f"Using model: {OLLAMA_MODEL}")
-    print("\nKey approach:")
-    print("- Using ONLY requirements and security best practices")
-    print("- NO counter-examples or failed request feedback")
-    print("- NO fault localization or erroneous policy statements")
-    print("- Pure requirements-based repair with AWS IAM security focus")
-    print("- Emphasis on principle of least privilege and defense-in-depth")
+    # # Test Ollama connection first
+    # print("Testing Ollama connection...")
+    # ollama_ok, ollama_msg = test_ollama_connection()
+    # if not ollama_ok:
+    #     logging.error(f"Ollama connection failed: {ollama_msg}")
+    #     print(f"Ollama connection failed: {ollama_msg}")
+    #     print("\nPlease ensure:")
+    #     print("1. Ollama is running (ollama serve)")
+    #     print(f"2. Model '{OLLAMA_MODEL}' is installed (ollama pull {OLLAMA_MODEL})")
+    #     print("3. Ollama is accessible")
+    #     sys.exit(1)
+
     
     # Ensure required directories exist
     for directory in [POLICY_DIR, REQUIREMENTS_DIR]:
@@ -1245,7 +1264,6 @@ def main():
         logging.info(f"Temporary files kept for analysis in: {TEMP_DIR}")
 
 def cleanup_previous_run():
-    """Clean up previous run data"""
     directories_to_clean = [
         OUTPUT_DIR,
         TEMP_DIR,
