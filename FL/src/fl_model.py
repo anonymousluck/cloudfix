@@ -163,11 +163,7 @@ def retry(max_attempts=MAX_ATTEMPT, delay=DELAY):
     return decorator
 
 
-# LLAMA_MODEL = "meta-llama/Llama-3.2-3B"
 LLAMA_MODEL = "codellama/CodeLlama-7b-Instruct-hf"
-# LLAMA_MODEL = "meta-llama/Llama-3.2-3B-Instruct"
-# LLAMA_MODEL = "ibm-granite/granite-3.3-8b-instruct"
-# LLAMA_MODEL = "deepseek-ai/deepseek-coder-7b-instruct-v1.5"
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 import torch
