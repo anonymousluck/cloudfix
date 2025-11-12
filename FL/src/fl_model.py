@@ -102,7 +102,6 @@ def parse_smt_timing_from_output(output_content: str) -> dict:
         call_times = []
         for line in lines:
             if 'Solver time:' in line:
-                # Extract time value (format: "Solver time: 0.0123 seconds")
                 time_match = re.search(r'Solver time:\s*([\d.]+)\s*seconds', line)
                 if time_match:
                     call_time = float(time_match.group(1))
